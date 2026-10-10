@@ -35,6 +35,7 @@ export interface UnitRecordOverrides {
     upgradesFrom?: string | null;
     upgradesTo?: string[];
     inTechTree?: boolean;
+    uniqueTo?: string | null;
 }
 
 /**
@@ -75,7 +76,7 @@ export function unitRecord(overrides: UnitRecordOverrides): UnitRecord {
         speed: overrides.speed ?? 1,
         lineOfSight: 5,
         civs: overrides.civs ?? ['britons'],
-        uniqueTo: null,
+        uniqueTo: overrides.uniqueTo ?? null,
         upgradesFrom: overrides.upgradesFrom ?? null,
         upgradesTo: overrides.upgradesTo ?? [],
         line: overrides.line ?? overrides.key,

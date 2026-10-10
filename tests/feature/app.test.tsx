@@ -210,6 +210,32 @@ describe('App', () => {
         });
     });
 
+    it('shows the roster of a civilization as upgrade lines when the address asks for them', async () => {
+        window.history.pushState(null, '', '/pt-br/civ/aztecs?roster=lines');
+        render(<App locale="pt-BR" />);
+
+        const halberdier = await screen.findByRole('link', { name: /^Alabardeiro/ });
+
+        expect(halberdier.getAttribute('data-missing')).toBe('true');
+        expect(halberdier.textContent).toContain('Astecas não treinam esta unidade.');
+        expect(screen.getByRole('link', { name: 'Milícia' })).toBeDefined();
+    });
+
+    it('switches the roster between the list and the lines from the card', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/civ/aztecs');
+        render(<App locale="pt-BR" />);
+        const views = await screen.findByRole('group', { name: 'Modo de exibição' });
+        expect(screen.getAllByRole('link', { name: /^Milícia/ })).toHaveLength(1);
+
+        await user.click(within(views).getByRole('button', { name: 'Linhas' }));
+
+        await waitFor(() => {
+            expect(window.location.search).toBe('?roster=lines');
+        });
+        expect(screen.getByRole('link', { name: /^Alabardeiro/ })).toBeDefined();
+    });
+
     it('links a unit to every civilization that trains it', async () => {
         window.history.pushState(null, '', '/pt-br/unit/paladin');
         render(<App locale="pt-BR" />);

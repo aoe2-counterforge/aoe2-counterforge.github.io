@@ -298,7 +298,11 @@
         "selected": "Active civilization",
         "clear": "Show all civilizations",
         "count_other": "{{count}} units",
-        "count_one": "{{count}} unit"
+        "count_one": "{{count}} unit",
+        "view": "Roster view",
+        "viewList": "List",
+        "viewLines": "Lines",
+        "linesHint": "Faded steps are upgrades {{civ}} never get."
     },
     "about": {
         "title": "About this guide",

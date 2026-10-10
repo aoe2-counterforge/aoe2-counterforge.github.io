@@ -298,7 +298,11 @@
         "selected": "Civilização ativa",
         "clear": "Ver todas as civilizações",
         "count_other": "{{count}} unidades",
-        "count_one": "{{count}} unidade"
+        "count_one": "{{count}} unidade",
+        "view": "Modo de exibição",
+        "viewList": "Lista",
+        "viewLines": "Linhas",
+        "linesHint": "Os passos apagados são evoluções que {{civ}} não recebem."
     },
     "about": {
         "title": "Sobre o guia",

@@ -298,7 +298,11 @@
         "selected": "Civiltà attiva",
         "clear": "Mostra tutte le civiltà",
         "count_other": "{{count}} unità",
-        "count_one": "{{count}} unità"
+        "count_one": "{{count}} unità",
+        "view": "Modalità di visualizzazione",
+        "viewList": "Elenco",
+        "viewLines": "Linee",
+        "linesHint": "I passaggi sbiaditi sono potenziamenti che {{civ}} non ricevono."
     },
     "about": {
         "title": "Informazioni su questa guida",

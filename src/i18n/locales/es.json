@@ -298,7 +298,11 @@
         "selected": "Civilización activa",
         "clear": "Mostrar todas las civilizaciones",
         "count_other": "{{count}} unidades",
-        "count_one": "{{count}} unidad"
+        "count_one": "{{count}} unidad",
+        "view": "Modo de vista",
+        "viewList": "Lista",
+        "viewLines": "Líneas",
+        "linesHint": "Los pasos atenuados son mejoras que {{civ}} no reciben."
     },
     "about": {
         "title": "Acerca de esta guía",

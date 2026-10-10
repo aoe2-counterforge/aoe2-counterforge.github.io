@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router';
-import { LAND_CATEGORIES } from '../../domain/enums/unit-category.ts';
+import { Link, useParams, useSearchParams } from 'react-router';
 import { EntityNotFoundError } from '../../domain/errors/domain-error.ts';
+import { CivilizationRoster, type RosterView } from '../components/civilization-roster.tsx';
 import { Forge } from '../components/forge.tsx';
 import { GameIcon } from '../components/game-icon.tsx';
 import { PageMeta } from '../components/page-meta.tsx';
@@ -13,10 +13,17 @@ import { useServices } from '../hooks/use-services.ts';
 import { NotFoundPage } from './not-found-page.tsx';
 import { BackLink } from '../components/back-link.tsx';
 
+const ROSTER_VIEWS: readonly RosterView[] = ['list', 'lines'];
+
+function isRosterView(value: string | null): value is RosterView {
+    return ROSTER_VIEWS.includes((value ?? '') as RosterView);
+}
+
 /** Civilization profile: bonuses, unique units and technologies, and the roster by category. */
 export function CivilizationPage() {
     const { t } = useTranslation();
     const { key } = useParams<{ key: string }>();
+    const [params, setParams] = useSearchParams();
     const { catalog } = useServices();
     const text = useGameText();
     const { preferences, update } = usePreferences();
@@ -43,18 +50,16 @@ export function CivilizationPage() {
         return [...byLine.values()];
     }, [catalog, civilization]);
 
-    const roster = useMemo(
-        () =>
-            civilization
-                ? LAND_CATEGORIES.map((category) => ({
-                      category,
-                      units: catalog.units({ civ: civilization.key, categories: [category] }),
-                  })).filter((group) => group.units.length > 0)
-                : [],
-        [catalog, civilization],
-    );
-
     if (!civilization) return <NotFoundPage />;
+
+    // The list is the default, so an address only says anything when it asks for the lines.
+    const view: RosterView = isRosterView(params.get('roster')) ? (params.get('roster') as RosterView) : 'list';
+    const setView = (next: RosterView) => {
+        const search = new URLSearchParams(params);
+        if (next === 'list') search.delete('roster');
+        else search.set('roster', next);
+        setParams(search, { replace: true });
+    };
 
     const civText = text.civilization(civilization.key);
     const isActive = preferences.civ === civilization.key;
@@ -151,10 +156,13 @@ export function CivilizationPage() {
                     <div className="card__title">
                         <h2>{t('civ.uniqueUnits')}</h2>
                     </div>
-                    <ul className="list">
+                    <ul className="list list--columns">
                         {civilization.uniqueUnits.map((unitKey) => (
                             <li key={unitKey}>
-                                <UnitListItem unit={catalog.unit(unitKey)} />
+                                <UnitListItem
+                                    unit={catalog.unit(unitKey)}
+                                    subtitle={t(`ages.${catalog.unit(unitKey).age}`)}
+                                />
                             </li>
                         ))}
                     </ul>
@@ -166,7 +174,7 @@ export function CivilizationPage() {
                     <div className="card__title">
                         <h2>{t('civ.uniqueTechs')}</h2>
                     </div>
-                    <ul className="list">
+                    <ul className="list list--columns">
                         {civilization.uniqueTechs.map((techKey) => {
                             const technology = catalog.technology(techKey);
                             const technologyText = text.technology(techKey);
@@ -190,25 +198,7 @@ export function CivilizationPage() {
                 </section>
             ) : null}
 
-            <section className="card">
-                <div className="card__title">
-                    <h2>{t('civ.roster')}</h2>
-                </div>
-                {roster.map((group) => (
-                    <div key={group.category} style={{ marginBottom: 'var(--space-4)' }}>
-                        <div className="section-label" style={{ marginBottom: 'var(--space-2)' }}>
-                            {t(`categories.${group.category}`)}
-                        </div>
-                        <ul className="list">
-                            {group.units.map((unit) => (
-                                <li key={unit.key}>
-                                    <UnitListItem unit={unit} subtitle={t(`ages.${unit.age}`)} />
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
-            </section>
+            <CivilizationRoster civilization={civilization} view={view} onViewChange={setView} />
         </div>
     );
 }

@@ -25,6 +25,25 @@ export interface UnitQuery {
     combatOnly?: boolean;
 }
 
+export interface RosterQuery {
+    civ: string;
+    /** Keeps the lines to one category, and each step to the members that belong to it. */
+    category?: UnitCategory;
+}
+
+export interface RosterStep {
+    unit: Unit;
+    /** False for an upgrade the line carries that this civilization never reaches. */
+    available: boolean;
+}
+
+export interface RosterLine {
+    /** Line slug, as carried by every member of it. */
+    line: string;
+    /** One entry per upgrade step, each holding the alternatives at that point. */
+    steps: RosterStep[][];
+}
+
 export interface TechnologyQuery {
     civ?: string | null;
     building?: string;
@@ -121,6 +140,30 @@ export class GameCatalogService {
     }
 
     /**
+     * The upgrade lines a civilization fields, each step marked with whether it gets there.
+     *
+     * A tech tree is read for its gaps as much as for its units: that a civilization stops at the
+     * Pikeman says more than the Pikeman does. So a line keeps the steps the civilization never
+     * reaches, as long as they are the ordinary upgrade. Another civilization's unique unit, a unit
+     * no tech tree lists, and the regional alternative to a step the civilization already has are
+     * not gaps, and are left out.
+     *
+     * @param query - The civilization, and optionally the category to keep the lines to.
+     * @returns The lines in the order their earliest unit is trained, each in upgrade steps.
+     */
+    public rosterLines(query: RosterQuery): RosterLine[] {
+        const owned = this.units({ civ: query.civ, categories: query.category ? [query.category] : undefined });
+        const lines = [...new Set(owned.map((unit) => unit.line))];
+
+        return lines.map((line) => ({
+            line,
+            steps: this.upgradeSteps(line)
+                .map((step) => this.rosterStep(step, query))
+                .filter((step) => step.length > 0),
+        }));
+    }
+
+    /**
      * Looks a technology up by slug.
      *
      * @param key - Technology slug such as "bloodlines".
@@ -169,5 +212,17 @@ export class GameCatalogService {
      */
     public civilizations(): Civilization[] {
         return [...this.civilizationsByKey.values()].sort((left, right) => left.key.localeCompare(right.key));
+    }
+    private rosterStep(step: readonly Unit[], query: RosterQuery): RosterStep[] {
+        const members = step.filter((unit) => !query.category || unit.category === query.category);
+        const available = members.filter((unit) => unit.availableTo(query.civ));
+        if (available.length > 0) return available.map((unit) => ({ unit, available: true }));
+
+        // Of the alternatives at a step the civilization skips, the one most tech trees name is the gap.
+        const ordinary = members.filter((unit) => unit.inTechTree && unit.uniqueTo === null);
+        if (ordinary.length === 0) return [];
+        const widest = ordinary.reduce((best, unit) => (unit.civs.length > best.civs.length ? unit : best));
+
+        return [{ unit: widest, available: false }];
     }
 }
