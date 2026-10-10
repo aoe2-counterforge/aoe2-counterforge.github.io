@@ -3,6 +3,7 @@
  */
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import i18next from 'i18next';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createI18n } from '../../src/i18n/index.ts';
 import { App } from '../../src/react/app.tsx';
@@ -12,8 +13,10 @@ beforeAll(() => {
     createI18n('pt-BR');
 });
 
-beforeEach(() => {
+beforeEach(async () => {
     window.history.pushState(null, '', '/pt-br/');
+    // The instance is shared, so a test that switches language would leave the next one in it.
+    await i18next.changeLanguage('pt-BR');
 });
 
 describe('App', () => {
@@ -252,6 +255,46 @@ describe('App', () => {
             'Italiano',
             'Português',
         ]);
+    });
+
+    it('switches the language on the page the reader is on, without loading it again', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/units?category=infantry');
+        render(<App locale="pt-BR" />);
+
+        await user.click(screen.getAllByRole('button', { name: /^Idioma:/ })[0]);
+        await user.click(screen.getByRole('option', { name: 'Inglês' }));
+
+        expect(await screen.findByRole('button', { name: /^Sort by/ })).toBeDefined();
+        expect(screen.getAllByRole('button', { name: /^Language: English/ })).not.toHaveLength(0);
+        expect(`${window.location.pathname}${window.location.search}`).toBe('/en/units?category=infantry');
+    });
+
+    it('keeps the settings open after switching the language from them', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+
+        await user.click(screen.getByRole('button', { name: 'Ajustes' }));
+        await user.click(within(screen.getByRole('dialog', { name: 'Ajustes' })).getByRole('button', { name: 'Português' }));
+        await user.click(screen.getByRole('option', { name: 'Inglês' }));
+
+        expect(await screen.findByRole('dialog', { name: 'Settings' })).toBeDefined();
+    });
+
+    it('keeps the chosen language when stepping back to a page seen before the switch', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/compare');
+        render(<App locale="pt-BR" />);
+
+        await user.click(screen.getAllByRole('link', { name: 'Civilizações' })[0]);
+        await user.click(screen.getAllByRole('button', { name: /^Idioma:/ })[0]);
+        await user.click(screen.getByRole('option', { name: 'Inglês' }));
+        window.history.back();
+
+        await waitFor(() => {
+            expect(window.location.pathname).toBe('/en/compare');
+        });
+        expect(await screen.findByRole('heading', { name: 'Compare units' })).toBeDefined();
     });
 
     it('filters the roster by name', async () => {
