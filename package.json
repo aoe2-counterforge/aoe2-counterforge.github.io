@@ -26,7 +26,8 @@
     "test:e2e": "playwright test",
     "data:build": "vite-node scripts/extract-dataset.ts",
     "data:icons": "vite-node scripts/extract-icons.ts",
-    "data:export": "vite-node scripts/export-gamedata.ts"
+    "data:export": "vite-node scripts/export-gamedata.ts",
+    "docs:screenshots": "vite-node scripts/screenshots.ts"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.10",

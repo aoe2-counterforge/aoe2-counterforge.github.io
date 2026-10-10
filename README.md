@@ -81,6 +81,12 @@ the repository.
 `npm run build` writes a page for every address into `dist/`, for the address in `homepage`. To publish
 somewhere else, set `SITE_URL` to the full address first, such as `SITE_URL=https://example.com/ npm run build`.
 
+`npm test` runs the unit and feature tests. `npm run test:e2e` drives the real pages in a browser, on a phone
+and on a desktop, with [Playwright](https://playwright.dev). On Windows it uses the Edge the system ships with;
+elsewhere run `npx playwright install chromium` once before. To run them in another Chromium-based browser,
+such as Brave, point `PLAYWRIGHT_BROWSER` in `.env` at its executable, as `.env.example` shows.
+`npm run docs:screenshots` retakes the pictures on this page.
+
 ## 📚 Docs
 
 - **[How the counters are calculated](docs/counters.md)** — the formula, the assumptions and the limits.
