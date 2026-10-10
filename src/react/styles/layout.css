@@ -21,7 +21,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     height: var(--header-height);
     padding-inline: var(--space-4);
     background: var(--bg-elevated);
@@ -50,27 +50,20 @@
     display: none;
 }
 
-.topbar__spacer {
-    flex: 1;
-}
-
-/* The civilization picker cannot shrink below its longest option, so on a phone it lives on
-   the page instead of in the header. */
-.topbar__civ {
-    display: none;
-}
-
+/* The search takes whatever the crest and the menu leave, so it reads as the field it opens. */
 .searchbutton {
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    flex: 1 1 0;
+    min-width: 0;
     height: var(--control-height);
     padding: 0 var(--space-3);
-    min-width: 0;
     border: 1px solid var(--border);
     border-radius: 999px;
     background: var(--surface);
     color: var(--text-muted);
+    container-type: inline-size;
     transition: border-color 0.15s ease;
 }
 
@@ -80,7 +73,13 @@
 
 .searchbutton__label {
     display: none;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
     font-size: 0.875rem;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .searchbutton__kbd {
@@ -90,54 +89,90 @@
 /* A phone has no keyboard to press, so the button says what it does and stops there. */
 .searchbutton__short {
     font-size: 0.875rem;
+    white-space: nowrap;
 }
 
-/* Below the wide header the three choices move into a panel, reached from one button. */
-.menubutton {
+/* The full label replaces the short one as soon as the button itself is wide enough to hold it,
+   whatever the screen around it measures. */
+@container (min-width: 17rem) {
+    .searchbutton__short {
+        display: none;
+    }
+
+    .searchbutton__label {
+        display: block;
+    }
+}
+
+/* The round buttons that frame the header: the menu, and the X that stands in for it. */
+.iconbutton {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: none;
     width: var(--control-height);
     height: var(--control-height);
-    margin-left: auto;
     border: 1px solid var(--border);
     border-radius: 999px;
     background: var(--surface);
     color: var(--text-muted);
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
-.menubutton:hover {
+.iconbutton:hover {
     border-color: var(--border-strong);
+    color: var(--text);
 }
 
+/* Below the wide header the three choices move into a panel, reached from one button. */
+.menubutton {
+    margin-left: auto;
+}
+
+/* On a phone the settings take the whole screen and borrow the page's own frame: the same header,
+   with the X exactly where the menu button was. */
 .sheet {
     position: fixed;
     inset: 0;
     z-index: 50;
     display: flex;
-    justify-content: flex-end;
-    background: color-mix(in srgb, var(--bg) 72%, transparent);
-    backdrop-filter: blur(4px);
+    flex-direction: column;
+    background: var(--bg);
+    animation: sheet-in 0.2s ease-out;
+}
+
+@keyframes sheet-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
 }
 
 .sheet__panel {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: var(--space-4);
-    width: min(20rem, 88vw);
-    padding: var(--space-4);
+    min-height: 0;
     overflow-y: auto;
-    background: var(--bg-elevated);
-    border-left: 1px solid var(--border);
-    box-shadow: var(--shadow-lg);
+    overscroll-behavior: contain;
 }
 
+/* The head stays put while a long list scrolls under it, so the way out is always in reach. */
 .sheet__head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     display: flex;
+    flex: none;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
+    height: var(--header-height);
+    padding-inline: var(--space-4);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
 }
 
 .sheet__head h2 {
@@ -176,24 +211,10 @@
     line-height: 1;
 }
 
-/* A label and its shortcut fit long before the layout is wide enough to centre them. */
+/* Past a phone there is a keyboard to name, and the search stops stretching with the window. */
 @media (min-width: 40rem) {
-    .searchbutton__short {
-        display: none;
-    }
-
     .searchbutton {
-        flex: 1;
         max-width: 22rem;
-    }
-
-    .searchbutton__label {
-        display: block;
-        flex: 1;
-        overflow: hidden;
-        text-align: left;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     .searchbutton__kbd {
@@ -210,14 +231,6 @@
 
     .topbar__name {
         display: inline;
-    }
-
-    .topbar__civ {
-        display: block;
-    }
-
-    .topbar__civ .select {
-        max-width: 12rem;
     }
 }
 
@@ -243,7 +256,7 @@
     }
 
     .searchbutton {
-        min-width: 18rem;
+        width: 21rem;
     }
 
     /* Wide screens get the same bar, docked in the middle instead of stretched. */

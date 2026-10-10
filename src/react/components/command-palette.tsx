@@ -120,8 +120,9 @@ function PaletteDialog({ close }: { close: () => void }) {
                             setActiveIndex(0);
                         }}
                     />
-                    <button type="button" className="palette__close" onClick={close}>
-                        {t('common.close')}
+                    <button type="button" className="iconbutton palette__close" onClick={close}>
+                        <Icon name="close" />
+                        <span className="visually-hidden">{t('common.close')}</span>
                     </button>
                 </div>
 

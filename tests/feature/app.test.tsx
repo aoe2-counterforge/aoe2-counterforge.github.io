@@ -36,6 +36,30 @@ describe('App', () => {
         expect(screen.getByRole('dialog')).toBeDefined();
     });
 
+    it('closes the command palette from its close button', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
+
+        await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Fechar' }));
+
+        expect(screen.queryByRole('dialog')).toBeNull();
+    });
+
+    it('opens the settings from the menu button and closes them with the X', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        const menu = screen.getByRole('button', { name: 'Ajustes' });
+
+        await user.click(menu);
+        const sheet = screen.getByRole('dialog', { name: 'Ajustes' });
+        expect(within(sheet).getByRole('button', { name: 'Todas as civilizações' })).toBeDefined();
+        await user.click(within(sheet).getByRole('button', { name: 'Fechar' }));
+
+        expect(screen.queryByRole('dialog')).toBeNull();
+        expect(document.activeElement).toBe(menu);
+    });
+
     it('navigates to a unit page from a search result', async () => {
         const user = userEvent.setup();
         render(<App locale="pt-BR" />);

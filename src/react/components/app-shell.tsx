@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation } from 'react-router';
 import { assetUrl } from '../format.ts';
@@ -52,19 +52,26 @@ export function AppShell() {
     const { t } = useTranslation();
     const { open } = useCommandPalette();
     const [isMenuOpen, setMenuOpen] = useState(false);
+    const menuButton = useRef<HTMLButtonElement>(null);
     const { pathname } = useLocation();
+
+    /** Closes the settings and hands the focus back to the button that opened them. */
+    const closeMenu = useCallback(() => {
+        setMenuOpen(false);
+        menuButton.current?.focus();
+    }, []);
 
     useEffect(() => {
         if (!isMenuOpen) return undefined;
 
         const onKey = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setMenuOpen(false);
+            if (event.key === 'Escape') closeMenu();
         };
 
         window.addEventListener('keydown', onKey);
 
         return () => { window.removeEventListener('keydown', onKey); };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, closeMenu]);
     useSpecular('.card, .topbar');
 
     return (
@@ -95,8 +102,9 @@ export function AppShell() {
                 <SettingsBar />
 
                 <button
+                    ref={menuButton}
                     type="button"
-                    className="menubutton"
+                    className="iconbutton menubutton"
                     aria-expanded={isMenuOpen}
                     onClick={() => { setMenuOpen(true); }}
                 >
@@ -106,20 +114,13 @@ export function AppShell() {
             </header>
 
             {isMenuOpen ? (
-                <div
-                    className="sheet"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={t('settings.title')}
-                    onMouseDown={(event) => {
-                        if (event.target === event.currentTarget) setMenuOpen(false);
-                    }}
-                >
+                <div className="sheet" role="dialog" aria-modal="true" aria-label={t('settings.title')}>
                     <div className="sheet__panel">
                         <div className="sheet__head">
                             <h2>{t('settings.title')}</h2>
-                            <button type="button" className="chip" onClick={() => { setMenuOpen(false); }}>
-                                {t('common.close')}
+                            <button type="button" className="iconbutton" autoFocus onClick={closeMenu}>
+                                <Icon name="close" />
+                                <span className="visually-hidden">{t('common.close')}</span>
                             </button>
                         </div>
                         <SettingsBar stacked />
