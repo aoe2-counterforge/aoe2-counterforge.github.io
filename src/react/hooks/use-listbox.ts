@@ -75,10 +75,14 @@ export function useListbox(options: ListboxOptions): Listbox {
                 setActive((current) => (current + delta + options.count) % options.count);
             };
 
+            // Inside the filter these keys belong to the text: a space is part of a name like
+            // "Arqueiro Tupi", and Home and End move the caret.
+            const typing = event.target instanceof HTMLInputElement;
+
             if (event.key === 'ArrowDown') { step(1); return; }
             if (event.key === 'ArrowUp') { step(-1); return; }
 
-            if (event.key === 'Home' || event.key === 'End') {
+            if (!typing && (event.key === 'Home' || event.key === 'End')) {
                 event.preventDefault();
                 setActive(event.key === 'Home' ? 0 : options.count - 1);
 
@@ -91,7 +95,7 @@ export function useListbox(options: ListboxOptions): Listbox {
                 return;
             }
 
-            if (isOpen && (event.key === 'Enter' || event.key === ' ')) {
+            if (isOpen && (event.key === 'Enter' || (event.key === ' ' && !typing))) {
                 event.preventDefault();
                 pick(active);
             }

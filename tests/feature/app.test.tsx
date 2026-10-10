@@ -147,6 +147,18 @@ describe('App', () => {
         });
     });
 
+    it('keeps a space typed into the picker as part of the name', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/compare?units=knight');
+        render(<App locale="pt-BR" />);
+
+        const search = await screen.findByRole('combobox', { name: 'Adicionar unidade' });
+        await user.type(search, 'arqueiro tupi');
+
+        expect(search).toHaveProperty('value', 'arqueiro tupi');
+        expect(window.location.search).toBe('?units=knight');
+    });
+
     it('takes a unit back out of the comparison from its tag', async () => {
         const user = userEvent.setup();
         window.history.pushState(null, '', '/pt-br/compare?units=halberdier,champion');
