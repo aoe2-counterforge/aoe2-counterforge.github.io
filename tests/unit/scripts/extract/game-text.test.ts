@@ -109,6 +109,52 @@ describe('splitMatchupSentences', () => {
             'Debole contro fanteria leggera.',
         ]);
     });
+
+    it('recognises a verdict the designer intensified', () => {
+        const result = splitMatchupSentences(
+            'Danish unique Infantry. Exceptionally strong vs. Cavalry and buildings. Weak vs. Ranged Soldiers.',
+        );
+
+        expect([result.role, result.strongVs, result.weakVs]).toEqual([
+            'Danish unique Infantry.',
+            'Exceptionally strong vs. Cavalry and buildings.',
+            'Weak vs. Ranged Soldiers.',
+        ]);
+    });
+
+    it('keeps both verdicts of a unit that is strong twice over', () => {
+        const result = splitMatchupSentences(
+            'Roman unique Infantry. Strong vs. buildings. Exceptionally strong vs. Infantry.',
+        );
+
+        expect(result.strongVs).toBe('Strong vs. buildings. Exceptionally strong vs. Infantry.');
+    });
+
+    it('recognises the plural verdicts a unit trained in pairs gets', () => {
+        const result = splitMatchupSentences(
+            'Arqueiros a Pé treinados em pares. Fortes em grande número. Fracos contra unidades próximas.',
+        );
+
+        expect([result.strongVs, result.weakVs]).toEqual([
+            'Fortes em grande número.',
+            'Fracos contra unidades próximas.',
+        ]);
+    });
+
+    it('recognises the Italian wording for an effective warship', () => {
+        const result = splitMatchupSentences('Nave da guerra veloce. Efficace contro galee incendiarie.');
+
+        expect(result.strongVs).toBe('Efficace contro galee incendiarie.');
+    });
+
+    it('separates a verdict the translation ran into the sentence before it', () => {
+        const result = splitMatchupSentences('Cavalaria de movimento rápido Forte contra Unidades Montadas.');
+
+        expect([result.role, result.strongVs]).toEqual([
+            'Cavalaria de movimento rápido',
+            'Forte contra Unidades Montadas.',
+        ]);
+    });
 });
 
 describe('parseUnitHelp', () => {

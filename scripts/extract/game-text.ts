@@ -6,14 +6,24 @@ const BULLET = /^[•·-]\s*/;
  * A sentence ends at a period followed by a capital letter, unless that period closes "vs.".
  *
  * Without the exception the English "Strong vs. Infantry" would be cut in two and the verdict
- * would lose the classes it introduces.
+ * would lose the classes it introduces. A translation occasionally forgets the period in front
+ * of a verdict, so a capitalised word followed by the locale's "versus" word opens a sentence
+ * too; a role sentence cut that way is joined back unchanged.
  */
-const SENTENCE_BREAK = /(?<=\.)(?<!\bvs\.)\s+(?=[A-ZÀ-Þ])/;
+const SENTENCE_BREAK = /(?<=\.)(?<!\bvs\.)\s+(?=[A-ZÀ-Þ])|\s+(?=[A-ZÀ-Þ]\S*\s+(?:vs\.|contra|contro)\s)/;
 
-/** Sentence openers the game uses to introduce a matchup verdict, per shipped locale. */
+/** The adverb a designer sometimes puts in front of a verdict ("Exceptionally strong vs."). */
+const INTENSIFIER = '(?:\\p{L}+mente|exceptionally|extremely|very|muy|molto)\\s+';
+
+/**
+ * Sentence openers the game uses to introduce a matchup verdict, per shipped locale.
+ *
+ * The translations inflect the verdict for a unit trained in pairs ("Fortes contra"), so each
+ * opener accepts both numbers.
+ */
 const MATCHUP_MARKERS = {
-    strong: /^(strong|forte|forts?|fuerte)\b/i,
-    weak: /^(weak|fraco|fraca|d[eé]bil|debole)\b/i,
+    strong: new RegExp(`^(?:${INTENSIFIER})?(?:strong|fortes?|forti|fuertes?|efficace)\\b`, 'iu'),
+    weak: new RegExp(`^(?:${INTENSIFIER})?(?:weak|fracos?|fracas?|d[eé]bil(?:es)?|debol[ei])\\b`, 'iu'),
 };
 
 export interface UnitHelp {
@@ -97,7 +107,7 @@ export function parseUnitHelp(raw: string): UnitHelp {
  * Pulls the designer-written matchup verdicts out of a unit description.
  *
  * @param description - The plain description sentence block.
- * @returns The role text plus each verdict sentence, empty when the unit has none.
+ * @returns The role text plus the verdicts of each kind, empty when the unit has none.
  */
 export function splitMatchupSentences(description: string): Omit<UnitHelp, 'upgradesHint'> {
     const sentences = description
@@ -106,16 +116,16 @@ export function splitMatchupSentences(description: string): Omit<UnitHelp, 'upgr
         .filter(Boolean);
 
     const role: string[] = [];
-    let strongVs = '';
-    let weakVs = '';
+    const strongVs: string[] = [];
+    const weakVs: string[] = [];
 
     for (const sentence of sentences) {
-        if (MATCHUP_MARKERS.strong.test(sentence)) strongVs = sentence;
-        else if (MATCHUP_MARKERS.weak.test(sentence)) weakVs = sentence;
+        if (MATCHUP_MARKERS.strong.test(sentence)) strongVs.push(sentence);
+        else if (MATCHUP_MARKERS.weak.test(sentence)) weakVs.push(sentence);
         else role.push(sentence);
     }
 
-    return { role: role.join(' '), strongVs, weakVs };
+    return { role: role.join(' '), strongVs: strongVs.join(' '), weakVs: weakVs.join(' ') };
 }
 
 /**
