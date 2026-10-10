@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { LAND_CATEGORIES } from '../../domain/enums/unit-category.ts';
+import { GameIcon } from '../components/game-icon.tsx';
 import { Icon } from '../components/icon.tsx';
 import { MatchupRow } from '../components/matchup-row.tsx';
 import { PageMeta } from '../components/page-meta.tsx';
 import { PickerField } from '../components/picker-field.tsx';
-import { iconUrl } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useMatchups } from '../hooks/use-matchups.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
@@ -32,12 +32,7 @@ export function HomePage() {
                     value: unit.key,
                     label: text.unit(unit.key).name,
                     visual: (
-                        <img
-                            className="picker__emblem"
-                            src={iconUrl(`Unit/${String(unit.icon)}.png`)}
-                            alt=""
-                            loading="lazy"
-                        />
+                        <GameIcon path={unit.icon === null ? null : `Unit/${unit.icon}.png`} alt="" size="sm" />
                     ),
                 }))
                 .sort((left, right) => left.label.localeCompare(right.label)),

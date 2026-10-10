@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useListbox } from '../hooks/use-listbox.ts';
-import { narrowOptions } from '../narrow-options.ts';
+import { narrowOptions, needsFilter } from '../narrow-options.ts';
 import { Icon } from './icon.tsx';
+import { SelectField } from './select-field.tsx';
 
 export interface PickerOption {
     value: string;
@@ -30,18 +31,30 @@ export interface PickerProps {
 /** How close to the window edge an open list is allowed to come, in pixels. */
 const EDGE_MARGIN = 8;
 
-/** Above this many entries, scanning the list stops working and typing takes over. */
-const SEARCH_FROM = 10;
-
 /** A single-choice list that can carry a flag, an emblem or an icon beside each entry. */
-export function Picker({ label, value, options, onChange, compact, prefix, block, id, align = 'end' }: PickerProps) {
+export function Picker(props: PickerProps) {
+    if (!props.block) return <MenuPicker {...props} />;
+
+    return (
+        <SelectField
+            id={props.id}
+            label={props.label}
+            value={props.value}
+            options={props.options}
+            onChange={props.onChange}
+        />
+    );
+}
+
+/** The small shape: a button whose list, and the filter for a long one, open in a popup under it. */
+function MenuPicker({ label, value, options, onChange, compact, prefix, id, align = 'end' }: PickerProps) {
     const { t } = useTranslation();
     const [term, setTerm] = useState('');
     const container = useRef<HTMLDivElement>(null);
     const popup = useRef<HTMLDivElement>(null);
     const [shift, setShift] = useState(0);
     const search = useRef<HTMLInputElement>(null);
-    const searchable = options.length > SEARCH_FROM;
+    const searchable = needsFilter(options.length);
 
     const visible = useMemo(() => narrowOptions(options, term), [options, term]);
 
@@ -83,9 +96,7 @@ export function Picker({ label, value, options, onChange, compact, prefix, block
 
     return (
         <div
-            className={['picker', block ? 'picker--block' : '', prefix === undefined ? '' : 'picker--labelled']
-                .filter(Boolean)
-                .join(' ')}
+            className={prefix === undefined ? 'picker' : 'picker picker--labelled'}
             ref={container}
             onKeyDown={list.onKeyDown}
         >
@@ -111,7 +122,7 @@ export function Picker({ label, value, options, onChange, compact, prefix, block
                 <div
                     ref={popup}
                     className="picker__popup"
-                    data-align={block ? 'start' : align}
+                    data-align={align}
                     style={shift === 0 ? undefined : { transform: `translateX(${String(shift)}px)` }}
                 >
                     {searchable ? (

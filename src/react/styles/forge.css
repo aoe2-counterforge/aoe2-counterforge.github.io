@@ -420,17 +420,6 @@
     color: var(--text-faint);
 }
 
-/* A picker standing in for a select fills its field, like the input beside it. */
-.picker--block,
-.picker--block .picker__button {
-    width: 100%;
-    max-width: none;
-}
-
-.picker--block .picker__popup {
-    min-width: 100%;
-}
-
 .picker__popup {
     position: absolute;
     top: calc(100% + var(--space-1));
@@ -528,31 +517,129 @@
     color: var(--gold);
 }
 
-/* ---------- a select that keeps several choices as tags ---------- */
+/* ---------- a full-width select, for one choice or for several as tags ---------- */
 
-.tag-picker {
+.select-field {
     position: relative;
+}
+
+.select-field__box {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
+    width: 100%;
     min-height: 3.25rem;
-    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    padding: 0 var(--space-3);
+    font-size: 0.9375rem;
+    color: var(--text);
+    text-align: left;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    cursor: text;
     transition: border-color 0.15s ease;
 }
 
-.tag-picker:hover,
-.tag-picker:focus-within {
+.select-field__box:hover,
+.select-field__box:focus-within,
+.select-field[data-open] .select-field__box {
     border-color: var(--gold);
 }
 
 /* The ring a focused control wears goes around the whole field, not the bare text inside it. */
-.tag-picker:has(.tag-picker__input:focus-visible) {
+.select-field__box:has(.select-field__input:focus-visible) {
     outline: 2px solid var(--gold);
     outline-offset: 2px;
+}
+
+.select-field__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 2.25rem;
+    padding: 0;
+    font-size: inherit;
+    color: var(--text);
+    background: none;
+    border: 0;
+}
+
+.select-field__input:focus-visible {
+    outline: none;
+}
+
+.select-field__input::placeholder {
+    color: var(--text-faint);
+}
+
+.select-field__caret {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    margin-left: auto;
+    color: var(--text-faint);
+    transition: transform 0.15s ease;
+}
+
+.select-field[data-open] .select-field__caret {
+    transform: rotate(180deg);
+}
+
+/* The picture of the current choice, at the scale of the field. */
+.select-field__box > .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+.select-field__box > .picker__emblem,
+.select-field__popup .picker__emblem {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.select-field__box > .flag,
+.select-field__popup .flag {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.select-field__box > .glyph:not(.select-field__caret),
+.select-field__popup .glyph {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--gold);
+}
+
+/* Anchored to the field, the list opens as wide as it. */
+.select-field__popup {
+    left: 0;
+    right: 0;
+    max-width: none;
+}
+
+.select-field__popup .picker__list {
+    max-height: 22rem;
+}
+
+/* The rows take the scale of the field above them, with the same picture the field shows. */
+.select-field__popup .picker__option {
+    gap: var(--space-3);
+    min-height: 3rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9375rem;
+}
+
+.select-field__popup .picker__option .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+}
+
+/* Several choices: the tags wrap, and a click anywhere between them reaches for the filter. */
+.tag-picker {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    cursor: text;
 }
 
 .tag-picker__values {
@@ -565,60 +652,10 @@
 }
 
 /* The filter takes whatever room the tags leave on their last line. */
-.tag-picker__input {
+.tag-picker .select-field__input {
     flex: 1 1 8rem;
     min-width: 8rem;
-    min-height: 2.25rem;
     padding: 0 var(--space-1);
-    font-size: 0.9375rem;
-    color: var(--text);
-    background: none;
-    border: 0;
-}
-
-.tag-picker__input:focus-visible {
-    outline: none;
-}
-
-.tag-picker__input::placeholder {
-    color: var(--text-faint);
-}
-
-.tag-picker__caret {
-    flex: none;
-    width: 1rem;
-    height: 1rem;
-    color: var(--text-faint);
-    transition: transform 0.15s ease;
-}
-
-.tag-picker[data-open] .tag-picker__caret {
-    transform: rotate(180deg);
-}
-
-/* Anchored to the field, the list opens as wide as it. */
-.tag-picker__popup {
-    left: 0;
-    right: 0;
-    max-width: none;
-}
-
-.tag-picker__popup .picker__list {
-    max-height: 22rem;
-}
-
-/* The rows take the scale of the field above them, with the portrait each one becomes as a tag. */
-.tag-picker__popup .picker__option {
-    gap: var(--space-3);
-    min-height: 3rem;
-    padding: var(--space-2) var(--space-3);
-    font-size: 0.9375rem;
-}
-
-.tag-picker__popup .picker__option .icon {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 999px;
 }
 
 .tag-picker__tag {

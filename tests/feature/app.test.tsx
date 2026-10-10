@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createI18n } from '../../src/i18n/index.ts';
@@ -213,6 +213,31 @@ describe('App', () => {
         await user.type(screen.getByRole('searchbox', { name: 'Usar esta civilização' }), 'bret');
 
         expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual(['Bretões']);
+    });
+
+    it('picks the enemy by typing its name into the field itself', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+
+        await user.click(await screen.findByRole('button', { name: 'Unidade inimiga' }));
+        await user.type(screen.getByRole('combobox', { name: 'Unidade inimiga' }), 'paladino');
+        await user.click(screen.getByRole('option', { name: 'Paladino' }));
+
+        expect(screen.getByRole('button', { name: 'Unidade inimiga' }).textContent).toBe('Paladino');
+    });
+
+    it('closes a list inside the settings without closing the settings', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+
+        await user.click(screen.getByRole('button', { name: 'Ajustes' }));
+        const sheet = screen.getByRole('dialog', { name: 'Ajustes' });
+        await user.click(within(sheet).getByRole('button', { name: 'Todas as civilizações' }));
+        await user.keyboard('{Escape}');
+
+        expect(within(sheet).queryByRole('listbox')).toBeNull();
+        expect(screen.getByRole('dialog', { name: 'Ajustes' })).toBeDefined();
+        expect(document.activeElement).toBe(within(sheet).getByRole('button', { name: 'Todas as civilizações' }));
     });
 
     it('lists the languages in alphabetical order of their names', async () => {

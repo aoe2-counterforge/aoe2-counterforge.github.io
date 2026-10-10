@@ -1,6 +1,19 @@
 import { FuzzyMatcher, normalize } from '../services/search/fuzzy-matcher.ts';
 import type { PickerOption } from './components/picker.tsx';
 
+/** Above this many entries, scanning a list stops working and typing takes over. */
+const SEARCH_FROM = 10;
+
+/**
+ * Tells whether a list is long enough to be narrowed by typing rather than scanned.
+ *
+ * @param count - How many options the list holds.
+ * @returns True once scanning stops working.
+ */
+export function needsFilter(count: number): boolean {
+    return count > SEARCH_FROM;
+}
+
 /** The same scoring the command palette uses, so "brt" finds the Britons in a picker too. */
 const matcher = new FuzzyMatcher();
 
