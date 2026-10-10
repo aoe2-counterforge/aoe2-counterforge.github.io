@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Unit } from '../../domain/entities/unit.ts';
@@ -22,6 +22,17 @@ export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
     const { t } = useTranslation();
     const text = useGameText();
     const steps = useUnitLine(unit);
+    const line = useRef<HTMLDivElement>(null);
+
+    // A line longer than a phone is wide slides sideways, and it opens with the unit you are on in view.
+    useEffect(() => {
+        const strip = line.current;
+        const here = strip?.querySelector<HTMLElement>('[data-here]');
+        if (!strip || !here || strip.scrollWidth <= strip.clientWidth) return;
+
+        const offset = here.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+        strip.scrollLeft += offset - (strip.clientWidth - here.offsetWidth) / 2;
+    }, [unit.key]);
 
     return (
         <Forge
@@ -34,28 +45,37 @@ export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
             }
         >
             {steps.length > 1 ? (
-                <div className="forge__line">
+                <div className="forge__line" ref={line}>
                     {steps.map((step, index) => (
                         <span className="forge__step-wrap" key={step[0].key}>
                             {index > 0 ? <Icon name="next" className="forge__arrow" /> : null}
                             <span className="forge__fork">
-                                {step.map((member, choice) => (
-                                    <Fragment key={member.key}>
-                                        {choice > 0 ? <span className="forge__or">{t('unit.lineOr')}</span> : null}
-                                        <Link
-                                            className="forge__step"
-                                            to={`/unit/${member.key}`}
-                                            data-here={member.key === unit.key || undefined}
-                                        >
-                                            <GameIcon
-                                                path={member.icon === null ? null : `Unit/${String(member.icon)}.png`}
-                                                alt=""
-                                                size="sm"
-                                            />
-                                            {text.unit(member.key).name}
-                                        </Link>
-                                    </Fragment>
-                                ))}
+                                {step.map((member, choice) => {
+                                    const name = text.unit(member.key).name;
+
+                                    return (
+                                        <Fragment key={member.key}>
+                                            {choice > 0 ? (
+                                                <span className="forge__or">{t('unit.lineOr')}</span>
+                                            ) : null}
+                                            <Link
+                                                className="forge__step"
+                                                to={`/unit/${member.key}`}
+                                                aria-label={name}
+                                                data-here={member.key === unit.key || undefined}
+                                            >
+                                                <GameIcon
+                                                    path={
+                                                        member.icon === null ? null : `Unit/${String(member.icon)}.png`
+                                                    }
+                                                    alt=""
+                                                    size="sm"
+                                                />
+                                                <span className="forge__step-name">{name}</span>
+                                            </Link>
+                                        </Fragment>
+                                    );
+                                })}
                             </span>
                         </span>
                     ))}

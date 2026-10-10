@@ -183,35 +183,52 @@
     background: radial-gradient(120% 130% at 50% 145%, var(--forge-glow, rgb(255 132 44 / 30%)), transparent 68%);
 }
 
+/* On a phone the portrait and the name share the top row, and the upgrade line and the badges take
+   the whole width under them instead of squeezing beside the portrait. */
 .forge__body {
     position: relative;
-    display: flex;
-    align-items: flex-end;
-    gap: var(--space-4);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--space-3);
+    align-items: center;
     width: 100%;
     min-width: 0;
 }
 
-.forge__title {
-    flex: 1;
+.forge__body > .slot {
+    grid-area: 1 / 1;
+}
+
+.forge__identity {
+    grid-area: 1 / 2;
     min-width: 0;
+}
+
+.forge__extra {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin-top: var(--space-3);
 }
 
 .forge__name {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 1.2rem + 1.6vw, 2.1rem);
+    font-size: clamp(1.35rem, 1rem + 1.8vw, 2.1rem);
     font-weight: 700;
     line-height: 1.05;
     color: var(--banner-ink);
+    overflow-wrap: anywhere;
+    hyphens: auto;
 }
 
 .forge__meta {
     display: flex;
     flex-wrap: wrap;
+    grid-column: 1 / -1;
     align-items: center;
     gap: var(--space-2);
-    margin-top: var(--space-2);
+    min-width: 0;
+    margin-top: var(--space-3);
     font-size: 0.8125rem;
     color: var(--banner-muted);
 }
@@ -233,14 +250,67 @@
     border-color: color-mix(in srgb, var(--gold) 45%, transparent);
 }
 
+/* On a phone the age shield hangs off the corner of the portrait, well clear of the name. */
 .forge__shield {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2.9rem;
-    height: 2.5rem;
+    position: relative;
+    z-index: 1;
+    grid-area: 1 / 1;
+    align-self: center;
+    justify-self: center;
+    width: 2.5rem;
+    height: 2.15rem;
+    transform: translate(1.5rem, 1.6rem);
     background: var(--shield) center / contain no-repeat;
     filter: drop-shadow(0 2px 6px rgb(0 0 0 / 55%));
+    pointer-events: none;
+}
+
+/* With room to spare the banner goes back to one block beside the portrait, the shield in the
+   corner of the banner and the name kept clear of it. */
+@media (min-width: 40rem) {
+    .forge__body {
+        grid-template-rows: 1fr auto auto;
+        column-gap: var(--space-4);
+        align-items: end;
+    }
+
+    .forge__body > .slot {
+        grid-row: 1 / 4;
+        width: 5.5rem;
+        height: 5.5rem;
+    }
+
+    .forge__identity {
+        align-self: end;
+    }
+
+    .forge__body:has(.forge__shield) .forge__identity {
+        padding-right: 3.25rem;
+    }
+
+    .forge__extra,
+    .forge__meta {
+        grid-column: 2;
+        margin-top: var(--space-2);
+    }
+
+    .forge__extra {
+        grid-row: 2;
+    }
+
+    .forge__meta {
+        grid-row: 3;
+    }
+
+    .forge__shield {
+        position: absolute;
+        top: 0;
+        right: 0;
+        grid-area: auto;
+        width: 2.9rem;
+        height: 2.5rem;
+        transform: none;
+    }
 }
 
 /* ---------- the portrait in its slot ---------- */
@@ -249,8 +319,8 @@
     position: relative;
     display: grid;
     flex: none;
-    width: 5.5rem;
-    height: 5.5rem;
+    width: 4.5rem;
+    height: 4.5rem;
     padding: 6px;
     background: var(--slot) center / 100% 100% no-repeat;
 }
@@ -749,16 +819,27 @@
     color: var(--banner-muted);
 }
 
+/* One row at any width. On a phone the steps are portraits alone, the one you are on ringed in
+   gold, and a line too long for the screen slides sideways instead of wrapping. */
 .forge__line {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: var(--space-1);
-    margin-top: var(--space-2);
+    /* The ring around the current step would otherwise be clipped by the scrolling box. */
+    margin: -3px;
+    padding: 3px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.forge__line::-webkit-scrollbar {
+    display: none;
 }
 
 .forge__step-wrap {
     display: inline-flex;
+    flex: none;
     align-items: center;
     gap: var(--space-1);
 }
@@ -784,7 +865,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    padding: 2px var(--space-2) 2px 2px;
+    padding: 2px;
     font-size: 0.6875rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -794,9 +875,14 @@
     white-space: nowrap;
 }
 
+/* The title above already names the unit you are on, so the row can be pictures alone. */
+.forge__step-name {
+    display: none;
+}
+
 .forge__step .icon {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 50%;
     background: none;
 }
@@ -807,10 +893,33 @@
 }
 
 .forge__step[data-here] {
-    color: var(--gold-ink);
-    font-weight: 700;
-    background: var(--gold);
     border-color: var(--gold);
+    box-shadow:
+        0 0 0 1px var(--gold),
+        0 0 10px var(--halo);
+}
+
+/* With the room of a wide banner each step gets its name back and the current one its gold fill. */
+@media (min-width: 60rem) {
+    .forge__step {
+        padding: 2px var(--space-2) 2px 2px;
+    }
+
+    .forge__step-name {
+        display: inline;
+    }
+
+    .forge__step .icon {
+        width: 1.05rem;
+        height: 1.05rem;
+    }
+
+    .forge__step[data-here] {
+        color: var(--gold-ink);
+        font-weight: 700;
+        background: var(--gold);
+        box-shadow: none;
+    }
 }
 
 .forge__arrow {

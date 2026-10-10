@@ -29,6 +29,19 @@
     font-size: 0.8125rem;
 }
 
+/* Figures on the left and the one action on the right, even once a narrow card wraps it under them. */
+.card__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.card__row > .chip {
+    margin-left: auto;
+}
+
 .section-label {
     font-size: 0.75rem;
     font-weight: 700;

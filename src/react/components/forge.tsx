@@ -30,17 +30,16 @@ export function Forge({ portrait, name, subtitle, age = null, children, meta }: 
 
             <div className="forge__body">
                 <span className="slot">{portrait}</span>
+                {age === null ? null : <span className="forge__shield" aria-hidden="true" />}
 
-                <div className="forge__title">
+                <div className="forge__identity">
                     <h1 className="forge__name">{name}</h1>
                     <p className="forge__sub">{subtitle}</p>
-
-                    {children}
-
-                    {meta === undefined ? null : <div className="forge__meta">{meta}</div>}
                 </div>
 
-                {age === null ? null : <span className="forge__shield" aria-hidden="true" />}
+                {children ? <div className="forge__extra">{children}</div> : null}
+
+                {meta === undefined ? null : <div className="forge__meta">{meta}</div>}
             </div>
         </div>
     );

@@ -72,7 +72,7 @@ export function UnitPage() {
                     }
                 />
 
-                <div className="row" style={{ justifyContent: 'space-between' }}>
+                <div className="card__row">
                     <ResourceCostRow
                         cost={unit.cost}
                         trailing={`${t('unit.trainTime')}: ${t('common.seconds', { value: short(unit.trainTime) })}`}
