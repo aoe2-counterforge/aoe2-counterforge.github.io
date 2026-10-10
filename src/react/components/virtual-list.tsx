@@ -22,6 +22,9 @@ export function VirtualList<T>({ items, estimate, keyOf, children }: VirtualList
         count: items.length,
         getScrollElement: () => scroller.current,
         estimateSize: () => estimate,
+        // React keeps a row's node when the list reorders, so nothing measures it again; keying the
+        // size cache by position would hand that row the height of whatever stood there before.
+        getItemKey: (index) => keyOf(items[index]),
         overscan: 6,
         gap: 8,
     });
