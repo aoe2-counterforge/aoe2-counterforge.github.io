@@ -7,6 +7,10 @@ coverage
 .vscode/*
 !.vscode/extensions.json
 
+# Playwright leaves its traces and reports here.
+test-results/
+playwright-report/
+
 # The extraction scripts read the game folder from here.
 .env
 exports/
