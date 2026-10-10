@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.5.0...v0.6.0) (2026-10-10)
+
+
+### Features
+
+* lay the unit banner out for a phone ([6220ff8](https://github.com/giovani-freitag/aoe2-counterforge/commit/6220ff879432a0fa524f8ac30ee47b5507f0e80d))
+* open the settings as a full screen sheet on phones ([3ce7dbf](https://github.com/giovani-freitag/aoe2-counterforge/commit/3ce7dbf746107e7e9f32e142d4f37a65876a3245))
+* pick compared units in a multiselect with portrait tags ([4285d07](https://github.com/giovani-freitag/aoe2-counterforge/commit/4285d0751131ec978f77a3f9cb3325cf81ef96c8))
+* show a civilization's roster as upgrade lines beside the list ([13f99be](https://github.com/giovani-freitag/aoe2-counterforge/commit/13f99bead81dfec8d0f2bd772661b7a878054617))
+* switch language in place without reloading the page ([2977877](https://github.com/giovani-freitag/aoe2-counterforge/commit/2977877a52d72d84eea12b822223ed7ce8408db4))
+* turn full-width pickers into large fields filtered by typing in them ([c75e56c](https://github.com/giovani-freitag/aoe2-counterforge/commit/c75e56cc4111222773d97fa45f682b32bf512a92))
+
+
+### Bug Fixes
+
+* keep a space typed into a picker filter as part of the name ([74995b4](https://github.com/giovani-freitag/aoe2-counterforge/commit/74995b4c3c09272c8e80b57435368c6fc62d11c4))
+* keep matchup rows from overlapping after switching sides ([011f19e](https://github.com/giovani-freitag/aoe2-counterforge/commit/011f19eb2f048f430b10f0fa992fc55454b925fc))
+* split intensified and plural matchup verdicts out of unit summaries ([df05092](https://github.com/giovani-freitag/aoe2-counterforge/commit/df05092940ba95011315781cec6e08788d70e07c))
+
 ## [0.5.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.4.2...v0.5.0) (2026-10-10)
 
 
