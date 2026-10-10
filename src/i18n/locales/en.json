@@ -370,7 +370,6 @@
         "title": "Compare units",
         "help": "Put up to {{max}} units side by side and see who beats whom.",
         "add": "Add a unit",
-        "pickPlaceholder": "Type a unit name...",
         "remove": "Remove {{unit}}",
         "empty": "Add at least one unit to compare.",
         "attribute": "Attribute",

@@ -1,61 +1,48 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUnitSearch } from '../hooks/use-unit-search.ts';
+import { useGameText } from '../hooks/use-game-text.ts';
+import { useServices } from '../hooks/use-services.ts';
 import { GameIcon } from './game-icon.tsx';
+import { TagPicker } from './tag-picker.tsx';
 
 export interface UnitPickerProps {
     label: string;
-    /** Units already picked, hidden from the suggestions. */
-    exclude: readonly string[];
-    onPick: (unitKey: string) => void;
+    /** Unit keys already chosen, in the order they are shown. */
+    values: readonly string[];
+    onChange: (unitKeys: string[]) => void;
+    max: number;
 }
 
-const SUGGESTION_LIMIT = 6;
-
-/** Search-backed input for adding one more unit to a list. */
-export function UnitPicker({ label, exclude, onPick }: UnitPickerProps) {
+/** A select that gathers several units, each one held as a tag with its portrait. */
+export function UnitPicker({ label, values, onChange, max }: UnitPickerProps) {
     const { t } = useTranslation();
-    const [term, setTerm] = useState('');
-    const outcome = useUnitSearch(term);
+    const { catalog } = useServices();
+    const text = useGameText();
 
-    const suggestions = outcome.hits
-        .filter((hit) => hit.document.kind === 'unit')
-        .filter((hit) => !exclude.includes(hit.document.key))
-        .slice(0, SUGGESTION_LIMIT);
-
-    const pick = (unitKey: string) => {
-        setTerm('');
-        onPick(unitKey);
-    };
+    const options = useMemo(
+        () =>
+            catalog
+                .units()
+                .map((unit) => ({
+                    value: unit.key,
+                    label: text.unit(unit.key).name,
+                    visual: (
+                        <GameIcon path={unit.icon === null ? null : `Unit/${unit.icon}.png`} alt="" size="sm" />
+                    ),
+                }))
+                .sort((left, right) => left.label.localeCompare(right.label)),
+        [catalog, text],
+    );
 
     return (
-        <div className="picker">
-            <label className="field__label" htmlFor="unit-picker">
-                {label}
-            </label>
-            <input
-                id="unit-picker"
-                type="search"
-                className="input"
-                value={term}
-                placeholder={t('compare.pickPlaceholder')}
-                autoComplete="off"
-                onChange={(event) => { setTerm(event.target.value); }}
-            />
-            {term.trim() && suggestions.length > 0 ? (
-                <ul className="picker__results">
-                    {suggestions.map((hit) => (
-                        <li key={hit.document.id}>
-                            <button type="button" className="list-item" onClick={() => { pick(hit.document.key); }}>
-                                <GameIcon path={hit.document.icon} alt="" size="sm" />
-                                <span className="list-item__body">
-                                    <span className="list-item__title">{hit.document.title}</span>
-                                </span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            ) : null}
-        </div>
+        <TagPicker
+            label={label}
+            placeholder={label}
+            values={values}
+            options={options}
+            onChange={onChange}
+            removeLabel={(option) => t('compare.remove', { unit: option.label })}
+            max={max}
+        />
     );
 }

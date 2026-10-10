@@ -183,34 +183,7 @@ export function ComparePage() {
             </header>
 
             <section className="card">
-                <div className="row">
-                    {columns.map((column) => (
-                        <span key={column.unit.key} className="chip">
-                            <GameIcon
-                                path={column.unit.icon === null ? null : `Unit/${column.unit.icon}.png`}
-                                alt=""
-                                size="sm"
-                            />
-                            {column.name}
-                            <button
-                                type="button"
-                                aria-label={t('compare.remove', { unit: column.name })}
-                                onClick={() => { setUnits(keys.filter((key) => key !== column.unit.key)); }}
-                            >
-                                ✕
-                            </button>
-                        </span>
-                    ))}
-                </div>
-                {units.length < MAX_UNITS ? (
-                    <div style={{ marginTop: 'var(--space-3)' }}>
-                        <UnitPicker
-                            label={t('compare.add')}
-                            exclude={keys}
-                            onPick={(unitKey) => { setUnits([...keys, unitKey]); }}
-                        />
-                    </div>
-                ) : null}
+                <UnitPicker label={t('compare.add')} values={keys} onChange={setUnits} max={MAX_UNITS} />
             </section>
 
             {units.length === 0 ? (

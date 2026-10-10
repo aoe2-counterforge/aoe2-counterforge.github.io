@@ -13,6 +13,8 @@ export interface ListboxOptions {
 export interface Listbox {
     isOpen: boolean;
     active: number;
+    /** Shows the list with the highlight back on the current choice, as typing a filter does. */
+    open: () => void;
     toggle: () => void;
     close: () => void;
     pick: (index: number) => void;
@@ -32,6 +34,11 @@ export function useListbox(options: ListboxOptions): Listbox {
     const close = useCallback(() => {
         setIsOpen(false);
     }, []);
+
+    const open = useCallback(() => {
+        setActive(options.selected);
+        setIsOpen(true);
+    }, [options.selected]);
 
     const toggle = useCallback(() => {
         setActive(options.selected);
@@ -92,5 +99,5 @@ export function useListbox(options: ListboxOptions): Listbox {
         [active, isOpen, options.count, pick],
     );
 
-    return { isOpen, active, toggle, close, pick, onKeyDown };
+    return { isOpen, active, open, toggle, close, pick, onKeyDown };
 }

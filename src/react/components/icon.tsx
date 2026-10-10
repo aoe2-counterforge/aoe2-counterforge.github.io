@@ -29,6 +29,7 @@ import {
     TreePine,
     Users,
     Wheat,
+    X,
 } from 'lucide-react';
 
 /**
@@ -83,6 +84,7 @@ const GLYPHS = {
     down: ChevronDown,
     source: GitHubMark,
     menu: Menu,
+    close: X,
 } as const;
 
 export type IconName = keyof typeof GLYPHS;

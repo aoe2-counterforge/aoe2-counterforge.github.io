@@ -139,12 +139,35 @@ describe('App', () => {
         window.history.pushState(null, '', '/pt-br/compare?units=knight');
         render(<App locale="pt-BR" />);
 
-        await user.type(await screen.findByRole('searchbox', { name: /Adicionar unidade/ }), 'campeao');
-        const [suggestion] = await screen.findAllByRole('button', { name: /^Campeão/ });
-        await user.click(suggestion);
+        await user.type(await screen.findByRole('combobox', { name: 'Adicionar unidade' }), 'campeao');
+        await user.click(screen.getByRole('option', { name: 'Campeão' }));
 
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Confronto direto' })).toBeDefined();
+        });
+    });
+
+    it('takes a unit back out of the comparison from its tag', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/compare?units=halberdier,champion');
+        render(<App locale="pt-BR" />);
+
+        await user.click(await screen.findByRole('button', { name: 'Remover Alabardeiro' }));
+
+        await waitFor(() => {
+            expect(window.location.search).toBe('?units=champion');
+        });
+    });
+
+    it('takes the last unit back out with backspace on an empty filter', async () => {
+        const user = userEvent.setup();
+        window.history.pushState(null, '', '/pt-br/compare?units=halberdier,champion');
+        render(<App locale="pt-BR" />);
+
+        await user.type(await screen.findByRole('combobox', { name: 'Adicionar unidade' }), '{Backspace}');
+
+        await waitFor(() => {
+            expect(window.location.search).toBe('?units=halberdier');
         });
     });
 

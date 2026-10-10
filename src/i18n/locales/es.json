@@ -370,7 +370,6 @@
         "title": "Comparar unidades",
         "help": "Pon hasta {{max}} unidades lado a lado y mira quién vence a quién.",
         "add": "Añadir una unidad",
-        "pickPlaceholder": "Escribe el nombre de una unidad...",
         "remove": "Quitar {{unit}}",
         "empty": "Añade al menos una unidad para comparar.",
         "attribute": "Atributo",

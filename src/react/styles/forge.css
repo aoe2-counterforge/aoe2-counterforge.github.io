@@ -528,6 +528,142 @@
     color: var(--gold);
 }
 
+/* ---------- a select that keeps several choices as tags ---------- */
+
+.tag-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 3.25rem;
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: text;
+    transition: border-color 0.15s ease;
+}
+
+.tag-picker:hover,
+.tag-picker:focus-within {
+    border-color: var(--gold);
+}
+
+/* The ring a focused control wears goes around the whole field, not the bare text inside it. */
+.tag-picker:has(.tag-picker__input:focus-visible) {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+.tag-picker__values {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+}
+
+/* The filter takes whatever room the tags leave on their last line. */
+.tag-picker__input {
+    flex: 1 1 8rem;
+    min-width: 8rem;
+    min-height: 2.25rem;
+    padding: 0 var(--space-1);
+    font-size: 0.9375rem;
+    color: var(--text);
+    background: none;
+    border: 0;
+}
+
+.tag-picker__input:focus-visible {
+    outline: none;
+}
+
+.tag-picker__input::placeholder {
+    color: var(--text-faint);
+}
+
+.tag-picker__caret {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    color: var(--text-faint);
+    transition: transform 0.15s ease;
+}
+
+.tag-picker[data-open] .tag-picker__caret {
+    transform: rotate(180deg);
+}
+
+/* Anchored to the field, the list opens as wide as it. */
+.tag-picker__popup {
+    left: 0;
+    right: 0;
+    max-width: none;
+}
+
+.tag-picker__popup .picker__list {
+    max-height: 22rem;
+}
+
+/* The rows take the scale of the field above them, with the portrait each one becomes as a tag. */
+.tag-picker__popup .picker__option {
+    gap: var(--space-3);
+    min-height: 3rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9375rem;
+}
+
+.tag-picker__popup .picker__option .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+}
+
+.tag-picker__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 3px var(--space-1) 3px 3px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+}
+
+.tag-picker__tag .icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+.tag-picker__remove {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    color: var(--text-faint);
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.tag-picker__remove:hover {
+    color: var(--text);
+    background: var(--surface-3);
+}
+
+.tag-picker__remove .glyph {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
 /* ---------- getting back out of a unit ---------- */
 
 .backlink {
