@@ -1,6 +1,7 @@
 import type { SVGProps } from 'react';
 import {
     Castle,
+    Check,
     Crown,
     ChevronDown,
     ChevronLeft,
@@ -85,6 +86,7 @@ const GLYPHS = {
     source: GitHubMark,
     menu: Menu,
     close: X,
+    check: Check,
 } as const;
 
 export type IconName = keyof typeof GLYPHS;

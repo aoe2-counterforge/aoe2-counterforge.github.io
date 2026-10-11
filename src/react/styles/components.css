@@ -199,6 +199,35 @@
     background: var(--gold);
 }
 
+/* The strip scrolls, so a ring drawn outside a tab is clipped to two bars; it is drawn inside instead. */
+.tabs__item:focus-visible {
+    outline-offset: -2px;
+}
+
+/* How many rows the tab holds, as a small pill that lights up with the tab. */
+.tabs__count {
+    display: inline-block;
+    min-width: 1.6em;
+    margin-left: 0.5em;
+    padding: 1px 0.5em;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--surface-3);
+    border-radius: 999px;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.tabs__item[aria-selected='true'] .tabs__count {
+    color: var(--gold-ink);
+    background: var(--gold);
+}
+
 .segmented {
     display: inline-flex;
     padding: 3px;
@@ -350,27 +379,31 @@
 .stepper {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    background: var(--surface-2);
+    gap: var(--space-1);
+    min-height: var(--control-height);
+    padding: 3px;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 3px;
 }
 
 .stepper__button {
-    width: 2rem;
-    height: 2rem;
     display: grid;
     place-items: center;
+    width: 2rem;
+    height: 2rem;
     border-radius: 999px;
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--text-muted);
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
 }
 
 .stepper__button:hover:not(:disabled) {
-    background: var(--surface-3);
-    color: var(--text);
+    background: var(--gold);
+    color: var(--gold-ink);
 }
 
 .stepper__button:disabled {
@@ -379,10 +412,11 @@
 }
 
 .stepper__value {
-    min-width: 2rem;
-    text-align: center;
+    min-width: 2.25rem;
+    font-size: 1.125rem;
+    font-weight: 750;
     font-variant-numeric: tabular-nums;
-    font-weight: 700;
+    text-align: center;
 }
 
 .stat-grid {
@@ -754,15 +788,67 @@
 }
 
 .toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    min-height: var(--control-height);
+    padding: 0 var(--space-3) 0 var(--space-2);
     border-radius: 999px;
     border: 1px solid var(--border);
-    background: var(--surface-2);
-    font-size: 0.8125rem;
+    background: var(--surface);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
     cursor: pointer;
+    user-select: none;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.toggle:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+}
+
+/* The pill is the whole control to the eye; the native box stays for the keyboard and the reader. */
+.toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toggle:has(input:focus-visible) {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+.toggle__mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--gold-ink);
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.toggle__mark .glyph {
+    width: 0.7rem;
+    height: 0.7rem;
+    stroke-width: 3;
+    opacity: 0;
+    transition: opacity 0.15s ease;
 }
 
 .toggle:has(input:checked) {
@@ -771,8 +857,37 @@
     color: var(--gold-soft);
 }
 
-.toggle input {
-    accent-color: var(--gold);
+.toggle:has(input:checked) .toggle__mark {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.toggle:has(input:checked) .toggle__mark .glyph {
+    opacity: 1;
+}
+
+/* A choice the chosen civilization never gets is drawn as the hole it leaves, like a missing step
+   in an upgrade line: outlined, drained of colour, and deaf to the click. */
+.toggle[data-unavailable] {
+    color: var(--text-faint);
+    background: transparent;
+    border-style: dashed;
+    cursor: not-allowed;
+}
+
+.toggle[data-unavailable]:hover {
+    color: var(--text-faint);
+    border-color: var(--border);
+}
+
+.toggle[data-unavailable] .toggle__mark {
+    opacity: 0.45;
+}
+
+.toggle[data-unavailable] .icon,
+.toggle[data-unavailable] .resource-icon {
+    filter: grayscale(1);
+    opacity: 0.55;
 }
 
 .controls {
@@ -1174,15 +1289,7 @@ details[open] > summary::after {
     transform: rotate(180deg);
 }
 
-/* ---------- a list that only mounts what the viewport shows ---------- */
-
-.virtual {
-    max-height: min(70dvh, 48rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-strong) transparent;
-}
+/* ---------- a list that only mounts what the viewport shows, scrolling with the page ---------- */
 
 .virtual__runway {
     position: relative;
@@ -1212,14 +1319,10 @@ details[open] > summary::after {
     flex: none;
 }
 
-.toggle--tech {
-    padding-left: var(--space-1);
-}
-
-.toggle--tech .icon {
-    width: 1.4rem;
-    height: 1.4rem;
-    border-radius: 2px;
+.toggle .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 3px;
 }
 
 .civ-heading {
@@ -1363,5 +1466,514 @@ details[open] > summary::after {
         padding: 0;
         overflow: hidden;
         clip-path: inset(50%);
+    }
+}
+
+/* ---------- the villager planner: the switches on one side, the answer on the other ---------- */
+
+.planner__grid {
+    display: grid;
+    grid-template-areas:
+        'plan'
+        'answer';
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.planner__answer {
+    grid-area: answer;
+    padding: var(--space-4);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.planner__plan {
+    grid-area: plan;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+@media (min-width: 60rem) {
+    .planner__grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+        grid-template-areas: 'plan answer';
+        align-items: start;
+    }
+
+    /* The answer stays in view while the switches under it are tried, which is the point of them. */
+    .planner__answer {
+        position: sticky;
+        top: calc(var(--header-height) + var(--space-4));
+    }
+}
+
+.planner__summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.planner__total {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+}
+
+.planner__count {
+    font-family: var(--font-display);
+    font-size: 3.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--gold);
+}
+
+.planner__label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.planner__facts .badge .glyph {
+    width: 0.9em;
+    height: 0.9em;
+}
+
+/* The tile already carries the bottleneck; the badge only says it where the tiles are too small to. */
+.planner__bottleneck {
+    display: none;
+}
+
+/* The resources stack as rows of the card's full width, so two or three of them line up the same:
+   the resource on the left, the count on the right, and the rates under both. */
+.planner__demands {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+}
+
+.planner__answer .demand {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-3);
+    align-items: baseline;
+    background: var(--surface);
+}
+
+.planner__answer .demand[data-bottleneck='true'] {
+    background: var(--gold-dim);
+}
+
+.demand__tag {
+    padding: 1px var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gold-ink);
+    background: var(--gold);
+    border-radius: var(--radius-sm);
+}
+
+.demand__number {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    justify-self: end;
+    font-size: 1.5rem;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.demand__number small {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.demand__rate {
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.planner__note {
+    margin-top: var(--space-3);
+}
+
+/* The two fields stand side by side from the left, each its own width but the same height. */
+.planner__fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.planner__fields > .field {
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.planner__fields > .field:has(.select-field) {
+    flex: 0 1 16rem;
+}
+
+.planner__fields .select-field__box {
+    min-height: var(--control-height);
+}
+
+/* The planner is square-cornered throughout, so its chips and stepper match the tiles. */
+.planner .toggle,
+.planner .chip,
+.planner .stepper {
+    border-radius: var(--radius-lg);
+}
+
+.planner .stepper__button {
+    border-radius: var(--radius);
+}
+
+.planner .toggle__mark {
+    border-radius: var(--radius-sm);
+}
+
+.planner__techs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.planner__techs-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+/* Wrapped under the label, the switch still sits on the right. */
+.planner__techs-head > .switch {
+    margin-left: auto;
+}
+
+/* ---------- an on-or-off setting, as a sliding switch ---------- */
+
+.switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+}
+
+/* The one control that slides is round, so the motion reads as a slide and not a jump. */
+.switch__track {
+    position: relative;
+    flex: none;
+    width: 2.25rem;
+    height: 1.25rem;
+    background: var(--surface-3);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.switch__knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.875rem;
+    height: 0.875rem;
+    background: var(--text-faint);
+    border-radius: 999px;
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+}
+
+.switch:hover .switch__track {
+    border-color: var(--gold);
+}
+
+.switch[aria-checked='true'] {
+    color: var(--gold-soft);
+}
+
+.switch[aria-checked='true'] .switch__track {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.switch[aria-checked='true'] .switch__knob {
+    background: var(--gold-ink);
+    transform: translateX(1rem);
+}
+
+/* Every switch is a tile in a grid, the way the game's own tech tree reads: the icon, the name
+   under it, the mark in the corner. An age is such a grid with a header line and its shield. */
+.planner__tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.25rem, 1fr));
+    gap: var(--space-2);
+}
+
+/* The two options carry longer names than any technology, so their tiles start wider. */
+.planner__tiles--options {
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
+.planner__age-label {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.planner__age-shield {
+    width: 1.5rem;
+    height: 1.3rem;
+    object-fit: contain;
+}
+
+.planner .toggle--tech {
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--space-1);
+    min-height: 0;
+    padding: var(--space-3) var(--space-1) var(--space-2);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.planner .toggle--tech .toggle__mark {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.planner .toggle--tech .icon,
+.planner .toggle--tech .resource-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius);
+}
+
+/* A name gets two lines at most, so a long one never pushes its tile taller than the row. */
+.planner .toggle--tech .toggle__label {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ---------- the lines a technology touches, one category at a time under the change they share ---------- */
+
+.tech-lines {
+    margin-top: var(--space-3);
+}
+
+/* ---------- the row above a detail page: the way back on the left, the one action on the right ---------- */
+
+.page-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.25rem;
+    padding: 0 var(--space-3) 0 var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--gold-soft);
+    background: var(--gold-dim);
+    border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+    border-radius: 999px;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.cta:hover {
+    color: var(--gold-ink);
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.cta .glyph {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+/*
+ * Under the two-column width the answer follows the switches, pinned to the foot of the screen
+ * as one strip: the count and the pace on one line, the resources as equal cells on the next,
+ * the bottleneck named in the line rather than tagged in a cell, and the explanations left out.
+ */
+@media (max-width: 59.9375rem) {
+    .planner__answer {
+        position: sticky;
+        bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom) + var(--space-2));
+        z-index: 2;
+        padding: var(--space-2) var(--space-3);
+        box-shadow: var(--shadow);
+    }
+
+    .planner__exact,
+    .planner__note,
+    .demand__name,
+    .demand__gather,
+    .demand__upkeep,
+    .demand__tag,
+    .demand__number small {
+        display: none;
+    }
+
+    .planner__bottleneck {
+        display: inline;
+        font-weight: 600;
+        color: var(--gold-soft);
+    }
+
+    .planner__summary {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--space-1) var(--space-3);
+    }
+
+    .planner__total {
+        gap: var(--space-2);
+    }
+
+    .planner__count {
+        font-size: 1.75rem;
+    }
+
+    .planner__label {
+        font-size: 0.875rem;
+    }
+
+    .planner__facts {
+        gap: var(--space-2);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .planner__facts .badge {
+        padding: 0;
+        font-size: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+    }
+
+    .planner__demands {
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        gap: var(--space-2);
+        margin-top: var(--space-2);
+    }
+
+    .planner__answer .demand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        min-width: 0;
+        padding: var(--space-1) var(--space-2);
+    }
+
+    /* The head dissolves so the icon sits in line with the number. */
+    .demand__head {
+        display: contents;
+    }
+
+    .demand__number {
+        margin-top: 0;
+        font-size: 1.125rem;
+    }
+
+    .demand__rate {
+        margin-top: 0;
+        font-size: 0.6875rem;
+        white-space: nowrap;
+    }
+}
+
+/* On a phone the switches close ranks too: the two fields on one row, the chips and tiles a size
+   smaller, and each resource in the strip down to its count. */
+@media (max-width: 39.9375rem) {
+    .planner > .card__title .card__hint {
+        display: none;
+    }
+
+    .planner > .card__title h2 {
+        font-size: 1rem;
+    }
+
+    .planner__grid {
+        gap: var(--space-3);
+        margin-top: var(--space-3);
+    }
+
+    .planner__plan {
+        gap: var(--space-3);
+    }
+
+    .planner__fields > .field:has(.select-field) {
+        flex: 1 1 0;
+    }
+
+    .planner .toggle__mark {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .planner__tiles {
+        grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr));
+    }
+
+    .planner__tiles--options {
+        grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    }
+
+    .planner__age-shield {
+        width: 1.4rem;
+        height: 1.2rem;
+    }
+
+    .planner .toggle--tech {
+        font-size: 0.6875rem;
+    }
+
+    .planner .toggle--tech .icon,
+    .planner .toggle--tech .resource-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+
+    .demand__rate {
+        display: none;
     }
 }

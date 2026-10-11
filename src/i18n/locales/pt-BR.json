@@ -277,7 +277,6 @@
         "sustain_one": "Com {{villagers}} aldeões você sustenta {{buildings}} construção",
         "countFarmUpkeep": "Contar madeira das fazendas",
         "researchAll": "Pesquisar tudo",
-        "researchNone": "Limpar",
         "ofWhichUpkeep": "Dos quais {{value}} para repor as fazendas",
         "farmSummary": "{{farms}} fazendas de {{food}} de comida cada, consumindo {{wood}} de madeira por minuto.",
         "techGroups": {
@@ -286,7 +285,10 @@
             "farming": "Fazendas"
         },
         "onlyUpkeep": "Só para repor as fazendas",
-        "exactTotal": "{{value}} exatos"
+        "exactTotal": "{{value}} exatos",
+        "upgrades": "Melhorias de economia",
+        "bottleneckTag": "Gargalo",
+        "techUnavailable": "{{civ}} não pesquisam {{tech}}."
     },
     "civ": {
         "bonuses": "Bônus",
@@ -453,7 +455,9 @@
         "civCount_other": "{{count}} civilizações",
         "uniqueTo": "Exclusiva de {{civ}}",
         "trainsFaster": "As unidades treinam {{value}}% mais rápido onde ela é pesquisada.",
-        "changesNoUnit": "Esta tecnologia não muda o número de nenhuma unidade. O que ela faz — uma taxa de mercado, um tributo, o trabalho de um monge, a melhoria para outra unidade — está na descrição acima."
+        "changesNoUnit": "Esta tecnologia não muda o número de nenhuma unidade. O que ela faz — uma taxa de mercado, um tributo, o trabalho de um monge, a melhoria para outra unidade — está na descrição acima.",
+        "linesHint": "Os passos apagados são unidades que {{tech}} não altera.",
+        "notChanged": "{{tech}} não altera esta unidade"
     },
     "techs": {
         "count_one": "{{count}} tecnologia",

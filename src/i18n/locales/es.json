@@ -277,7 +277,6 @@
         "sustain_one": "{{villagers}} aldeanos mantienen {{buildings}} edificio en marcha",
         "countFarmUpkeep": "Contar la madera de reponer granjas",
         "researchAll": "Investigar todo",
-        "researchNone": "Limpiar",
         "ofWhichUpkeep": "De los cuales {{value}} para reponer granjas",
         "farmSummary": "{{farms}} granjas con {{food}} de comida cada una, consumiendo {{wood}} de madera por minuto.",
         "techGroups": {
@@ -286,7 +285,10 @@
             "farming": "Granjas"
         },
         "onlyUpkeep": "Solo para reponer granjas",
-        "exactTotal": "{{value}} exactos"
+        "exactTotal": "{{value}} exactos",
+        "upgrades": "Mejoras de economía",
+        "bottleneckTag": "Cuello de botella",
+        "techUnavailable": "{{civ}} no pueden investigar {{tech}}."
     },
     "civ": {
         "bonuses": "Bonificaciones",
@@ -453,7 +455,9 @@
         "civCount_other": "{{count}} civilizaciones",
         "uniqueTo": "Exclusiva de {{civ}}",
         "trainsFaster": "Las unidades se entrenan un {{value}}% más rápido donde se investiga.",
-        "changesNoUnit": "Esta tecnología no cambia los números de ninguna unidad. Lo que hace — una tasa de mercado, un tributo, cómo trabaja un monje, una mejora a otra unidad — está en su descripción, arriba."
+        "changesNoUnit": "Esta tecnología no cambia los números de ninguna unidad. Lo que hace — una tasa de mercado, un tributo, cómo trabaja un monje, una mejora a otra unidad — está en su descripción, arriba.",
+        "linesHint": "Los pasos atenuados son unidades que {{tech}} no cambia.",
+        "notChanged": "{{tech}} no cambia esta unidad"
     },
     "techs": {
         "count_one": "{{count}} tecnología",

@@ -31,7 +31,6 @@ test.describe('the matchup list of a unit', () => {
     test('keeps every row clear of the next after switching sides', async ({ page }) => {
         await page.goto('en/unit/archer?tab=counters');
         const sides = page.getByRole('group', { name: 'Which matchups to show' });
-        const scroller = page.locator('.virtual');
 
         for (const side of ['All', 'Weak', 'Strong', 'All', 'Weak']) {
             await sides.getByRole('button', { name: new RegExp(`^${side}`) }).click();
@@ -39,12 +38,13 @@ test.describe('the matchup list of a unit', () => {
 
             expect(await overlappingRows(page), `rows on the ${side} side`).toBe(0);
 
-            await scroller.evaluate((element) => { element.scrollTop = element.scrollHeight / 2; });
+            // The list scrolls with the page, so it is the page that is taken halfway down.
+            await page.evaluate(() => { window.scrollTo(0, document.documentElement.scrollHeight / 2); });
             await settle(page);
 
             expect(await overlappingRows(page), `rows halfway down the ${side} side`).toBe(0);
 
-            await scroller.evaluate((element) => { element.scrollTop = 0; });
+            await page.evaluate(() => { window.scrollTo(0, 0); });
         }
     });
 });

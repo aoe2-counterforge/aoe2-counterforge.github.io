@@ -277,7 +277,6 @@
         "sustain_one": "{{villagers}} abitanti tengono in funzione {{buildings}} edificio",
         "countFarmUpkeep": "Conta il legname per rifare le fattorie",
         "researchAll": "Ricerca tutto",
-        "researchNone": "Azzera",
         "ofWhichUpkeep": "Di cui {{value}} per rifare le fattorie",
         "farmSummary": "{{farms}} fattorie da {{food}} cibo ciascuna, che bruciano {{wood}} legname al minuto.",
         "techGroups": {
@@ -286,7 +285,10 @@
             "farming": "Fattorie"
         },
         "onlyUpkeep": "Solo per rifare le fattorie",
-        "exactTotal": "{{value}} esatti"
+        "exactTotal": "{{value}} esatti",
+        "upgrades": "Miglioramenti economici",
+        "bottleneckTag": "Collo di bottiglia",
+        "techUnavailable": "{{civ}} non possono ricercare {{tech}}."
     },
     "civ": {
         "bonuses": "Bonus",
@@ -453,7 +455,9 @@
         "civCount_other": "{{count}} civiltà",
         "uniqueTo": "Esclusiva di {{civ}}",
         "trainsFaster": "Le unità si addestrano il {{value}}% più in fretta dove viene ricercata.",
-        "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa — una tassa di mercato, un tributo, il lavoro di un monaco, un potenziamento a un'altra unità — è nella descrizione qui sopra."
+        "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa — una tassa di mercato, un tributo, il lavoro di un monaco, un potenziamento a un'altra unità — è nella descrizione qui sopra.",
+        "linesHint": "I passi sbiaditi sono unità che {{tech}} non modifica.",
+        "notChanged": "{{tech}} non modifica questa unità"
     },
     "techs": {
         "count_one": "{{count}} tecnologia",

@@ -277,7 +277,6 @@
         "sustain_one": "{{villagers}} villagers keep {{buildings}} building running",
         "countFarmUpkeep": "Count farm rebuild wood",
         "researchAll": "Research all",
-        "researchNone": "Clear",
         "ofWhichUpkeep": "Of which {{value}} to replace farms",
         "farmSummary": "{{farms}} farms holding {{food}} food each, burning {{wood}} wood per minute.",
         "techGroups": {
@@ -286,7 +285,10 @@
             "farming": "Farms"
         },
         "onlyUpkeep": "Only to replace farms",
-        "exactTotal": "{{value}} exact"
+        "exactTotal": "{{value}} exact",
+        "upgrades": "Economy upgrades",
+        "bottleneckTag": "Bottleneck",
+        "techUnavailable": "{{civ}} cannot research {{tech}}."
     },
     "civ": {
         "bonuses": "Bonuses",
@@ -453,7 +455,9 @@
         "civCount_other": "{{count}} civilizations",
         "uniqueTo": "Unique to the {{civ}}",
         "trainsFaster": "Units train {{value}}% faster where it is researched.",
-        "changesNoUnit": "This technology changes no unit’s numbers. What it does — a market fee, a tribute, how a monk works, an upgrade to another unit — is in its description above."
+        "changesNoUnit": "This technology changes no unit’s numbers. What it does — a market fee, a tribute, how a monk works, an upgrade to another unit — is in its description above.",
+        "linesHint": "Faded steps are units {{tech}} does not change.",
+        "notChanged": "{{tech}} does not change this unit"
     },
     "techs": {
         "count_one": "{{count}} technology",

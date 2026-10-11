@@ -9,8 +9,8 @@ import { Icon } from './icon.tsx';
 export interface LineChainProps {
     /** One entry per upgrade step, each holding the alternatives at that point. */
     steps: readonly (readonly RosterStep[])[];
-    /** Name of the civilization the line is read for, for the step it never reaches. */
-    civName: string;
+    /** What to say of a faded step: why the line never reaches it where it is being read. */
+    missing: string;
     /** True for units that merely share a box: none upgrades into another, so nothing joins them. */
     standalone?: boolean;
 }
@@ -18,10 +18,11 @@ export interface LineChainProps {
 /**
  * An upgrade line as a row of pills, one per unit, the arrows between them reading as the upgrades.
  *
- * A step the civilization never reaches stays in the row, faded: the gap is what a civilization
- * page has to say about a line that every civilization starts the same way.
+ * A step the line never reaches here stays in the row, faded: the gap is what a civilization page
+ * has to say about a line every civilization starts the same way, and what a technology page has
+ * to say about a line it only touches part of.
  */
-export function LineChain({ steps, civName, standalone = false }: LineChainProps) {
+export function LineChain({ steps, missing, standalone = false }: LineChainProps) {
     const { t } = useTranslation();
     const text = useGameText();
 
@@ -30,7 +31,7 @@ export function LineChain({ steps, civName, standalone = false }: LineChainProps
             {steps.map((step, index) => (
                 <Fragment key={step[0].unit.key}>
                     {step.map((entry, choice) => {
-                        const unavailable = entry.available ? null : t('unit.notAvailable', { civ: civName });
+                        const unavailable = entry.available ? null : missing;
 
                         // The arrow travels with the pill it points at, so a wrapped row opens with it.
                         return (

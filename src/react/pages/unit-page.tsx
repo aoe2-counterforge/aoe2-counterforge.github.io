@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useSearchParams } from 'react-router';
+import { Icon } from '../components/icon.tsx';
 import { UnitForge } from '../components/unit-forge.tsx';
 import { ResourceCostRow } from '../components/resource-cost-row.tsx';
 import { UnitCountersPanel } from '../components/unit-counters-panel.tsx';
@@ -52,7 +53,13 @@ export function UnitPage() {
                 name={unitText.name}
                 section="units"
             />
-            <BackLink to="/units" label={t('nav.units')} />
+            <div className="page-nav">
+                <BackLink to="/units" label={t('nav.units')} />
+                <Link className="cta" to={`/compare?units=${unit.key}`}>
+                    <Icon name="compare" />
+                    {t('compare.addToCompare')}
+                </Link>
+            </div>
             <header className="card">
                 <UnitForge
                     unit={unit}
@@ -72,15 +79,10 @@ export function UnitPage() {
                     }
                 />
 
-                <div className="card__row">
-                    <ResourceCostRow
-                        cost={unit.cost}
-                        trailing={`${t('unit.trainTime')}: ${t('common.seconds', { value: short(unit.trainTime) })}`}
-                    />
-                    <Link className="chip" to={`/compare?units=${unit.key}`}>
-                        {t('compare.addToCompare')}
-                    </Link>
-                </div>
+                <ResourceCostRow
+                    cost={unit.cost}
+                    trailing={`${t('unit.trainTime')}: ${t('common.seconds', { value: short(unit.trainTime) })}`}
+                />
 
                 {unavailable ? (
                     <p className="verdict verdict--bad" style={{ marginTop: 'var(--space-3)' }}>

@@ -4,12 +4,10 @@ import type { Civilization } from '../../domain/entities/civilization.ts';
 import { LAND_CATEGORIES } from '../../domain/enums/unit-category.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useServices } from '../hooks/use-services.ts';
+import type { RosterView } from '../roster-view.ts';
 import { LineChain } from './line-chain.tsx';
 import { SegmentedControl } from './segmented-control.tsx';
 import { UnitListItem } from './unit-list-item.tsx';
-
-/** The roster one unit a row, or one upgrade line a row. */
-export type RosterView = 'list' | 'lines';
 
 export interface CivilizationRosterProps {
     civilization: Civilization;
@@ -28,6 +26,7 @@ export function CivilizationRoster({ civilization, view, onViewChange }: Civiliz
     const { catalog } = useServices();
     const text = useGameText();
     const civName = text.civilization(civilization.key).name;
+    const missing = t('unit.notAvailable', { civ: civName });
 
     const list = useMemo(
         () =>
@@ -90,10 +89,10 @@ export function CivilizationRoster({ civilization, view, onViewChange }: Civiliz
                           <div className="section-label roster__label">{t(`categories.${group.category}`)}</div>
                           <div className="list">
                               {group.chains.map((line) => (
-                                  <LineChain key={line.line} steps={line.steps} civName={civName} />
+                                  <LineChain key={line.line} steps={line.steps} missing={missing} />
                               ))}
                               {group.standalone.length > 0 ? (
-                                  <LineChain steps={group.standalone} civName={civName} standalone />
+                                  <LineChain steps={group.standalone} missing={missing} standalone />
                               ) : null}
                           </div>
                       </div>
