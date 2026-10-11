@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.7.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.6.0...v0.7.0) (2026-10-11)
+
+
+### Features
+
+* add German and French ([1085499](https://github.com/giovani-freitag/aoe2-counterforge/commit/108549909de31c2d17bb542f3adc0c5c5d5628ae))
+* build every picker on the select-box library ([74835c1](https://github.com/giovani-freitag/aoe2-counterforge/commit/74835c158e92b9de9e279505f9596e6430f90681))
+* give each lone unit its own row in the lines view ([bc97fb1](https://github.com/giovani-freitag/aoe2-counterforge/commit/bc97fb1fb384a2afd42079853f0e5300b5795ee5))
+* give every control the shared control height ([3cd8f66](https://github.com/giovani-freitag/aoe2-counterforge/commit/3cd8f66f27085ec30e745ee48bf20d84441f4ac1))
+* group the units a technology changes by age ([031c3a5](https://github.com/giovani-freitag/aoe2-counterforge/commit/031c3a5c59ef7371452b94dc6cdff2bc1f2a21ad))
+* keep regional lines in the common opponent pool ([6780cb0](https://github.com/giovani-freitag/aoe2-counterforge/commit/6780cb070798be0d117b11fe86e7d79c386ebd08))
+* rebuild the villager planner and tab the technology page ([9c2702d](https://github.com/giovani-freitag/aoe2-counterforge/commit/9c2702de5c37e0ab59c532974f4205368665d61e))
+* reimagine the light theme as daylight steel ([d2ed722](https://github.com/giovani-freitag/aoe2-counterforge/commit/d2ed722a98317685d5b2d1b230a5eae324e63927))
+* show the age each civilization reaches a unit in ([3b10f38](https://github.com/giovani-freitag/aoe2-counterforge/commit/3b10f380faf9482fb0ac68190b15b1ddd1f91950))
+* size civilization bonus marks like technology icons ([4165a1c](https://github.com/giovani-freitag/aoe2-counterforge/commit/4165a1cbb1491b01019ead577e61f3ab9f95a2fc))
+
+
+### Bug Fixes
+
+* drop the clipped focus ring under the picker filter ([fde66a9](https://github.com/giovani-freitag/aoe2-counterforge/commit/fde66a9dc332afff47b569472c269b2624165cf1))
+* list civilians among the units a technology changes ([9b230f5](https://github.com/giovani-freitag/aoe2-counterforge/commit/9b230f5372ee67fbc948bbc37fbe04c7ac341624))
+
 ## [0.6.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.5.0...v0.6.0) (2026-10-10)
 
 
