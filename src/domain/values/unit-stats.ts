@@ -22,6 +22,8 @@ export interface UnitStatsConfig {
     range: number;
     minRange: number;
     reloadTime: number;
+    /** Seconds the unit stands still in each attack before the blow lands or the missile leaves. */
+    attackDelay: number;
     accuracy: number;
     blastWidth: number;
     speed: number;
@@ -129,6 +131,10 @@ export class UnitStats {
 
     public get reloadTime(): number {
         return this.config.reloadTime;
+    }
+
+    public get attackDelay(): number {
+        return this.config.attackDelay;
     }
 
     public get accuracy(): number {

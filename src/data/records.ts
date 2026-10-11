@@ -47,6 +47,8 @@ export interface UnitRecord {
     range: number;
     minRange: number;
     reloadTime: number;
+    /** Seconds from the start of an attack until the blow lands or the missile leaves. */
+    attackDelay: number;
     accuracy: number;
     blastWidth: number;
     speed: number;

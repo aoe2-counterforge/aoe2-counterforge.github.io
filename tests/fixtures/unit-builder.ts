@@ -20,6 +20,7 @@ export interface StatsOverrides {
     range?: number;
     minRange?: number;
     reloadTime?: number;
+    attackDelay?: number;
     accuracy?: number;
     blastWidth?: number;
     speed?: number;
@@ -70,6 +71,7 @@ export function makeStats(overrides: StatsOverrides = {}): UnitStats {
         range: overrides.range ?? 0,
         minRange: overrides.minRange ?? 0,
         reloadTime: overrides.reloadTime ?? 2,
+        attackDelay: overrides.attackDelay ?? 0,
         accuracy: overrides.accuracy ?? 100,
         blastWidth: overrides.blastWidth ?? 0,
         speed: overrides.speed ?? 1,

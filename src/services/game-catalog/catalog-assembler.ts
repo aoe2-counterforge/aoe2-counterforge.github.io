@@ -52,6 +52,7 @@ export class CatalogAssembler {
                 range: record.range,
                 minRange: record.minRange,
                 reloadTime: record.reloadTime,
+                attackDelay: record.attackDelay,
                 accuracy: record.accuracy,
                 blastWidth: record.blastWidth,
                 speed: record.speed,

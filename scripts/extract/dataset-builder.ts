@@ -16,7 +16,7 @@ import type {
 } from '../../src/data/records.ts';
 import type { CivilizationTechTree, TechTreeNode } from './game-install.ts';
 import { cleanText, parseCivilizationHelp, parseUnitHelp, slug } from './game-text.ts';
-import { UNIT_TYPE, type ClassAmount, type GenieData, type GenieUnit } from './genie-dat.ts';
+import { UNIT_TYPE, type ClassAmount, type GenieData, type GenieUnit, type Graphic } from './genie-dat.ts';
 
 /** One civilization as the game's own metadata file describes it. */
 export interface CivilizationMeta {
@@ -290,6 +290,7 @@ export class DatasetBuilder {
     /** Age of every age advance, resolved once because every bonus asks for it. */
     private ages: Map<number, number> | null = null;
     private shooters: Map<number, number[]> | null = null;
+    private graphicsById: Map<number, Graphic> | null = null;
 
     constructor(config: DatasetBuilderConfig) {
         this.config = config;
@@ -1007,6 +1008,22 @@ export class DatasetBuilder {
     }
 
     /**
+     * Seconds from the start of an attack to the moment the blow or the missile leaves.
+     *
+     * The file counts the delay in frames of the attack animation, and the animation states how
+     * long each of its frames is held.
+     *
+     * @param unit - The attacker, as the file describes it.
+     * @returns The delay in seconds, or zero for a unit without an attack animation.
+     */
+    private attackDelayOf(unit: GenieUnit): number {
+        this.graphicsById ??= new Map(this.config.game.graphics.map((graphic) => [graphic.id, graphic]));
+        const graphic = this.graphicsById.get(unit.attackGraphic);
+
+        return graphic ? this.round(unit.frameDelay * graphic.frameDuration) : 0;
+    }
+
+    /**
      * The extra missiles a single shot puts in the air, and the damage each of them carries.
      *
      * A Chu Ko Nu looses one arrow of its own and two more behind it, and the file says so twice:
@@ -1070,6 +1087,7 @@ export class DatasetBuilder {
             range: this.round(unit.displayedRange),
             minRange: this.round(unit.minRange),
             reloadTime: this.round(unit.reloadTime),
+            attackDelay: this.attackDelayOf(unit),
             accuracy: unit.accuracyPercent,
             blastWidth: this.round(unit.blastWidth),
             speed: this.round(unit.speed),

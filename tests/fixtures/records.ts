@@ -73,6 +73,7 @@ export function unitRecord(overrides: UnitRecordOverrides): UnitRecord {
         range: overrides.range ?? 0,
         minRange: 0,
         reloadTime: overrides.reloadTime ?? 2,
+        attackDelay: 0,
         accuracy: 100,
         blastWidth: 0,
         speed: overrides.speed ?? 1,
