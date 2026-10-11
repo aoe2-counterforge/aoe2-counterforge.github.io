@@ -1340,6 +1340,12 @@ details[open] > summary::after {
     margin-top: var(--space-3);
 }
 
+/* The same hint read before the rows it explains rather than after them. */
+.roster__hint--top {
+    margin-top: 0;
+    margin-bottom: var(--space-3);
+}
+
 /* The heading of one age's part of a list: its shield, then its name. */
 .age-label {
     display: inline-flex;
@@ -1773,7 +1779,8 @@ details[open] > summary::after {
 
 /* ---------- the lines a technology touches, one category at a time under the change they share ---------- */
 
-.tech-lines {
+.tech-lines,
+.tech-ages {
     margin-top: var(--space-3);
 }
 

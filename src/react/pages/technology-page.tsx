@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import type { Unit } from '../../domain/entities/unit.ts';
+import type { AgeId } from '../../domain/enums/age.ts';
 import { LAND_CATEGORIES, UNIT_CATEGORIES, type UnitCategory } from '../../domain/enums/unit-category.ts';
 import { EntityNotFoundError } from '../../domain/errors/domain-error.ts';
 import type { RosterLine } from '../../services/game-catalog/game-catalog-service.ts';
+import { AgeLabel } from '../components/age-label.tsx';
 import { BackLink } from '../components/back-link.tsx';
 import { Forge } from '../components/forge.tsx';
 import { GameIcon } from '../components/game-icon.tsx';
@@ -46,9 +48,15 @@ interface TouchedLine extends RosterLine {
     reach: number;
 }
 
+/** The units of one age that get the same change. */
+interface AgeBucket {
+    age: AgeId;
+    units: Unit[];
+}
+
 interface EffectGroup {
     effects: string[];
-    units: Unit[];
+    ages: AgeBucket[];
 }
 
 interface LineGroup {
@@ -91,14 +99,24 @@ export function TechnologyPage() {
     );
 
     // Bloodlines reaches eighty-three units with the same twenty hit points; that is one fact, not
-    // eighty-three rows, so the units are gathered under the change they share.
-    const groups = useMemo<EffectGroup[]>(
-        () =>
-            groupBy(touched, (entry) => effectKey(entry.effects))
-                .map((members) => ({ effects: members[0].effects, units: members.map((entry) => entry.unit) }))
-                .sort((left, right) => right.units.length - left.units.length),
-        [touched],
-    );
+    // eighty-three rows, so the units are gathered under the change they share, an age at a time.
+    const groups = useMemo<EffectGroup[]>(() => {
+        // Sorted by the name on screen rather than by slug: a slug order reads as random in any
+        // other language, and even in English once a name is abbreviated.
+        const byName = (left: Unit, right: Unit) =>
+            text.unit(left.key).name.localeCompare(text.unit(right.key).name);
+
+        return groupBy(touched, (entry) => effectKey(entry.effects))
+            .sort((left, right) => right.length - left.length)
+            .map((members) => {
+                const units = members.map((entry) => entry.unit);
+                const ages = groupBy(units, (unit) => String(unit.age))
+                    .map((bucket) => ({ age: bucket[0].age, units: bucket.sort(byName) }))
+                    .sort((left, right) => left.age - right.age);
+
+                return { effects: members[0].effects, ages };
+            });
+    }, [touched, text]);
 
     // The same units as the lines they belong to, gathered under the change they share the same
     // way, with the steps the technology skips faded out: a reader sees the whole Knight line
@@ -218,18 +236,29 @@ export function TechnologyPage() {
                         <p className="card__hint">{t('tech.trainsFaster', { value: short((faster - 1) * 100) })}</p>
                     )}
 
+                    {gaps ? (
+                        <p className="card__hint roster__hint roster__hint--top">
+                            {t('tech.linesHint', { tech: technologyText.name })}
+                        </p>
+                    ) : null}
+
                     {view === 'list'
                         ? groups.map((group) => (
                               <div key={effectKey(group.effects)} className="roster__group">
                                   <div className="upgrade-item__effects">{chips(group.effects)}</div>
-                                  <div className="row" style={{ marginTop: 'var(--space-2)' }}>
-                                      {group.units.map((unit) => (
-                                          <Link key={unit.key} className="chip" to={`/unit/${unit.key}`}>
-                                              <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
-                                              {text.unit(unit.key).name}
-                                          </Link>
-                                      ))}
-                                  </div>
+                                  {group.ages.map((bucket) => (
+                                      <div className="tech-ages" key={bucket.age}>
+                                          <AgeLabel age={bucket.age} />
+                                          <div className="row" style={{ marginTop: 'var(--space-2)' }}>
+                                              {bucket.units.map((unit) => (
+                                                  <Link key={unit.key} className="chip" to={`/unit/${unit.key}`}>
+                                                      <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
+                                                      {text.unit(unit.key).name}
+                                                  </Link>
+                                              ))}
+                                          </div>
+                                      </div>
+                                  ))}
                               </div>
                           ))
                         : lines.map((group) => (
@@ -240,10 +269,6 @@ export function TechnologyPage() {
                                   </div>
                               </div>
                           ))}
-
-                    {gaps ? (
-                        <p className="card__hint roster__hint">{t('tech.linesHint', { tech: technologyText.name })}</p>
-                    ) : null}
                 </section>
             ) : (
                 <section className="card">
