@@ -53,6 +53,20 @@ const FLAGS: Record<SupportedLocale, ReactNode> = {
             <rect x="16" width="8" height="24" fill="#ce2b37" />
         </>
     ),
+    de: (
+        <>
+            <rect width="24" height="8" fill="#1d1d1b" />
+            <rect y="8" width="24" height="8" fill="#dd0000" />
+            <rect y="16" width="24" height="8" fill="#ffce00" />
+        </>
+    ),
+    fr: (
+        <>
+            <rect width="8" height="24" fill="#0055a4" />
+            <rect x="8" width="8" height="24" fill="#f4f6f8" />
+            <rect x="16" width="8" height="24" fill="#ef4135" />
+        </>
+    ),
 };
 
 /**

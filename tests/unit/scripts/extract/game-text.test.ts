@@ -110,6 +110,55 @@ describe('splitMatchupSentences', () => {
         ]);
     });
 
+    it('recognises the German verdict openers', () => {
+        const result = splitMatchupSentences('Vielseitige Infanterie. Stark gegen Gebäude. Schwach gegen Fernkämpfer.');
+
+        expect([result.strongVs, result.weakVs]).toEqual([
+            'Stark gegen Gebäude.',
+            'Schwach gegen Fernkämpfer.',
+        ]);
+    });
+
+    it('recognises the German wording for an effective unit', () => {
+        const result = splitMatchupSentences('Schnelle Kavallerie. Außergewöhnlich wirksam gegen Bogenschützen.');
+
+        expect(result.strongVs).toBe('Außergewöhnlich wirksam gegen Bogenschützen.');
+    });
+
+    it('recognises the French verdict openers', () => {
+        const result = splitMatchupSentences(
+            'Cavalerie rapide. Puissante contre les archers. Faible contre les piquiers.',
+        );
+
+        expect([result.strongVs, result.weakVs]).toEqual([
+            'Puissante contre les archers.',
+            'Faible contre les piquiers.',
+        ]);
+    });
+
+    it('recognises a French verdict the designer intensified', () => {
+        const result = splitMatchupSentences('Archer à pied. Exceptionnellement efficace contre la cavalerie.');
+
+        expect(result.strongVs).toBe('Exceptionnellement efficace contre la cavalerie.');
+    });
+
+    it('recognises the French wording for a unit that is vulnerable', () => {
+        const result = splitMatchupSentences(
+            'Archer à pied formé par paires. Fort en nombre. Vulnérable face aux unités de mêlée.',
+        );
+
+        expect([result.strongVs, result.weakVs]).toEqual(['Fort en nombre.', 'Vulnérable face aux unités de mêlée.']);
+    });
+
+    it('keeps a French role that opens with a strength adjective', () => {
+        const result = splitMatchupSentences("Puissante cavalerie lourde polyvalente. Efficace contre l'infanterie.");
+
+        expect([result.role, result.strongVs]).toEqual([
+            'Puissante cavalerie lourde polyvalente.',
+            "Efficace contre l'infanterie.",
+        ]);
+    });
+
     it('recognises a verdict the designer intensified', () => {
         const result = splitMatchupSentences(
             'Danish unique Infantry. Exceptionally strong vs. Cavalry and buildings. Weak vs. Ranged Soldiers.',

@@ -1,0 +1,513 @@
+{
+    "app": {
+        "title": "AoE2 Counterforge",
+        "tagline": "Konter, Kosten und Wirtschaft für jede Einheit",
+        "skipToContent": "Zum Inhalt springen",
+        "source": "Quellcode auf GitHub"
+    },
+    "nav": {
+        "home": "Start",
+        "units": "Einheiten",
+        "civilizations": "Völker",
+        "about": "Über",
+        "compare": "Vergleichen",
+        "backTo": "Zurück zu {{section}}",
+        "technologies": "Technologien"
+    },
+    "search": {
+        "open": "Einheit oder Volk suchen",
+        "placeholder": "Einheit, Volk oder Technologie suchen...",
+        "hint": "Tipp: Tippe \"briten bogenschütze\", um die Ergebnisse auf ein Volk einzugrenzen",
+        "empty": "Nichts gefunden für \"{{query}}\"",
+        "clearCiv": "Volksfilter entfernen",
+        "groups": {
+            "unit": "Einheiten",
+            "civilization": "Völker",
+            "technology": "Technologien"
+        },
+        "keys": {
+            "navigate": "navigieren",
+            "select": "öffnen",
+            "close": "schließen"
+        },
+        "short": "Suchen"
+    },
+    "home": {
+        "browseByCategory": "Nach Typ stöbern",
+        "pickCiv": "Spielst du ein bestimmtes Volk?",
+        "pickCivHelp": "Wähle eines, um nur zu sehen, was du wirklich ausbilden und entwickeln kannst.",
+        "allCivs": "Alle Völker",
+        "facing": "Was kommt auf dich zu?",
+        "facingHint": "Wähle, was auf dich zukommt, und der Guide antwortet mit dem, was es schlägt.",
+        "enemy": "Gegnerische Einheit",
+        "answerWith": "{{unit}} kontern mit",
+        "seeAll": "Alle Duelle →"
+    },
+    "unit": {
+        "trainedAt": "Ausgebildet in",
+        "trainTime": "Ausbildungszeit",
+        "age": "Zeitalter",
+        "uniqueTo": "Spezialeinheit der {{civ}}",
+        "notAvailable": "{{civ}} können diese Einheit nicht ausbilden.",
+        "tabs": {
+            "overview": "Überblick",
+            "counters": "Konter",
+            "upgrades": "Verbesserungen",
+            "economy": "Wirtschaft"
+        },
+        "officialSummary": "Offizielle Beschreibung aus dem Spiel",
+        "strongVs": "Stark gegen",
+        "weakVs": "Schwach gegen",
+        "stats": "Werte",
+        "statsBase": "Basis",
+        "statsUpgraded": "Voll verbessert",
+        "statsWithCiv": "Alles, was {{civ}} entwickeln können, plus die Boni, die das Volk einfach so bekommt.",
+        "bonusDamage": "Bonusschaden",
+        "armourClasses": "Rüstungsklassen",
+        "line": "Verbesserungslinie",
+        "lineCurrent": "aktuell",
+        "lineOr": "oder",
+        "noBonusDamage": "Kein Bonusschaden.",
+        "availableIn_other": "{{count}} Völker",
+        "availableIn_one": "{{count}} Volk",
+        "trainedBy": "Ausgebildet von"
+    },
+    "stats": {
+        "hp": "LP",
+        "attack": "Angriff",
+        "meleeArmour": "Nahkampfrüstung",
+        "pierceArmour": "Fernkampfrüstung",
+        "range": "Reichweite",
+        "minRange": "Mindestreichweite",
+        "reloadTime": "Nachladen",
+        "accuracy": "Genauigkeit",
+        "speed": "Geschwindigkeit",
+        "lineOfSight": "Sichtweite",
+        "blastWidth": "Sprengradius",
+        "dps": "Schaden pro Sekunde"
+    },
+    "resources": {
+        "food": "Nahrung",
+        "wood": "Holz",
+        "gold": "Gold",
+        "stone": "Stein"
+    },
+    "ages": {
+        "1": "Dunkle Zeit",
+        "2": "Feudalzeit",
+        "3": "Ritterzeit",
+        "4": "Imperialzeit"
+    },
+    "categories": {
+        "infantry": "Infanterie",
+        "archer": "Bogenschützen",
+        "cavalry": "Kavallerie",
+        "cavalry-archer": "Berittene Bogenschützen",
+        "camel": "Kamele",
+        "elephant": "Elefanten",
+        "siege": "Belagerung",
+        "monk": "Mönche",
+        "naval": "Marine",
+        "civilian": "Zivil"
+    },
+    "buildings": {
+        "barracks": "Kaserne",
+        "archery-range": "Schießstand",
+        "stable": "Stall",
+        "siege-workshop": "Waffenschmiede",
+        "castle": "Burg",
+        "monastery": "Kloster",
+        "dock": "Hafen",
+        "town-center": "Dorfzentrum",
+        "market": "Marktplatz",
+        "university": "Universität",
+        "blacksmith": "Schmiede",
+        "mill": "Mühle",
+        "lumber-camp": "Holzfällerlager",
+        "mining-camp": "Bergarbeiterlager",
+        "krepost": "Krepost",
+        "donjon": "Donjon",
+        "folwark": "Gutshof",
+        "fortified-church": "Wehrkirche",
+        "mule-cart": "Maultierkarren",
+        "caravanserai": "Karawanserei",
+        "feitoria": "Feitoria",
+        "settlement": "Siedlung",
+        "pasture": "Weide"
+    },
+    "counters": {
+        "title": "{{unit}} im Duell",
+        "empty": "Kein relevantes Duell in diesem Bereich.",
+        "model": "Gefecht",
+        "models": {
+            "stand": "Stehen und kämpfen",
+            "skirmish": "Mit Reichweite"
+        },
+        "pool": "Gegner",
+        "pools": {
+            "common": "Gewöhnliche",
+            "all": "Mit Spezialeinheiten",
+            "every": "Jede Version"
+        },
+        "upgradeLevel": "Verbesserungen",
+        "upgradeLevels": {
+            "base": "Keine",
+            "full": "Alle"
+        },
+        "efficiency": "Tauscheffizienz",
+        "verdicts": {
+            "dominant": "Dominiert",
+            "favourable": "Im Vorteil",
+            "even": "Ausgeglichen",
+            "unfavourable": "Im Nachteil",
+            "countered": "Gekontert"
+        },
+        "notes": {
+            "outranges": "Mehr Reichweite",
+            "outranged": "Weniger Reichweite",
+            "faster": "Schneller",
+            "slower": "Langsamer",
+            "blast": "Flächenschaden",
+            "deals-bonus": "Verursacht Bonusschaden",
+            "takes-bonus": "Erleidet Bonusschaden",
+            "min-range": "Mindestreichweite"
+        },
+        "duel": {
+            "title": "Kampfanalyse",
+            "damagePerHit": "Schaden pro Treffer",
+            "hitsToKill": "Treffer bis zum Tod",
+            "timeToKill": "Zeit bis zum Tod",
+            "freeHits": "Freie Treffer",
+            "breakdown": "Wie sich der Schaden zusammensetzt",
+            "minimumDamage": "Das Spiel verursacht immer mindestens 1 Schaden pro Treffer.",
+            "volley_one": "{{count}} weiteres Geschoss",
+            "volley_other": "{{count}} weitere Geschosse"
+        },
+        "noAttack": "{{unit}} hat keinen Angriff: Statt zu kämpfen, bekehrt die Einheit ihre Gegner.",
+        "seconds": "{{value}} s",
+        "filterPlaceholder": "Gegner filtern",
+        "filterHint": "z. B. Pikenier",
+        "demolition": "{{unit}} bleibt außen vor: Die Einheit verbraucht sich mit einem Schlag oder wirkt nur gegen Gebäude, es gibt also keinen anhaltenden Schaden zu vergleichen.",
+        "openUnit": "{{unit}} öffnen",
+        "side": "Welche Duelle anzeigen",
+        "sides": {
+            "strong": "Stark",
+            "weak": "Schwach",
+            "all": "Alle"
+        },
+        "widen": "Stattdessen jede Verbesserungsstufe durchsuchen",
+        "columns": {
+            "opponent": "Gegner",
+            "trade": "Tausch ({{unit}})",
+            "answer": "Antwort",
+            "tradeAgainst": "Tausch gegen {{unit}}"
+        },
+        "ownRoster": "Verfügbar für {{civ}}"
+    },
+    "upgrades": {
+        "lineTitle": "Linienverbesserungen",
+        "genericTitle": "Technologien, die diese Einheit ändern",
+        "uniqueTitle": "Was ein einzelnes Volk ändert",
+        "officialHint": "Was das Spiel sagt",
+        "researchTime": "{{value}} s Entwicklung",
+        "qualitative": "Effekt nicht als Zahl modelliert",
+        "empty": "Keine allgemeine Technologie ändert diese Einheit.",
+        "effect": {
+            "hp": "{{value}} LP",
+            "range": "{{value}} Reichweite",
+            "accuracy": "{{value}}% Genauigkeit",
+            "lineOfSight": "{{value}} Sichtweite",
+            "speed": "{{value}}% Geschwindigkeit",
+            "attackSpeed": "{{value}}% Feuerrate",
+            "trainSpeed": "{{value}}% schneller ausgebildet",
+            "attack": "{{value}} Angriff{{against}}",
+            "armour": "{{value}} Rüstung{{against}}",
+            "against": " gegen {{class}}",
+            "speedFlat": "{{value}} Geschwindigkeit",
+            "reload": "{{value}} s Nachladen",
+            "hpPercent": "{{value}}% LP",
+            "attackPercent": "{{value}}% Angriff{{against}}",
+            "armourPercent": "{{value}}% Rüstung{{against}}",
+            "perAge": "{{effect}} pro Zeitalter",
+            "projectiles": "{{value}} Geschoss",
+            "blast": "{{value}} Sprengradius",
+            "regeneration": "regeneriert {{value}} LP pro Minute",
+            "ballistics": "Schüsse zielen bewegten Zielen voraus",
+            "cost": "{{value}}% Kosten",
+            "costResource": "{{value}}% Kosten in {{resource}}",
+            "accuracyFloor": "Genauigkeit auf {{value}}% angehoben",
+            "bonusResistance": "Erleidet {{value}}% weniger Bonusschaden",
+            "ignoresArmour": "Angriffe ignorieren Rüstung",
+            "minRange": "Mindestreichweite auf {{value}} gesenkt",
+            "population": "{{value}} Bevölkerung",
+            "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück"
+        },
+        "uniqueHint": "Boni, die ein Volk bekommt, und die Burgtechnologien, die diese Einheit betreffen.",
+        "noUnique": "Kein Volk ändert diese Einheit für sich allein.",
+        "civBonus": "Volksbonus",
+        "civBonusHint": "Gilt ab Spielbeginn, ohne etwas zu entwickeln.",
+        "teamBonus": "Teambonus",
+        "teamBonusHint": "Gilt für das ganze Team, zählt also auch, wenn dieses Volk ein Verbündeter ist."
+    },
+    "economy": {
+        "title": "Dorfbewohner für eine Produktion ohne Pause",
+        "explain": "Abgeleitet aus den Kosten der Einheit, ihrer Ausbildungszeit und den Sammelraten der Definitive Edition.",
+        "buildings": "Produktionsgebäude",
+        "foodSource": "Nahrungsquelle",
+        "foodSources": {
+            "farm": "Feld",
+            "sheep": "Schafe",
+            "berries": "Beeren",
+            "hunt": "Jagd",
+            "shore-fish": "Küstenfische"
+        },
+        "trainingSpeed": "Ausbildungsgeschwindigkeit",
+        "withConscription": "Mit Wehrpflicht (+33%)",
+        "totalVillagers": "Dorfbewohner insgesamt",
+        "perMinute": "{{value}}/min",
+        "unitsPerMinute": "{{value}} Einheiten pro Minute",
+        "bottleneck": "Engpass: {{resource}}",
+        "gatherRate": "{{value}}/s pro Dorfbewohner",
+        "demand": "Verbrauch",
+        "free": "Diese Einheit kostet keine Rohstoffe.",
+        "note": "Die Basisraten enthalten bereits den Weg zur Abgabestelle. Tragekapazitäts-Verbesserungen und der Tragebonus des Pflugs laufen über das Wegemodell: Sie erhöhen Kapazität und Geschwindigkeit und bringen deshalb weniger als ein direkter Sammelbonus.",
+        "villagers_other": "{{count}} Dorfbewohner",
+        "villagers_one": "{{count}} Dorfbewohner",
+        "sustain_other": "{{villagers}} Dorfbewohner halten {{buildings}} Gebäude am Laufen",
+        "sustain_one": "{{villagers}} Dorfbewohner halten {{buildings}} Gebäude am Laufen",
+        "countFarmUpkeep": "Holz für neue Felder mitzählen",
+        "researchAll": "Alles entwickeln",
+        "ofWhichUpkeep": "Davon {{value}} für neue Felder",
+        "farmSummary": "{{farms}} Felder mit je {{food}} Nahrung, die {{wood}} Holz pro Minute verbrauchen.",
+        "techGroups": {
+            "gathering": "Sammelgeschwindigkeit",
+            "carrying": "Tragekapazität",
+            "farming": "Felder"
+        },
+        "onlyUpkeep": "Nur für neue Felder",
+        "exactTotal": "{{value}} genau",
+        "upgrades": "Wirtschaftsverbesserungen",
+        "bottleneckTag": "Engpass",
+        "techUnavailable": "{{civ}} können {{tech}} nicht entwickeln."
+    },
+    "civ": {
+        "bonuses": "Boni",
+        "uniqueUnits": "Spezialeinheiten",
+        "uniqueTechs": "Spezialtechnologien",
+        "roster": "Verfügbare Einheiten",
+        "teamBonus": "Teambonus",
+        "select": "Dieses Volk verwenden",
+        "selected": "Aktives Volk",
+        "clear": "Alle Völker anzeigen",
+        "count_other": "{{count}} Einheiten",
+        "count_one": "{{count}} Einheit",
+        "view": "Ansicht",
+        "viewList": "Liste",
+        "viewLines": "Linien",
+        "linesHint": "Ausgegraute Schritte sind Verbesserungen, die {{civ}} nie bekommen."
+    },
+    "about": {
+        "title": "Über diesen Guide",
+        "whatIsIt": "Was es ist",
+        "whatIsItBody": "Ein schneller Guide zu den Einheiten von Age of Empires II: was sie kosten, wen sie schlagen, welche Verbesserungen ihre Werte ändern und wie viele Dorfbewohner es braucht, um sie ohne Pause zu bauen.",
+        "howCounters": "Wie Konter berechnet werden",
+        "howCountersBody": "Jedes Duell läuft durch die Schadensformel des Spiels: für jede gemeinsame Rüstungsklasse der Angriff des Angreifers minus die Rüstung des Verteidigers, aufsummiert, mit mindestens 1 Schaden. Daraus folgen Treffer bis zum Tod, Zeit bis zum Tod und Schaden pro Sekunde. Die Tauscheffizienz vergleicht, wie viel Wert jede Seite pro Sekunde zerstört.",
+        "limitations": "Grenzen",
+        "limitationsBody": "Die Simulation ist eine Einheit gegen eine Einheit. Sie modelliert keine Massenschlachten, kein Fokusfeuer, keinen Flächenschaden über Gruppen, keine Bekehrungen und kein perfektes Micro. Lies sie neben der offiziellen Beschreibung aus dem Spiel.",
+        "dataSource": "Daten",
+        "dataSourceBody": "Werte, Texte und Symbole werden aus den Spieldaten selbst extrahiert und zusammen mit der App versioniert, die komplett offline läuft.",
+        "credits": "Danksagung",
+        "creditsBody": "Age of Empires II und alle seine Symbole gehören Microsoft, Forgotten Empires, Ensemble Studios und SkyBox Labs. Dies ist ein Fanprojekt ohne offizielle Verbindung.",
+        "language": "Sprache"
+    },
+    "common": {
+        "back": "Zurück",
+        "close": "Schließen",
+        "seconds": "{{value}} s",
+        "tiles": "{{value}} Felder",
+        "perSecond": "{{value}}/s",
+        "loading": "Lädt...",
+        "notFound": "Diese Seite konnten wir nicht finden.",
+        "goHome": "Zur Startseite",
+        "all": "Alle",
+        "filter": "Filtern…",
+        "noMatch": "Keine Treffer"
+    },
+    "armourClasses": {
+        "infantry": "Infanterie",
+        "archer": "Bogenschützen",
+        "skirmisher": "Plänkler",
+        "spearman": "Speerkämpfer",
+        "eagle-warrior": "Schock-Infanterie",
+        "cavalry": "Kavallerie",
+        "cavalry-archer": "Berittene Bogenschützen",
+        "camel": "Kamele",
+        "mameluke": "Mamelucken",
+        "war-elephant": "Kriegselefanten",
+        "monk": "Mönche",
+        "siege-weapon": "Belagerungswaffen",
+        "ram": "Rammböcke",
+        "gunpowder": "Schießpulver",
+        "unique-unit": "Spezialeinheiten",
+        "ship": "Schiffe",
+        "ship-secondary": "Schiffe",
+        "fire-ship": "Feuerschiffe",
+        "standard-building": "Gebäude",
+        "all-buildings": "Alle Gebäude",
+        "stone-defense": "Steinverteidigung",
+        "castle": "Burgen",
+        "wall-gate": "Mauern und Tore",
+        "tree": "Bäume",
+        "base-melee": "Nahkampf",
+        "base-pierce": "Fernkampf",
+        "unused-0": "Ungenutzte Rüstung 0",
+        "capital-ship": "Großschiffe",
+        "predator-animal": "Raubtiere",
+        "boar": "Wildschweine",
+        "unused-31": "Ungenutzte Rüstung 31",
+        "condottiero": "Condottieri",
+        "fishing-ship": "Fischkutter",
+        "hero-king": "Helden und Könige",
+        "heavy-siege": "Schwere Belagerung",
+        "royal-heir": "Königliche Erben",
+        "unused-40": "Ungenutzte Rüstung 40"
+    },
+    "compare": {
+        "title": "Einheiten vergleichen",
+        "help": "Stelle bis zu {{max}} Einheiten nebeneinander und sieh, wer wen schlägt.",
+        "add": "Einheit hinzufügen",
+        "remove": "{{unit}} entfernen",
+        "empty": "Füge mindestens eine Einheit zum Vergleichen hinzu.",
+        "attribute": "Attribut",
+        "villagers": "Dorfbewohner pro Gebäude",
+        "best": "Bester Wert",
+        "headToHead": "Direktvergleich",
+        "views": {
+            "duels": "Zweikämpfe",
+            "standings": "Tabelle",
+            "grid": "Raster"
+        },
+        "hints": {
+            "duels": "Jedes Paar kämpft einmal. Der Sieger steht links und der Balken neigt sich zu ihm: Die Mittellinie ist ein ausgeglichener Tausch, das äußere Ende ein zehnfacher. Tippe auf einen Zweikampf, um die Rechnung zu sehen.",
+            "standings": "Wie sich jede Einheit gegen den Rest der Gruppe schlägt: gewonnene, ausgeglichene und verlorene Zweikämpfe sowie ihr durchschnittlicher Tausch über alle.",
+            "grid": "Lies entlang der Zeile: Jede Zahl zeigt, wie die Einheit der Zeile gegen die Einheit der Spalte tauscht. Über 1 gewinnt die Einheit der Zeile den Tausch."
+        },
+        "duels": {
+            "beats": "{{winner}} schlägt {{loser}}: {{value}}, {{verdict}}",
+            "trades": "{{winner}} tauscht ausgeglichen mit {{loser}}: {{value}}, {{verdict}}"
+        },
+        "standings": {
+            "unit": "Einheit",
+            "average": "Durchschnittlicher Tausch",
+            "record": "S–U–N",
+            "recordLong": "Siege–Unentschieden–Niederlagen"
+        },
+        "rowVersusColumn": "Zeile gegen Spalte",
+        "cell": "{{row}} gegen {{column}}: {{value}}",
+        "addToCompare": "Vergleichen"
+    },
+    "units": {
+        "filterPlaceholder": "Nach Name filtern",
+        "sortBy": "Sortieren nach",
+        "onePerLine": "Eine pro Linie",
+        "uniqueOnly": "Nur Spezialeinheiten",
+        "withUpgrades": "Mit Verbesserungen",
+        "sorts": {
+            "name": "Name (A–Z)",
+            "age": "Zeitalter",
+            "train-time": "Am schnellsten ausgebildet",
+            "cost": "Am günstigsten",
+            "hp": "Meiste LP",
+            "attack": "Höchster Angriff",
+            "dps": "Höchster Schaden pro Sekunde",
+            "speed": "Am schnellsten",
+            "range": "Größte Reichweite",
+            "value": "Bester Wert für die Kosten"
+        },
+        "filterHint": "z. B. Ritter",
+        "category": "Typ",
+        "empty": "Keine Einheit passt zu diesen Filtern.",
+        "offTreeBadge": "Nicht im Baum"
+    },
+    "settings": {
+        "language": "Sprache",
+        "theme": "Design",
+        "title": "Einstellungen"
+    },
+    "languages": {
+        "pt-BR": "Portugiesisch",
+        "en": "Englisch",
+        "es": "Spanisch",
+        "it": "Italienisch",
+        "de": "Deutsch",
+        "fr": "Französisch"
+    },
+    "themes": {
+        "system": "System",
+        "light": "Hell",
+        "dark": "Dunkel"
+    },
+    "tech": {
+        "changes": "Was sie ändert",
+        "changesCount_one": "{{count}} Einheit",
+        "changesCount_other": "{{count}} Einheiten",
+        "changesNothing": "Sie betrifft keine Einheit, der dieser Guide eine Zahl gibt.",
+        "researchedBy": "Entwickelt von",
+        "civCount_one": "{{count}} Volk",
+        "civCount_other": "{{count}} Völker",
+        "uniqueTo": "Spezialtechnologie der {{civ}}",
+        "trainsFaster": "Einheiten werden dort, wo sie entwickelt ist, {{value}}% schneller ausgebildet.",
+        "changesNoUnit": "Diese Technologie ändert die Werte keiner Einheit. Was sie tut — eine Marktgebühr, ein Tribut, wie ein Mönch arbeitet, eine Verbesserung einer anderen Einheit — steht oben in ihrer Beschreibung.",
+        "linesHint": "Ausgegraute Schritte sind Einheiten, die {{tech}} nicht ändert.",
+        "notChanged": "{{tech}} ändert diese Einheit nicht"
+    },
+    "techs": {
+        "count_one": "{{count}} Technologie",
+        "count_other": "{{count}} Technologien",
+        "filter": "Nach Name filtern",
+        "filterHint": "z. B. Zuchtauswahl",
+        "building": "Entwickelt in",
+        "unique": "Spezial",
+        "empty": "Keine Technologie passt."
+    },
+    "civs": {
+        "count_one": "{{count}} Volk",
+        "count_other": "{{count}} Völker",
+        "filter": "Nach Name filtern",
+        "filterHint": "z. B. Briten",
+        "empty": "Kein Volk passt."
+    },
+    "seo": {
+        "home": {
+            "title": "Age of Empires II: Konter und Einheiten-Guide",
+            "description": "Was jede Einheit in Age of Empires II schlägt, berechnet mit der Schadensformel des Spiels, plus Kosten, Werte, Verbesserungen und die Dorfbewohner für den Nachschub."
+        },
+        "units": {
+            "title": "Jede Einheit in Age of Empires II",
+            "description": "Jede Einheit in Age of Empires II, gefiltert nach Typ, Zeitalter und Volk und sortiert nach Schaden, Lebenspunkten, Reichweite, Geschwindigkeit oder Wert für ihre Kosten."
+        },
+        "technologies": {
+            "title": "Jede Technologie in Age of Empires II",
+            "description": "Jede Technologie in Age of Empires II mit ihren Kosten, den Einheiten, die sie ändert, und um wie viel, und welche Völker sie entwickeln dürfen."
+        },
+        "civilizations": {
+            "title": "Jedes Volk in Age of Empires II",
+            "description": "Jedes Volk in Age of Empires II mit seinen Boni, Spezialeinheiten und Spezialtechnologien und den Einheiten, die es ausbilden kann."
+        },
+        "compare": {
+            "title": "Einheiten in Age of Empires II vergleichen",
+            "description": "Bis zu {{max}} Einheiten aus Age of Empires II nebeneinander, mit dem besten Wert in jeder Zeile und einem Direktvergleich, wer wen schlägt."
+        },
+        "unit": {
+            "title": "{{name}}: Konter, Werte und Kosten",
+            "description": "Was {{name}} in Age of Empires II schlägt, was die Einheit kostet, welche Verbesserungen sie ändern und wie viele Dorfbewohner sie in Produktion halten."
+        },
+        "technology": {
+            "title": "{{name}}: Effekt, Kosten und Völker",
+            "description": "Kosten, jede Einheit, die sie ändert, und welche Völker sie entwickeln."
+        },
+        "civilization": {
+            "title": "{{name}}: Boni, Spezialeinheiten und Technologien"
+        }
+    }
+}

@@ -438,7 +438,9 @@
         "pt-BR": "Português",
         "en": "Inglês",
         "es": "Espanhol",
-        "it": "Italiano"
+        "it": "Italiano",
+        "de": "Alemão",
+        "fr": "Francês"
     },
     "themes": {
         "system": "Do sistema",

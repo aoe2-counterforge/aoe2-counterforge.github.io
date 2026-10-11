@@ -1,7 +1,9 @@
 import civilizationsJson from './generated/civilizations.json';
 import economyJson from './generated/economy.json';
+import stringsDeJson from './generated/strings.de.json';
 import stringsEnJson from './generated/strings.en.json';
 import stringsEsJson from './generated/strings.es.json';
+import stringsFrJson from './generated/strings.fr.json';
 import stringsItJson from './generated/strings.it.json';
 import stringsPtBrJson from './generated/strings.pt-BR.json';
 import technologiesJson from './generated/technologies.json';
@@ -24,6 +26,8 @@ export const GAME_STRING_BUNDLES: Record<string, GameStringBundle> = {
     'pt-BR': stringsPtBrJson,
     es: stringsEsJson,
     it: stringsItJson,
+    de: stringsDeJson,
+    fr: stringsFrJson,
 };
 
 export const DEFAULT_LOCALE = 'en' as const;

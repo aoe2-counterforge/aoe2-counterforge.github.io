@@ -43,7 +43,7 @@ const MAX_INFLATED_BYTES = 1 << 30;
 const STRING_LINE = /^(\d+)\s+"(.*)"\s*$/;
 
 /** The folder inside resources/ holding each shipped locale; the game names Brazilian Portuguese "br". */
-const LANGUAGE_FOLDERS: Record<SupportedLocale, string> = { 'pt-BR': 'br', en: 'en', es: 'es', it: 'it' };
+const LANGUAGE_FOLDERS: Record<SupportedLocale, string> = { 'pt-BR': 'br', de: 'de', en: 'en', es: 'es', fr: 'fr', it: 'it' };
 
 /** Reads the three things the guide needs out of an installed copy of the game. */
 export class GameInstall {

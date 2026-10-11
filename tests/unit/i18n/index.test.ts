@@ -27,7 +27,7 @@ describe('toSupportedLocale', () => {
     });
 
     it('falls back to English for a language it has no strings for', () => {
-        const locale = toSupportedLocale('fr');
+        const locale = toSupportedLocale('pl');
 
         expect(locale).toBe('en');
     });

@@ -300,7 +300,9 @@ describe('App', () => {
         await user.click(screen.getAllByRole('button', { name: /^Idioma:/ })[0]);
 
         expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+            'Alemão',
             'Espanhol',
+            'Francês',
             'Inglês',
             'Italiano',
             'Português',

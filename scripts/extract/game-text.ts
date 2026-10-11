@@ -10,20 +10,27 @@ const BULLET = /^[•·-]\s*/;
  * of a verdict, so a capitalised word followed by the locale's "versus" word opens a sentence
  * too; a role sentence cut that way is joined back unchanged.
  */
-const SENTENCE_BREAK = /(?<=\.)(?<!\bvs\.)\s+(?=[A-ZÀ-Þ])|\s+(?=[A-ZÀ-Þ]\S*\s+(?:vs\.|contra|contro)\s)/;
+const SENTENCE_BREAK = /(?<=\.)(?<!\bvs\.)\s+(?=[A-ZÀ-Þ])|\s+(?=[A-ZÀ-Þ]\S*\s+(?:vs\.|contra|contro|contre|gegen)\s)/;
 
 /** The adverb a designer sometimes puts in front of a verdict ("Exceptionally strong vs."). */
-const INTENSIFIER = '(?:\\p{L}+mente|exceptionally|extremely|very|muy|molto)\\s+';
+const INTENSIFIER =
+    '(?:\\p{L}+mente?|exceptionally|extremely|very|muy|molto|sehr|extrem|äußerst|besonders|außerordentlich|außergewöhnlich)\\s+';
+
+/** The translations inflect the verdict for a unit trained in pairs ("Fortes contra"), so each opener accepts both numbers. */
+const STRONG_OPENERS = 'strong|fortes?|forti|fuertes?|efficaces?|stark|wirksam|effektiv';
 
 /**
- * Sentence openers the game uses to introduce a matchup verdict, per shipped locale.
- *
- * The translations inflect the verdict for a unit trained in pairs ("Fortes contra"), so each
- * opener accepts both numbers.
+ * French opens a role sentence with the same adjectives ("Puissante cavalerie lourde"), so there
+ * they only count as a verdict when they lead straight to the versus word.
  */
+const STRONG_OPENERS_FRENCH = '(?:puissant(?:es?|s)?|forts?)(?=\\s+(?:contre|face|en)\\b)';
+
+const WEAK_OPENERS = 'weak|fracos?|fracas?|d[eé]bil(?:es)?|debol[ei]|faibles?|vulnérables?|schwach';
+
+/** Sentence openers the game uses to introduce a matchup verdict, per shipped locale. */
 const MATCHUP_MARKERS = {
-    strong: new RegExp(`^(?:${INTENSIFIER})?(?:strong|fortes?|forti|fuertes?|efficace)\\b`, 'iu'),
-    weak: new RegExp(`^(?:${INTENSIFIER})?(?:weak|fracos?|fracas?|d[eé]bil(?:es)?|debol[ei])\\b`, 'iu'),
+    strong: new RegExp(`^(?:${INTENSIFIER})?(?:${STRONG_OPENERS}|${STRONG_OPENERS_FRENCH})\\b`, 'iu'),
+    weak: new RegExp(`^(?:${INTENSIFIER})?(?:${WEAK_OPENERS})\\b`, 'iu'),
 };
 
 export interface UnitHelp {

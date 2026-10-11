@@ -24,7 +24,7 @@ Both are TypeScript running under `vite-node`, with no build step.
 | `resources/_common/dat/empires2_x2_p1.dat` | attributes, costs and times of units and technologies, and the effect table |
 | `resources/_common/dat/CivTechTrees/*.json` | availability, age and building of every node, per civilization |
 | `resources/_common/dat/civilizations.json` | the civilization list, in the order the data file numbers them |
-| `resources/<language>/strings/key-value/` | official names and descriptions, in English, Portuguese, Spanish and Italian |
+| `resources/<language>/strings/key-value/` | official names and descriptions, in English, Portuguese, Spanish, Italian, German and French |
 | `widgetui/textures/` | unit, technology and civilization icons |
 | `widgetui/textures/menu/` | age shields, the portrait frame and the resource icons |
 
@@ -66,7 +66,7 @@ are only re-encoded.
 - Availability per civilization, derived from all 56 tech trees.
 - The age each unit arrives in, with the civilizations a bonus brings it to an age early listed
   beside it: the Armenians for every infantry upgrade, the Burgundians for the Cavalier.
-- Official names and descriptions in **English, Portuguese, Spanish and Italian**, including the "Strong vs…" and
+- Official names and descriptions in **English, Portuguese, Spanish, Italian, German and French**, including the "Strong vs…" and
   "Weak vs…" lines written by the game's designers.
 - Upgrade lines rebuilt from the upgrade links.
 - The game's effect table: 160 of the 199 technologies carry a modelled effect, plus 1,702

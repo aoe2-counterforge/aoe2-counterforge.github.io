@@ -1,19 +1,23 @@
 import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DEFAULT_LOCALE, FALLBACK_LOCALE } from '../data/dataset.ts';
+import de from './locales/de.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
+import fr from './locales/fr.json';
 import it from './locales/it.json';
 import ptBr from './locales/pt-BR.json';
 
-export const SUPPORTED_LOCALES = ['en', 'es', 'it', 'pt-BR'] as const;
+export const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr', 'it', 'pt-BR'] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 const RESOURCES: Record<SupportedLocale, { translation: Record<string, unknown> }> = {
     'pt-BR': { translation: ptBr },
+    de: { translation: de },
     en: { translation: en },
     es: { translation: es },
+    fr: { translation: fr },
     it: { translation: it },
 };
 

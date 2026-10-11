@@ -24,7 +24,7 @@ describe('preferredLocale', () => {
     });
 
     it('ignores a stored language the site does not speak', () => {
-        window.localStorage.setItem('aoe2-guide.locale', 'fr');
+        window.localStorage.setItem('aoe2-guide.locale', 'pl');
 
         const locale = preferredLocale();
 

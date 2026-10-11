@@ -57,7 +57,14 @@ const OWNED_ATTRIBUTE = 'data-page-head';
 const DESCRIPTION_LIMIT = 160;
 
 /** Open Graph wants a territory beside the language. */
-const OPEN_GRAPH_LOCALES: Record<SupportedLocale, string> = { 'pt-BR': 'pt_BR', en: 'en_US', es: 'es_ES', it: 'it_IT' };
+const OPEN_GRAPH_LOCALES: Record<SupportedLocale, string> = {
+    'pt-BR': 'pt_BR',
+    de: 'de_DE',
+    en: 'en_US',
+    es: 'es_ES',
+    fr: 'fr_FR',
+    it: 'it_IT',
+};
 
 function absoluteUrl(appPath: string, locale: SupportedLocale): string {
     return new URL(sitePath(appPath, locale), __SITE_URL__).href;
