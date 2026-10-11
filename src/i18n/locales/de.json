@@ -141,7 +141,8 @@
         "model": "Gefecht",
         "models": {
             "stand": "Stehen und kämpfen",
-            "skirmish": "Mit Reichweite"
+            "skirmish": "Mit Reichweite",
+            "army": "Armee gegen Armee"
         },
         "pool": "Gegner",
         "pools": {

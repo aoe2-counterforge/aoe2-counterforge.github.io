@@ -9,7 +9,13 @@ export interface CombatServiceConfig {
     kiteRepeats: number;
 }
 
-export type EngagementModel = 'stand' | 'skirmish';
+/**
+ * How a fight is assumed to play out.
+ *
+ * `stand` trades blows from first contact, `skirmish` lets the longer-ranged unit shoot while the
+ * gap closes, and `army` fights two equal-value armies instead of one unit of each.
+ */
+export type EngagementModel = 'stand' | 'skirmish' | 'army';
 
 export interface DuelQuery {
     attacker: UnitStats;
@@ -79,8 +85,8 @@ export class CombatService {
      */
     public duel(query: DuelQuery): DuelResult {
         const model = query.model ?? 'skirmish';
-        const attackerFree = model === 'skirmish' ? this.freeHits(query.attacker, query.defender) : 0;
-        const defenderFree = model === 'skirmish' ? this.freeHits(query.defender, query.attacker) : 0;
+        const attackerFree = model === 'stand' ? 0 : this.freeHits(query.attacker, query.defender);
+        const defenderFree = model === 'stand' ? 0 : this.freeHits(query.defender, query.attacker);
 
         return {
             model,

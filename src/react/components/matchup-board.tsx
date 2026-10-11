@@ -141,7 +141,7 @@ export function MatchupBoard({ matchups, subjectName, ownRoster = null }: Matchu
                     prefix={t('counters.model')}
                     label={t('counters.model')}
                     value={preferences.model}
-                    options={(['skirmish', 'stand'] as const).map((option) => ({
+                    options={(['skirmish', 'stand', 'army'] as const).map((option) => ({
                         value: option,
                         label: t(`counters.models.${option}`),
                     }))}

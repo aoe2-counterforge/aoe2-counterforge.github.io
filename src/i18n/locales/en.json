@@ -141,7 +141,8 @@
         "model": "Engagement",
         "models": {
             "stand": "Stand and fight",
-            "skirmish": "With range"
+            "skirmish": "With range",
+            "army": "Army vs army"
         },
         "pool": "Opponents",
         "pools": {

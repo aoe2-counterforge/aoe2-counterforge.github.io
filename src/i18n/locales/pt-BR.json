@@ -141,7 +141,8 @@
         "model": "Combate",
         "models": {
             "stand": "Duelo parado",
-            "skirmish": "Com alcance"
+            "skirmish": "Com alcance",
+            "army": "Exército contra exército"
         },
         "pool": "Adversários",
         "pools": {

@@ -39,6 +39,18 @@ export const ASSUMPTIONS = {
         value: 3,
         reason: 'How many approach-and-shoot exchanges one skirmish stands for.',
     },
+    armyValue: {
+        value: 2000,
+        reason: 'What each side spends in an army fight: some twenty gold units, a mid-game army.',
+    },
+    meleeFrontage: {
+        value: 4,
+        reason: 'A packed formation of n units leaves room for about 4√n melee attackers around its edge.',
+    },
+    kiteOverheadSeconds: {
+        value: 0.2,
+        reason: 'A kiting army turns to shoot and turns back, and an order to a whole group lands a beat late.',
+    },
     dropOffTilesNearby: {
         value: 2,
         reason: 'Tiles from a farm or a sheep to the drop-off. The game states no distance.',

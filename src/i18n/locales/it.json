@@ -141,7 +141,8 @@
         "model": "Combattimento",
         "models": {
             "stand": "Faccia a faccia",
-            "skirmish": "Sfruttando la gittata"
+            "skirmish": "Sfruttando la gittata",
+            "army": "Esercito contro esercito"
         },
         "pool": "Avversari",
         "pools": {

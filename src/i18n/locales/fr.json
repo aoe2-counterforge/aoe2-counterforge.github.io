@@ -141,7 +141,8 @@
         "model": "Engagement",
         "models": {
             "stand": "Face à face",
-            "skirmish": "À distance"
+            "skirmish": "À distance",
+            "army": "Armée contre armée"
         },
         "pool": "Adversaires",
         "pools": {

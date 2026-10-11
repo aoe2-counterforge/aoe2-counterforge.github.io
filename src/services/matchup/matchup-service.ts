@@ -2,6 +2,7 @@ import type { Unit } from '../../domain/entities/unit.ts';
 import type { UnitCategory } from '../../domain/enums/unit-category.ts';
 import type { ResourceWeights } from '../../domain/values/resource-cost.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
+import type { BattleSimulator } from '../combat/battle-simulator.ts';
 import type { CombatService, DuelResult, EngagementModel } from '../combat/combat-service.ts';
 import type { DamageComponent } from '../combat/damage-calculator.ts';
 import type { GameCatalogService } from '../game-catalog/game-catalog-service.ts';
@@ -37,6 +38,7 @@ export interface MatchupThresholds {
 export interface MatchupServiceConfig {
     catalog: GameCatalogService;
     combat: CombatService;
+    battles: BattleSimulator;
     upgrades: UpgradeService;
     resourceWeights: ResourceWeights;
     thresholds: MatchupThresholds;
@@ -143,6 +145,7 @@ const KITE_PENALTY = 0.4;
  */
 const FIGHT_KNEE = 4;
 const MIN_EXPOSURE = 0.05;
+const MIN_ARMY_LOSS = 0.02;
 
 /**
  * Bends a lopsided fight towards its logarithm, the same way in both directions.
@@ -317,12 +320,30 @@ export class MatchupService {
         opponent: { stats: UnitStats; dps: number; value: number };
         model: EngagementModel;
     }): number {
+        if (trade.model === 'army') return this.armyEfficiencyOf(trade.subject, trade.opponent);
+
         const subjectExposure = this.exposureOf(trade.subject.stats, trade.opponent.stats, trade.model);
         const opponentExposure = this.exposureOf(trade.opponent.stats, trade.subject.stats, trade.model);
 
         const subjectKill = trade.opponent.stats.hp / Math.max(MIN_DPS, trade.subject.dps * subjectExposure);
         const opponentKill = trade.subject.stats.hp / Math.max(MIN_DPS, trade.opponent.dps * opponentExposure);
         return compress(opponentKill / subjectKill) * (trade.opponent.value / trade.subject.value);
+    }
+
+    /**
+     * Value destroyed over value lost when two armies of the same worth meet.
+     *
+     * Both armies cost the same, so the share of each one that dies is already a share of value.
+     * A side that loses next to nothing is counted as losing a sliver of its army, which keeps a
+     * clean sweep finite without letting it outrank every close win by orders of magnitude.
+     */
+    private armyEfficiencyOf(subject: { stats: UnitStats; value: number }, opponent: { stats: UnitStats; value: number }): number {
+        const battle = this.config.battles.fight({ attacker: subject, defender: opponent });
+        const destroyed = battle.defender.lost / battle.defender.fielded;
+        const lost = battle.attacker.lost / battle.attacker.fielded;
+        if (destroyed < MIN_ARMY_LOSS && lost < MIN_ARMY_LOSS) return 1;
+
+        return compress(Math.max(MIN_ARMY_LOSS, destroyed) / Math.max(MIN_ARMY_LOSS, lost));
     }
 
     /**

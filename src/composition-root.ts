@@ -8,6 +8,7 @@ import {
     TECHNOLOGY_RECORDS,
     UNIT_RECORDS,
 } from './data/dataset.ts';
+import { BattleSimulator } from './services/combat/battle-simulator.ts';
 import { CombatService } from './services/combat/combat-service.ts';
 import { DamageCalculator } from './services/combat/damage-calculator.ts';
 import { EconomyService } from './services/economy/economy-service.ts';
@@ -120,11 +121,20 @@ export function createServices(): AppServices {
         kiteRepeats: ASSUMPTIONS.kiteRepeats.value,
     });
 
+    const battles = new BattleSimulator({
+        combat,
+        armyValue: ASSUMPTIONS.armyValue.value,
+        meleeFrontage: ASSUMPTIONS.meleeFrontage.value,
+        kiteRepeats: ASSUMPTIONS.kiteRepeats.value,
+        kiteOverheadSeconds: ASSUMPTIONS.kiteOverheadSeconds.value,
+    });
+
     const upgrades = new UpgradeService({ catalog });
 
     const matchups = new MatchupService({
         catalog,
         combat,
+        battles,
         upgrades,
         resourceWeights: RESOURCE_WEIGHTS,
         thresholds: MATCHUP_THRESHOLDS,

@@ -141,7 +141,8 @@
         "model": "Combate",
         "models": {
             "stand": "Cara a cara",
-            "skirmish": "Con alcance"
+            "skirmish": "Con alcance",
+            "army": "Ejército contra ejército"
         },
         "pool": "Oponentes",
         "pools": {

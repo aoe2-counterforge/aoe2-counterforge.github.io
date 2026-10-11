@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BattleSimulator } from '../../../../src/services/combat/battle-simulator.ts';
 import { CombatService } from '../../../../src/services/combat/combat-service.ts';
 import { DamageCalculator } from '../../../../src/services/combat/damage-calculator.ts';
 import { CatalogAssembler } from '../../../../src/services/game-catalog/catalog-assembler.ts';
@@ -8,6 +9,10 @@ import { UpgradeService } from '../../../../src/services/upgrade/upgrade-service
 import { unitRecord } from '../../../fixtures/records.ts';
 
 const ALL_CIVS = ['britons', 'franks', 'goths'];
+
+function battlesFor(combat: CombatService) {
+    return new BattleSimulator({ combat, armyValue: 2000, meleeFrontage: 4, kiteRepeats: 3, kiteOverheadSeconds: 0.2 });
+}
 
 function buildService(units = defaultUnits()) {
     const catalog = new GameCatalogService({
@@ -23,6 +28,7 @@ function buildService(units = defaultUnits()) {
         matchups: new MatchupService({
             catalog,
             combat,
+            battles: battlesFor(combat),
             upgrades: new UpgradeService({ catalog }),
             resourceWeights: { food: 1, wood: 1, gold: 1.6, stone: 1.6 },
             thresholds: { dominant: 2, favourable: 1.25, even: 0.8, unfavourable: 0.5 },
@@ -347,9 +353,11 @@ describe('MatchupService saturation', () => {
             technologies: [],
             civilizations: [],
         });
+        const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3 });
         const matchups = new MatchupService({
             catalog,
-            combat: new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3 }),
+            combat,
+            battles: battlesFor(combat),
             upgrades: new UpgradeService({ catalog }),
             resourceWeights: { food: 1, wood: 1, gold: 1.6, stone: 1.6 },
             thresholds: { dominant: 2, favourable: 1.25, even: 0.8, unfavourable: 0.5 },
