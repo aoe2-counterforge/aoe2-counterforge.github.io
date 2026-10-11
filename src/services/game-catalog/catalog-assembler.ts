@@ -35,6 +35,7 @@ export class CatalogAssembler {
             category: isUnitCategory(record.category) ? record.category : 'civilian',
             tags: record.tags,
             age: toAgeId(record.age),
+            ageByCiv: Object.fromEntries(Object.entries(record.ageByCiv).map(([civ, age]) => [civ, toAgeId(age)])),
             buildings: record.buildings,
             cost: this.toCost(record.cost),
             trainTime: record.trainTime,

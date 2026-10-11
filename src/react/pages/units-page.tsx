@@ -196,7 +196,7 @@ export function UnitsPage() {
                 {(row) => (
                     <UnitListItem
                         unit={row.unit}
-                        subtitle={`${t(`ages.${row.unit.age}`)} · ${buildingNames(row.unit.buildings, t)}`}
+                        subtitle={`${t(`ages.${row.unit.ageFor(preferences.civ)}`)} · ${buildingNames(row.unit.buildings, t)}`}
                         trailing={
                             <span className="badge">
                                 {metricLabel(row.metric) ?? t('common.seconds', { value: short(row.unit.trainTime) })}

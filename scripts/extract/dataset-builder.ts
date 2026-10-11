@@ -412,9 +412,12 @@ export class DatasetBuilder {
                 const registry = node['Use Type'] === 'Unit' ? units : node['Use Type'] === 'Tech' ? techs : null;
                 if (!registry) continue;
 
-                const entry = registry.get(node['Node ID']) ?? { node, candidates: [], civs: [] };
+                const entry: NodeEntry = registry.get(node['Node ID']) ?? { node, candidates: [], civs: [], ages: new Map() };
                 entry.candidates.push(node);
-                if (node['Node Status'] !== 'NotAvailable') entry.civs.push(civKey);
+                if (node['Node Status'] !== 'NotAvailable') {
+                    entry.civs.push(civKey);
+                    entry.ages.set(civKey, node['Age ID']);
+                }
                 registry.set(node['Node ID'], entry);
             }
         }
@@ -427,6 +430,41 @@ export class DatasetBuilder {
         }
 
         return { units, techs, byCiv };
+    }
+
+    /**
+     * The age a node arrives in, with the civilizations that reach it in another one.
+     *
+     * The Armenians take every infantry upgrade an age early and the Burgundians their Cavalier, so
+     * the first tree to mention a node cannot speak for the rest: the age most civilizations share
+     * is the node's own, and whoever differs is written down beside it. A tie goes to the later
+     * age, because arriving early is the bonus.
+     */
+    private agesOf(ages: ReadonlyMap<string, number>, fallback: number): Pick<UnitRecord, 'age' | 'ageByCiv'> {
+        const tally = new Map<number, number>();
+        for (const age of ages.values()) tally.set(age, (tally.get(age) ?? 0) + 1);
+
+        const modal = [...tally].sort((left, right) => right[1] - left[1] || right[0] - left[0])[0]?.[0] ?? fallback;
+        const ageByCiv: Record<string, number> = {};
+        for (const civ of [...ages.keys()].sort()) {
+            const age = ages.get(civ) ?? modal;
+            if (age !== modal) ageByCiv[civ] = age;
+        }
+
+        return { age: modal, ageByCiv };
+    }
+
+    /** Every civilization's age for a unit and its twin, the earlier one wherever both buildings serve a civilization. */
+    private mergedAges(unit: UnitRecord, twin: UnitRecord): Map<string, number> {
+        const ages = new Map<string, number>();
+        for (const record of [unit, twin]) {
+            for (const civ of record.civs) {
+                const age = record.ageByCiv[civ] ?? record.age;
+                ages.set(civ, Math.min(ages.get(civ) ?? age, age));
+            }
+        }
+
+        return ages;
     }
 
     private representative(candidates: readonly TechTreeNode[]): TechTreeNode {
@@ -621,6 +659,7 @@ export class DatasetBuilder {
             const civs = this.civsWithoutTheirOwn(unit, building);
             if (civs.length === 0) continue;
 
+            const age = this.ageOf(techId) ?? 1;
             found.push({
                 unit,
                 entry: {
@@ -632,12 +671,13 @@ export class DatasetBuilder {
                         'Link Node Type': 'BuildingTech',
                         'Use Type': 'Unit',
                         'Node Status': 'ResearchedCompleted',
-                        'Age ID': this.ageOf(techId) ?? 1,
+                        'Age ID': age,
                         'Building ID': building,
                         'Picture Index': unit.iconId,
                     },
                     candidates: [],
                     civs,
+                    ages: new Map(civs.map((civ) => [civ, age])),
                 },
             });
         }
@@ -1012,7 +1052,7 @@ export class DatasetBuilder {
             icon: entry.node['Picture Index'] ?? null,
             category: this.categoryOf(armours, building, unit),
             tags: this.tagsOf({ unit, attacks, armours, node: entry.node }),
-            age: entry.node['Age ID'],
+            ...this.agesOf(entry.ages, entry.node['Age ID']),
             buildings: [building],
             upgradeTechId: upgrade?.techIndex ?? null,
             upgradeCost: upgrade?.cost ?? null,
@@ -1140,9 +1180,9 @@ export class DatasetBuilder {
                     (left, right) => right.civs.length - left.civs.length || left.id - right.id,
                 );
                 for (const duplicate of rest) {
+                    Object.assign(canonical, this.agesOf(this.mergedAges(canonical, duplicate), canonical.age));
                     canonical.buildings = [...new Set([...canonical.buildings, ...duplicate.buildings])];
                     canonical.civs = [...new Set([...canonical.civs, ...duplicate.civs])].sort();
-                    canonical.age = Math.min(canonical.age, duplicate.age);
                     canonical.trainTime = Math.min(canonical.trainTime, duplicate.trainTime);
                     aliases.set(duplicate.key, canonical.key);
                     dropped.add(duplicate.key);
@@ -1224,7 +1264,7 @@ export class DatasetBuilder {
                 id,
                 key,
                 icon: entry.node['Picture Index'] ?? null,
-                age: entry.node['Age ID'],
+                age: this.agesOf(entry.ages, entry.node['Age ID']).age,
                 building: BUILDINGS[buildingId] ?? `building-${buildingId}`,
                 cost: this.cost(tech.costs),
                 researchTime: tech.researchTime,
@@ -1336,6 +1376,8 @@ interface NodeEntry {
     node: TechTreeNode;
     candidates: TechTreeNode[];
     civs: string[];
+    /** The age each civilization that has the node reaches it in. */
+    ages: Map<string, number>;
 }
 
 interface CollectedNodes {

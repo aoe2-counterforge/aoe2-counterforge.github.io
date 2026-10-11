@@ -18,6 +18,8 @@ export interface UnitConfig {
     category: UnitCategory;
     tags: readonly string[];
     age: AgeId;
+    /** The age a civilization reaches the unit in, for the few a bonus moves it for. */
+    ageByCiv: Readonly<Record<string, AgeId>>;
     buildings: readonly string[];
     cost: ResourceCost;
     trainTime: number;
@@ -70,6 +72,18 @@ export class Unit {
     }
 
     public get age(): AgeId {
+        return this.config.age;
+    }
+
+    /**
+     * The age a civilization reaches the unit in.
+     *
+     * @param civKey - Civilization slug, or null for the age most civilizations share.
+     * @returns That civilization's age for the unit, which only a bonus moves off the common one.
+     */
+    public ageFor(civKey: string | null): AgeId {
+        if (civKey !== null && Object.hasOwn(this.config.ageByCiv, civKey)) return this.config.ageByCiv[civKey];
+
         return this.config.age;
     }
 

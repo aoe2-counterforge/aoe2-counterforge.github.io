@@ -21,6 +21,7 @@ export interface UnitRecordOverrides {
     category?: string;
     tags?: string[];
     age?: number;
+    ageByCiv?: Record<string, number>;
     buildings?: string[];
     cost?: Partial<CostRecord>;
     trainTime?: number;
@@ -53,6 +54,7 @@ export function unitRecord(overrides: UnitRecordOverrides): UnitRecord {
         category: overrides.category ?? 'infantry',
         tags: overrides.tags ?? ['melee'],
         age: overrides.age ?? 2,
+        ageByCiv: overrides.ageByCiv ?? {},
         buildings: overrides.buildings ?? ['barracks'],
         upgradeTechId: null,
         upgradeCost: null,

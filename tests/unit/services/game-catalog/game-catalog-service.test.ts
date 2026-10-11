@@ -121,6 +121,22 @@ describe('GameCatalogService', () => {
         expect(unique.map((technology) => technology.key)).toEqual(['chivalry']);
     });
 
+    it('filters and sorts by the age the civilization reaches a unit in', () => {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [
+                unitRecord({ key: 'champion', age: 4, ageByCiv: { armenians: 3 }, civs: ['britons', 'armenians'] }),
+                unitRecord({ key: 'knight', age: 3, category: 'cavalry', civs: ['britons', 'armenians'] }),
+            ],
+            technologies: [],
+            civilizations: [],
+        });
+
+        const keys = catalog.units({ civ: 'armenians', ages: [3] }).map((unit) => unit.key);
+
+        expect(keys).toEqual(['champion', 'knight']);
+    });
+
     it('lists civilizations sorted by slug', () => {
         const catalog = buildCatalog();
 

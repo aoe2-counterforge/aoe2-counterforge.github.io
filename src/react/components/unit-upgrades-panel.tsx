@@ -7,6 +7,7 @@ import type { AppliedUpgrade } from '../../services/upgrade/upgrade-service.ts';
 import { describeEffect } from '../effect-description.ts';
 import { iconUrl, short, techIconPath, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
+import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { useUnitUpgrades } from '../hooks/use-unit-upgrades.ts';
@@ -60,6 +61,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
     const { t } = useTranslation();
     const text = useGameText();
     const { catalog } = useServices();
+    const { preferences } = usePreferences();
     const view = useUnitUpgrades(unit);
     const steps = useUnitLine(unit);
 
@@ -116,7 +118,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                                                 })}
                                             />
                                         ) : null}
-                                        <span className="badge">{t(`ages.${member.age}`)}</span>
+                                        <span className="badge">{t(`ages.${member.ageFor(preferences.civ)}`)}</span>
                                         {member.key === unit.key ? (
                                             <span className="badge badge--gold">{t('unit.lineCurrent')}</span>
                                         ) : null}

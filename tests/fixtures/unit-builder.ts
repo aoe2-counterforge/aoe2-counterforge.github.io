@@ -95,6 +95,7 @@ export function makeUnit(overrides: UnitOverrides = {}): Unit {
         category: overrides.category ?? 'infantry',
         tags: overrides.tags ?? ['melee'],
         age: overrides.age ?? 2,
+        ageByCiv: {},
         buildings: overrides.buildings ?? ['barracks'],
         cost: new ResourceCost(overrides.cost ?? { food: 60, gold: 20 }),
         trainTime: overrides.trainTime ?? 20,

@@ -376,10 +376,11 @@ export class MatchupService {
 
         if (pool === 'every') return candidates;
 
+        const subject = { age: query.unit.ageFor(query.civ ?? null), civ: query.opponentCiv ?? null };
         const byLine = new Map<string, Unit>();
         for (const candidate of candidates) {
             const current = byLine.get(candidate.line);
-            if (!current || this.represents(candidate, current, query.unit.age)) {
+            if (!current || this.represents(candidate, current, subject)) {
                 byLine.set(candidate.line, candidate);
             }
         }
@@ -390,14 +391,16 @@ export class MatchupService {
     /**
      * Whether a line member stands in for its line better than the one picked so far.
      *
-     * The nearest reachable age wins. Between two steps of the same age, like Cavalier and Paladin,
-     * the one more civilizations stop at is the one a reader is likelier to meet.
+     * The nearest reachable age wins, each step counted in the age the opposing civilization reaches
+     * it. Between two steps of the same age, like Cavalier and Paladin, the one more civilizations
+     * stop at is the one a reader is likelier to meet.
      */
-    private represents(candidate: Unit, current: Unit, age: number): boolean {
-        const reachable = (unit: Unit) => unit.age <= age;
+    private represents(candidate: Unit, current: Unit, subject: { age: number; civ: string | null }): boolean {
+        const ageOf = (unit: Unit) => unit.ageFor(subject.civ);
+        const reachable = (unit: Unit) => ageOf(unit) <= subject.age;
         if (reachable(candidate) !== reachable(current)) return reachable(candidate);
 
-        const distance = Math.abs(candidate.age - age) - Math.abs(current.age - age);
+        const distance = Math.abs(ageOf(candidate) - subject.age) - Math.abs(ageOf(current) - subject.age);
         if (distance !== 0) return distance < 0;
 
         return this.fieldedBy(candidate) > this.fieldedBy(current);

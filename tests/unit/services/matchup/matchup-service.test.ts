@@ -281,6 +281,46 @@ describe('MatchupService opponent pools', () => {
         expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['paladin']);
     });
 
+    it('counts a line step in the age the opposing civilization reaches it', () => {
+        const units = [
+            unitRecord({ key: 'knight', category: 'cavalry', age: 3, civs: ALL_CIVS }),
+            unitRecord({ key: 'two-handed-swordsman', age: 3, line: 'militia', upgradesTo: ['champion'], civs: ALL_CIVS }),
+            unitRecord({
+                key: 'champion',
+                age: 4,
+                line: 'militia',
+                upgradesFrom: 'two-handed-swordsman',
+                civs: ALL_CIVS,
+                ageByCiv: { goths: 3 },
+            }),
+        ];
+        const { catalog, matchups } = buildService(units);
+
+        const report = matchups.rank({ unit: catalog.unit('knight'), opponentCiv: 'goths', upgradeLevel: 'base' });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['champion']);
+    });
+
+    it('counts a line step in the age most civilizations reach it when no civilization is named', () => {
+        const units = [
+            unitRecord({ key: 'knight', category: 'cavalry', age: 3, civs: ALL_CIVS }),
+            unitRecord({ key: 'two-handed-swordsman', age: 3, line: 'militia', upgradesTo: ['champion'], civs: ALL_CIVS }),
+            unitRecord({
+                key: 'champion',
+                age: 4,
+                line: 'militia',
+                upgradesFrom: 'two-handed-swordsman',
+                civs: ALL_CIVS,
+                ageByCiv: { goths: 3 },
+            }),
+        ];
+        const { catalog, matchups } = buildService(units);
+
+        const report = matchups.rank({ unit: catalog.unit('knight') });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['two-handed-swordsman']);
+    });
+
     it('still leaves the subject itself out of the widest pool', () => {
         const units = [
             unitRecord({ key: 'militia', age: 1, line: 'militia', civs: ALL_CIVS }),

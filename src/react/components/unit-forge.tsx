@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Unit } from '../../domain/entities/unit.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
+import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { Forge } from './forge.tsx';
 import { GameIcon } from './game-icon.tsx';
@@ -22,6 +23,7 @@ export interface UnitForgeProps {
 export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
     const { t } = useTranslation();
     const text = useGameText();
+    const { preferences } = usePreferences();
     const steps = useUnitLine(unit);
     const line = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,7 @@ export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
         <Forge
             name={name}
             subtitle={subtitle}
-            age={unit.age}
+            age={unit.ageFor(preferences.civ)}
             meta={meta}
             portrait={
                 <GameIcon path={unitIconPath(unit.icon)} alt="" size="lg" />

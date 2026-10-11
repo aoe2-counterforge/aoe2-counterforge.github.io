@@ -147,7 +147,7 @@ export function CivilizationPage() {
                             <li key={unitKey}>
                                 <UnitListItem
                                     unit={catalog.unit(unitKey)}
-                                    subtitle={t(`ages.${catalog.unit(unitKey).age}`)}
+                                    subtitle={t(`ages.${catalog.unit(unitKey).ageFor(civilization.key)}`)}
                                 />
                             </li>
                         ))}

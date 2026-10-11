@@ -64,6 +64,8 @@ are only re-encoded.
 
 - Attributes and costs for 237 units and 199 technologies.
 - Availability per civilization, derived from all 56 tech trees.
+- The age each unit arrives in, with the civilizations a bonus brings it to an age early listed
+  beside it: the Armenians for every infantry upgrade, the Burgundians for the Cavalier.
 - Official names and descriptions in **English, Portuguese, Spanish and Italian**, including the "Strong vs…" and
   "Weak vs…" lines written by the game's designers.
 - Upgrade lines rebuilt from the upgrade links.

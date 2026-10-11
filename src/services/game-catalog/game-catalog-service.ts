@@ -91,16 +91,17 @@ export class GameCatalogService {
     public units(query: UnitQuery = {}): Unit[] {
         const categories = query.categories ? new Set(query.categories) : null;
         const ages = query.ages ? new Set<number>(query.ages) : null;
+        const civ = query.civ ?? null;
 
         return [...this.unitsByKey.values()]
-            .filter((unit) => unit.availableTo(query.civ ?? null))
+            .filter((unit) => unit.availableTo(civ))
             .filter((unit) => !categories || categories.has(unit.category))
-            .filter((unit) => !ages || ages.has(unit.age))
+            .filter((unit) => !ages || ages.has(unit.ageFor(civ)))
             .filter((unit) => !query.line || unit.line === query.line)
             .filter((unit) => !query.tags || query.tags.every((tag) => unit.hasTag(tag)))
             .filter((unit) => !query.combatOnly || unit.category !== 'civilian')
             .filter((unit) => query.inTechTreeOnly !== true || unit.inTechTree)
-            .sort((left, right) => left.age - right.age || left.key.localeCompare(right.key));
+            .sort((left, right) => left.ageFor(civ) - right.ageFor(civ) || left.key.localeCompare(right.key));
     }
 
     /**

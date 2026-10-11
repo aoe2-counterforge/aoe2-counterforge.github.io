@@ -224,7 +224,7 @@ export function ComparePage() {
                                     <tr>
                                         <th scope="row">{t('unit.age')}</th>
                                         {columns.map((column) => (
-                                            <td key={column.unit.key}>{t(`ages.${column.unit.age}`)}</td>
+                                            <td key={column.unit.key}>{t(`ages.${column.unit.ageFor(preferences.civ)}`)}</td>
                                         ))}
                                     </tr>
                                     <tr>

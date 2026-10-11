@@ -69,7 +69,7 @@ export function CivilizationRoster({ civilization, view, onViewChange }: Civiliz
                           <ul className="list list--columns">
                               {group.units.map((unit) => (
                                   <li key={unit.key}>
-                                      <UnitListItem unit={unit} subtitle={t(`ages.${unit.age}`)} />
+                                      <UnitListItem unit={unit} subtitle={t(`ages.${unit.ageFor(civilization.key)}`)} />
                                   </li>
                               ))}
                           </ul>

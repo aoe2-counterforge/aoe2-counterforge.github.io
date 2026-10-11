@@ -54,12 +54,12 @@ describe('unit guidance', () => {
         expect(matchup.efficiency).toBeGreaterThan(1.25);
     });
 
-    it('rates the Knight as countered by the Halberdier', () => {
+    it('rates the Knight as countered by the Pikeman', () => {
         const knight = services.catalog.unit('knight');
 
         const report = services.matchups.rank({ unit: knight });
 
-        expect(report.weakAgainst.map((matchup) => matchup.opponent.key)).toContain('halberdier');
+        expect(report.weakAgainst.map((matchup) => matchup.opponent.key)).toContain('pikeman');
     });
 
     it('rates the Elite Skirmisher as a counter to the Crossbowman', () => {

@@ -4,6 +4,7 @@ import type { Unit } from '../../domain/entities/unit.ts';
 import { iconUrl } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useMediaQuery } from '../hooks/use-media-query.ts';
+import { usePreferences } from '../hooks/use-preferences.ts';
 
 export interface UnitLineDiagramProps {
     /** One entry per upgrade step, each holding the alternatives at that point. */
@@ -125,6 +126,7 @@ interface PlacedNode {
 export function UnitLineDiagram({ steps, current }: UnitLineDiagramProps) {
     const { t } = useTranslation();
     const text = useGameText();
+    const { preferences } = usePreferences();
     const stacked = useMediaQuery(STACKED);
 
     const names = new Map(steps.flat().map((unit) => [unit.key, text.unit(unit.key).name]));
@@ -271,7 +273,7 @@ export function UnitLineDiagram({ steps, current }: UnitLineDiagramProps) {
                             >
                                 {node.unit.key === current.key
                                     ? t('unit.lineCurrent')
-                                    : t(`ages.${String(node.unit.age)}`)}
+                                    : t(`ages.${String(node.unit.ageFor(preferences.civ))}`)}
                             </text>
                         </g>
                     </Link>

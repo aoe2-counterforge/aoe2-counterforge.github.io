@@ -112,7 +112,7 @@ describe('App', () => {
         window.history.pushState(null, '', '/pt-br/unit/knight?tab=counters');
         render(<App locale="pt-BR" />);
 
-        await user.type(await screen.findByRole('searchbox', { name: /Filtrar advers/ }), 'alabard');
+        await user.type(await screen.findByRole('searchbox', { name: /Filtrar advers/ }), 'piqu');
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: /^Fortes/ }).textContent).toBe('Fortes0');
@@ -365,10 +365,10 @@ describe('App', () => {
         render(<App locale="pt-BR" />);
 
         await user.click(await screen.findByRole('button', { name: /^Fracos/ }));
-        const [row] = await screen.findAllByRole('button', { name: /Alabardeiro/ });
+        const [row] = await screen.findAllByRole('button', { name: /Piqueiro/ });
         await user.click(row);
 
-        expect(await screen.findByRole('link', { name: /Abrir Alabardeiro/ })).toBeDefined();
+        expect(await screen.findByRole('link', { name: /Abrir Piqueiro/ })).toBeDefined();
     });
 
     it('shows the villager plan for a unit', async () => {

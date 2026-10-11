@@ -21,6 +21,8 @@ export interface UnitRecord {
     category: string;
     tags: string[];
     age: number;
+    /** Civilizations that reach the unit in another age than most, with the age each reaches it in. */
+    ageByCiv: Record<string, number>;
     buildings: string[];
     upgradeTechId: number | null;
     upgradeCost: CostRecord | null;

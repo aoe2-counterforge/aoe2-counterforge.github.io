@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     datasetBuilderFixture,
+    gaiaCivilization,
     genieUnit,
     sampleCivilization,
     sampleGameData,
@@ -177,6 +178,29 @@ describe('DatasetBuilder replacements', () => {
         expect(built.units.find((entry) => entry.key === 'guard')).toMatchObject({
             upgradesFrom: 'militia',
             upgradeCost: { food: 100, wood: 0, gold: 40, stone: 0 },
+        });
+    });
+});
+
+describe('DatasetBuilder ages', () => {
+    it('takes the age most civilizations share and notes who reaches it earlier', () => {
+        const trees = ['BRITONS', 'FRANKS', 'GOTHS'].map((civ) => ({ ...sampleTechTree(), civ_id: civ }));
+        trees[1].civ_techs_units[1]['Age ID'] = 1;
+        const civilizations = [
+            gaiaCivilization(),
+            sampleCivilization(),
+            { ...sampleCivilization(), internal_name: 'Franks', tech_tree_name: 'FRANKS', name_string_id: 10272 },
+            { ...sampleCivilization(), internal_name: 'Goths', tech_tree_name: 'GOTHS', name_string_id: 10273 },
+        ];
+        const strings = sampleStrings();
+        strings.set(10272, 'Franks');
+        strings.set(10273, 'Goths');
+
+        const built = datasetBuilderFixture({ trees, civilizations, strings }).build();
+
+        expect(built.units.find((entry) => entry.key === 'man-at-arms')).toMatchObject({
+            age: 2,
+            ageByCiv: { franks: 1 },
         });
     });
 });

@@ -62,7 +62,7 @@ export function UnitPage() {
                     subtitle={`${t(`categories.${unit.category}`)} · ${buildingNames(unit.buildings, t)}`}
                     meta={
                         <>
-                            <span className="badge">{t(`ages.${unit.age}`)}</span>
+                            <span className="badge">{t(`ages.${unit.ageFor(preferences.civ)}`)}</span>
                             {unit.uniqueTo ? (
                                 <span className="badge badge--gold">
                                     {t('unit.uniqueTo', { civ: text.civilization(unit.uniqueTo).name })}
