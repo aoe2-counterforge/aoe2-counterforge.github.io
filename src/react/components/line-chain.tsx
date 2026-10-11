@@ -12,8 +12,6 @@ export interface LineChainProps {
     steps: readonly (readonly RosterStep[])[];
     /** What to say of a faded step: why the line never reaches it where it is being read. */
     missing: string;
-    /** True for units that merely share a box: none upgrades into another, so nothing joins them. */
-    standalone?: boolean;
 }
 
 /**
@@ -23,7 +21,7 @@ export interface LineChainProps {
  * has to say about a line every civilization starts the same way, and what a technology page has
  * to say about a line it only touches part of.
  */
-export function LineChain({ steps, missing, standalone = false }: LineChainProps) {
+export function LineChain({ steps, missing }: LineChainProps) {
     const { t } = useTranslation();
     const text = useGameText();
 
@@ -39,7 +37,7 @@ export function LineChain({ steps, missing, standalone = false }: LineChainProps
                             <span className="chain__hop" key={entry.unit.key}>
                                 {choice > 0 ? (
                                     <span className="chain__or">{t('unit.lineOr')}</span>
-                                ) : index > 0 && !standalone ? (
+                                ) : index > 0 ? (
                                     <Icon name="next" className="chain__arrow" />
                                 ) : null}
                                 <Link

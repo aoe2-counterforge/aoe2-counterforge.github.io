@@ -5,7 +5,7 @@ import type { RosterLine, RosterStep } from '../services/game-catalog/game-catal
 export interface CategoryLines {
     category: UnitCategory;
     chains: RosterLine[];
-    /** Units that merely share a box: none upgrades into another, so they are shown as one row. */
+    /** Units that upgrade into nothing, each drawn as a row of its own. */
     standalone: RosterStep[][];
 }
 

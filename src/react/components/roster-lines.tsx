@@ -19,7 +19,9 @@ export function RosterLines({ groups, missing }: RosterLinesProps) {
                 {group.chains.map((line) => (
                     <LineChain key={line.line} steps={line.steps} missing={missing} />
                 ))}
-                {group.standalone.length > 0 ? <LineChain steps={group.standalone} missing={missing} standalone /> : null}
+                {group.standalone.map((step) => (
+                    <LineChain key={step[0].unit.key} steps={[step]} missing={missing} />
+                ))}
             </div>
         </div>
     ));
