@@ -39,10 +39,6 @@ export const ASSUMPTIONS = {
         value: 3,
         reason: 'How many approach-and-shoot exchanges one skirmish stands for.',
     },
-    commonOpponentCivs: {
-        value: 20,
-        reason: 'A unit most civilizations train is one you can expect to meet; below this it is a surprise.',
-    },
     dropOffTilesNearby: {
         value: 2,
         reason: 'Tiles from a farm or a sheep to the drop-off. The game states no distance.',

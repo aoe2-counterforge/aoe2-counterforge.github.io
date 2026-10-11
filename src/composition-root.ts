@@ -128,7 +128,6 @@ export function createServices(): AppServices {
         upgrades,
         resourceWeights: RESOURCE_WEIGHTS,
         thresholds: MATCHUP_THRESHOLDS,
-        commonOpponentCivs: ASSUMPTIONS.commonOpponentCivs.value,
     });
 
     const ranking = new UnitRankingService({ upgrades, resourceWeights: RESOURCE_WEIGHTS });

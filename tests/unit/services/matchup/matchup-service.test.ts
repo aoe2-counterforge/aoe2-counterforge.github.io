@@ -26,7 +26,6 @@ function buildService(units = defaultUnits()) {
             upgrades: new UpgradeService({ catalog }),
             resourceWeights: { food: 1, wood: 1, gold: 1.6, stone: 1.6 },
             thresholds: { dominant: 2, favourable: 1.25, even: 0.8, unfavourable: 0.5 },
-            commonOpponentCivs: 2,
         }),
     };
 }
@@ -63,6 +62,7 @@ function defaultUnits() {
             range: 6,
             speed: 0.96,
             civs: ['britons'],
+            uniqueTo: 'britons',
         }),
         unitRecord({
             key: 'monk',
@@ -109,7 +109,7 @@ describe('MatchupService', () => {
         expect(report.all.map((matchup) => matchup.opponent.key)).not.toContain('monk');
     });
 
-    it('hides units only one civilization trains from the common pool', () => {
+    it('hides unique units from the common pool', () => {
         const { catalog, matchups } = buildService();
 
         const report = matchups.rank({ unit: catalog.unit('knight') });
@@ -243,6 +243,44 @@ describe('MatchupService opponent pools', () => {
         expect(report.all.map((matchup) => matchup.opponent.key).sort()).toEqual(['man-at-arms', 'militia']);
     });
 
+    it('keeps a regional line few civilizations train in the common pool', () => {
+        const units = [
+            unitRecord({ key: 'knight', category: 'cavalry', civs: ALL_CIVS }),
+            unitRecord({ key: 'eagle-warrior', civs: ['aztecs'] }),
+        ];
+        const { catalog, matchups } = buildService(units);
+
+        const report = matchups.rank({ unit: catalog.unit('knight') });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['eagle-warrior']);
+    });
+
+    it('represents a line by the step most civilizations stop at when two share an age', () => {
+        const units = [
+            unitRecord({ key: 'archer', category: 'archer', age: 4, civs: ALL_CIVS }),
+            unitRecord({ key: 'cavalier', age: 4, line: 'knight', upgradesTo: ['paladin'], civs: ALL_CIVS }),
+            unitRecord({ key: 'paladin', age: 4, line: 'knight', upgradesFrom: 'cavalier', civs: ['franks'] }),
+        ];
+        const { catalog, matchups } = buildService(units);
+
+        const report = matchups.rank({ unit: catalog.unit('archer') });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['cavalier']);
+    });
+
+    it('prefers the later step once most civilizations reach it', () => {
+        const units = [
+            unitRecord({ key: 'archer', category: 'archer', age: 4, civs: ALL_CIVS }),
+            unitRecord({ key: 'cavalier', age: 4, line: 'knight', upgradesTo: ['paladin'], civs: ALL_CIVS }),
+            unitRecord({ key: 'paladin', age: 4, line: 'knight', upgradesFrom: 'cavalier', civs: ['britons', 'franks'] }),
+        ];
+        const { catalog, matchups } = buildService(units);
+
+        const report = matchups.rank({ unit: catalog.unit('archer') });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toEqual(['paladin']);
+    });
+
     it('still leaves the subject itself out of the widest pool', () => {
         const units = [
             unitRecord({ key: 'militia', age: 1, line: 'militia', civs: ALL_CIVS }),
@@ -275,7 +313,6 @@ describe('MatchupService saturation', () => {
             upgrades: new UpgradeService({ catalog }),
             resourceWeights: { food: 1, wood: 1, gold: 1.6, stone: 1.6 },
             thresholds: { dominant: 2, favourable: 1.25, even: 0.8, unfavourable: 0.5 },
-            commonOpponentCivs: 2,
         });
 
         const report = matchups.rank({ unit: catalog.unit('brute'), pool: 'every' });

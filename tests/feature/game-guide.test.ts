@@ -153,7 +153,27 @@ describe('opponent pools on the shipped roster', () => {
 
         const report = services.matchups.rank({ unit: knight, pool: 'common' });
 
-        expect(report.all.length).toBeLessThan(20);
+        expect(report.all.length).toBeLessThan(30);
+    });
+
+    it('keeps regional lines in the common pool while leaving the unique units out', () => {
+        const knight = services.catalog.unit('knight');
+
+        const report = services.matchups.rank({ unit: knight, pool: 'common' });
+
+        expect(report.all.map((matchup) => matchup.opponent.key)).toContain('eagle-warrior');
+        expect(report.all.every((matchup) => matchup.opponent.uniqueTo === null)).toBe(true);
+    });
+
+    it('stands a line in by the step most civilizations field in that age', () => {
+        const arbalester = services.catalog.unit('arbalester');
+
+        const report = services.matchups.rank({ unit: arbalester, pool: 'common' });
+        const keys = report.all.map((matchup) => matchup.opponent.key);
+
+        expect(keys).toContain('cavalier');
+        expect(keys).toContain('champion');
+        expect(keys).not.toContain('paladin');
     });
 
     it('adds the unique units to the wider pool', () => {

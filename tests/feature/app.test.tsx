@@ -104,7 +104,7 @@ describe('App', () => {
         await user.click(complete);
 
         expect(complete.getAttribute('aria-pressed')).toBe('true');
-        expect(complete.textContent).toBe('Todos11');
+        expect(complete.textContent).toBe('Todos25');
     });
 
     it('counts what the opponent filter leaves on each end of the ranking', async () => {

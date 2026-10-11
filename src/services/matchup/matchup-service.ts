@@ -40,8 +40,6 @@ export interface MatchupServiceConfig {
     upgrades: UpgradeService;
     resourceWeights: ResourceWeights;
     thresholds: MatchupThresholds;
-    /** Minimum number of civilizations that must train a unit for it to count as a common opponent. */
-    commonOpponentCivs: number;
 }
 
 export type UpgradeLevel = 'base' | 'full';
@@ -49,9 +47,9 @@ export type UpgradeLevel = 'base' | 'full';
 /**
  * How wide the opponent list is drawn.
  *
- * `common` keeps one age-appropriate unit per line and only the ones most civilizations train,
- * `all` adds the unique units, and `every` drops the per-line grouping so each upgrade step of
- * every line shows up on its own.
+ * `common` keeps one age-appropriate unit per line and leaves out the units a single civilization
+ * owns, `all` adds those unique units, and `every` drops the per-line grouping so each upgrade
+ * step of every line shows up on its own.
  */
 export type OpponentPool = 'common' | 'all' | 'every';
 
@@ -360,7 +358,9 @@ export class MatchupService {
      * The opponents worth showing: one age-appropriate representative per upgrade line.
      *
      * Listing every line member would fill the screen with the same unit four times over, so the
-     * member closest to the subject's own age stands in for the whole line.
+     * member closest to the subject's own age stands in for the whole line. Regional lines such as
+     * the Eagle Warrior belong to a handful of civilizations and still count as common: any of
+     * those civilizations can turn up across the map, while a unique unit announces its owner.
      */
     private opponentsFor(query: MatchupQuery): Unit[] {
         const pool = query.pool ?? 'common';
@@ -372,14 +372,14 @@ export class MatchupService {
             .filter((unit) => unit.stats.canAttack())
             .filter((unit) => !unit.hasTag('demolition'))
             .filter((unit) => query.opponentCiv == null || unit.availableTo(query.opponentCiv))
-            .filter((unit) => pool !== 'common' || unit.civs.length >= this.config.commonOpponentCivs);
+            .filter((unit) => pool !== 'common' || unit.uniqueTo === null);
 
         if (pool === 'every') return candidates;
 
         const byLine = new Map<string, Unit>();
         for (const candidate of candidates) {
             const current = byLine.get(candidate.line);
-            if (!current || this.isCloserToAge(candidate, current, query.unit.age)) {
+            if (!current || this.represents(candidate, current, query.unit.age)) {
                 byLine.set(candidate.line, candidate);
             }
         }
@@ -387,11 +387,32 @@ export class MatchupService {
         return [...byLine.values()];
     }
 
-    private isCloserToAge(candidate: Unit, current: Unit, age: number): boolean {
+    /**
+     * Whether a line member stands in for its line better than the one picked so far.
+     *
+     * The nearest reachable age wins. Between two steps of the same age, like Cavalier and Paladin,
+     * the one more civilizations stop at is the one a reader is likelier to meet.
+     */
+    private represents(candidate: Unit, current: Unit, age: number): boolean {
         const reachable = (unit: Unit) => unit.age <= age;
         if (reachable(candidate) !== reachable(current)) return reachable(candidate);
 
-        return Math.abs(candidate.age - age) < Math.abs(current.age - age);
+        const distance = Math.abs(candidate.age - age) - Math.abs(current.age - age);
+        if (distance !== 0) return distance < 0;
+
+        return this.fieldedBy(candidate) > this.fieldedBy(current);
+    }
+
+    /**
+     * How many civilizations field a step of a line as its top, rather than pass through it.
+     *
+     * Every civilization with the Paladin also has the Cavalier, so a raw count would always favour
+     * the earlier step; what tells the two apart is who stops where.
+     */
+    private fieldedBy(unit: Unit): number {
+        const passedThrough = unit.upgradesTo.reduce((sum, key) => sum + this.config.catalog.unit(key).civs.length, 0);
+
+        return unit.civs.length - passedThrough;
     }
 
     private verdictFor(efficiency: number): MatchupVerdict {

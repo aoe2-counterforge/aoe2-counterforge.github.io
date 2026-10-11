@@ -57,7 +57,7 @@ Breadth decides who is in the ranking at all:
 
 | Breadth | Who is in it |
 |---|---|
-| Common | One representative per line, only what most civilizations train (~11 opponents) |
+| Common | One representative per line, regional lines included, without the unique units (~25 opponents) |
 | Include unique units | One representative per line, now with the unique units (~95) |
 | Every version | Each step of each line on its own (~190) |
 
