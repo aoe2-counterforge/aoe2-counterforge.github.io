@@ -679,7 +679,7 @@
     align-items: center;
     gap: var(--space-3);
     width: 100%;
-    min-height: 3.25rem;
+    min-height: var(--control-height);
     padding: 0 var(--space-3);
     font-size: 0.9375rem;
     color: var(--text);
@@ -736,8 +736,8 @@
 
 /* The picture of the current choice, at the scale of the field. */
 .select-field__box > .icon {
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
     border-radius: 999px;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent);
 }
@@ -787,9 +787,10 @@
 }
 
 /* Several choices: the tags wrap, and a click anywhere between them reaches for the filter. */
+/* One row of tags stands exactly one control tall, so the field lines up with every other. */
 .tag-picker {
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    padding: 3px var(--space-3) 3px 3px;
     cursor: text;
 }
 
@@ -806,6 +807,7 @@
 .tag-picker .select-field__input {
     flex: 1 1 8rem;
     min-width: 8rem;
+    min-height: 2rem;
     padding: 0 var(--space-1);
 }
 
@@ -824,8 +826,8 @@
 }
 
 .tag-picker__tag .icon {
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 999px;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent);
 }
@@ -859,7 +861,8 @@
     align-items: center;
     gap: var(--space-1);
     align-self: flex-start;
-    padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
+    min-height: var(--control-height);
+    padding: 0 var(--space-2) 0 var(--space-1);
     font-size: 0.8125rem;
     color: var(--text-muted);
     border: 1px solid var(--border);
@@ -942,7 +945,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    padding: 2px;
+    padding: 1px;
     font-size: 0.6875rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;

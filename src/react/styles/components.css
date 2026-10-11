@@ -237,8 +237,10 @@
     border-radius: 999px;
 }
 
+/* The track adds its padding and border, so the options fill it to the control height. */
 .segmented__option {
-    padding: var(--space-1) var(--space-3);
+    min-height: 2rem;
+    padding: 0 var(--space-3);
     border-radius: 999px;
     font-size: 0.8125rem;
     font-weight: 600;
@@ -360,7 +362,7 @@
 .input {
     width: 100%;
     min-height: var(--control-height);
-    padding: var(--space-2) var(--space-3);
+    padding: 0 var(--space-3);
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -607,7 +609,8 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    min-height: var(--control-height);
+    padding: 0 var(--space-3);
     border-radius: 999px;
     border: 1px solid var(--border);
     background: var(--surface);
@@ -1635,10 +1638,6 @@ details[open] > summary::after {
     flex: 0 1 16rem;
 }
 
-.planner__fields .select-field__box {
-    min-height: var(--control-height);
-}
-
 /* The planner is square-cornered throughout, so its chips and stepper match the tiles. */
 .planner .chip,
 .planner .stepper {
@@ -1800,7 +1799,7 @@ details[open] > summary::after {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: 2.25rem;
+    min-height: var(--control-height);
     padding: 0 var(--space-3) 0 var(--space-2);
     font-size: 0.8125rem;
     font-weight: 700;
