@@ -653,6 +653,12 @@
     font: inherit;
 }
 
+/* The ring a focused control wears is clipped by the popup on three sides and survives as a stray
+   line under the filter, so the caret stands for the focus here, as it does in the command palette. */
+.picker__search:focus-visible {
+    outline: none;
+}
+
 .picker__empty {
     padding: var(--space-3);
     color: var(--text-faint);
