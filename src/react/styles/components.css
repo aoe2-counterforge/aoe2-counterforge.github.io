@@ -931,6 +931,19 @@
     min-width: 0;
 }
 
+/* A bonus has no sprite, so its glyph sits in the same tile a technology icon fills: the rows line
+   up whichever kind of entry they hold. */
+.upgrade-item__mark {
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+}
+
+.upgrade-item__mark .glyph {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .upgrade-item__effects {
     display: flex;
     flex-wrap: wrap;

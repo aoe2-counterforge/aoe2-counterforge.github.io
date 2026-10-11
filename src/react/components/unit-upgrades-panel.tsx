@@ -182,10 +182,9 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                                 ] as const).map(([kind, delta]) =>
                                     delta === null ? null : (
                                         <li className="upgrade-item" key={kind}>
-                                            <Icon
-                                                name={kind === 'teamBonus' ? 'population' : 'civilizations'}
-                                                className="upgrade-item__mark"
-                                            />
+                                            <span className="icon upgrade-item__mark" aria-hidden="true">
+                                                <Icon name={kind === 'teamBonus' ? 'population' : 'civilizations'} />
+                                            </span>
                                             <div className="upgrade-item__body">
                                                 <span className="list-item__title">{t(`upgrades.${kind}`)}</span>
                                                 <p className="card__hint">{t(`upgrades.${kind}Hint`)}</p>
