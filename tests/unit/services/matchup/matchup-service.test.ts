@@ -11,7 +11,7 @@ import { unitRecord } from '../../../fixtures/records.ts';
 const ALL_CIVS = ['britons', 'franks', 'goths'];
 
 function battlesFor(combat: CombatService) {
-    return new BattleSimulator({ combat, armyValue: 2000, meleeFrontage: 4, kiteRepeats: 3, kiteOverheadSeconds: 0.2 });
+    return new BattleSimulator({ combat, armyValue: 2000, meleeFrontage: 4 });
 }
 
 function buildService(units = defaultUnits()) {
@@ -21,7 +21,7 @@ function buildService(units = defaultUnits()) {
         technologies: [],
         civilizations: [],
     });
-    const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3 });
+    const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3, kiteOverheadSeconds: 0.2 });
 
     return {
         catalog,
@@ -353,7 +353,7 @@ describe('MatchupService saturation', () => {
             technologies: [],
             civilizations: [],
         });
-        const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3 });
+        const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3, kiteOverheadSeconds: 0.2 });
         const matchups = new MatchupService({
             catalog,
             combat,

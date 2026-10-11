@@ -4,17 +4,12 @@ import { CombatService } from '../../../../src/services/combat/combat-service.ts
 import { DamageCalculator } from '../../../../src/services/combat/damage-calculator.ts';
 import { makeStats } from '../../../fixtures/unit-builder.ts';
 
-const combat = new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3 });
+function combatWith(kiteOverheadSeconds: number) {
+    return new CombatService({ damageCalculator: new DamageCalculator(), maxFreeHits: 6, kiteRepeats: 3, kiteOverheadSeconds });
+}
 
 function simulator(overrides: Partial<BattleSimulatorConfig> = {}) {
-    return new BattleSimulator({
-        combat,
-        armyValue: 1000,
-        meleeFrontage: 4,
-        kiteRepeats: 3,
-        kiteOverheadSeconds: 0.2,
-        ...overrides,
-    });
+    return new BattleSimulator({ combat: combatWith(0.2), armyValue: 1000, meleeFrontage: 4, ...overrides });
 }
 
 const archer = makeStats({ hp: 40, range: 6, speed: 1, reloadTime: 2, attackDelay: 0.3, attacks: { 'base-pierce': 6 } });
@@ -43,7 +38,7 @@ describe('BattleSimulator', () => {
         const query = { attacker: { stats: archer, value: 100 }, defender: { stats: swordsman, value: 100 } };
 
         const kiting = simulator().fight(query);
-        const standing = simulator({ kiteOverheadSeconds: Number.POSITIVE_INFINITY }).fight(query);
+        const standing = simulator({ combat: combatWith(Number.POSITIVE_INFINITY) }).fight(query);
 
         expect(kiting.attacker.lost).toBeLessThan(standing.attacker.lost);
     });
@@ -53,7 +48,7 @@ describe('BattleSimulator', () => {
         const query = { attacker: { stats: slowShot, value: 100 }, defender: { stats: swordsman, value: 100 } };
 
         const kiting = simulator().fight(query);
-        const standing = simulator({ kiteOverheadSeconds: Number.POSITIVE_INFINITY }).fight(query);
+        const standing = simulator({ combat: combatWith(Number.POSITIVE_INFINITY) }).fight(query);
 
         expect(kiting.attacker.lost).toBeCloseTo(standing.attacker.lost, 5);
     });

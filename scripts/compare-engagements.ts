@@ -10,7 +10,12 @@
 import { ASSUMPTIONS } from '../src/assumptions.ts';
 import { createServices, MATCHUP_THRESHOLDS, RESOURCE_WEIGHTS } from '../src/composition-root.ts';
 import { BattleSimulator, type BattleSimulatorConfig } from '../src/services/combat/battle-simulator.ts';
-import type { EngagementModel } from '../src/services/combat/combat-service.ts';
+import {
+    CombatService,
+    type CombatServiceConfig,
+    type EngagementModel,
+} from '../src/services/combat/combat-service.ts';
+import { DamageCalculator } from '../src/services/combat/damage-calculator.ts';
 import { MatchupService, type UpgradeLevel } from '../src/services/matchup/matchup-service.ts';
 
 type Expectation = 'wins' | 'loses';
@@ -19,6 +24,7 @@ interface Variant {
     label: string;
     model: EngagementModel;
     upgradeLevel: UpgradeLevel;
+    combat?: Partial<CombatServiceConfig>;
     battles?: Partial<BattleSimulatorConfig>;
 }
 
@@ -50,31 +56,38 @@ const PAIRS: readonly [subject: string, opponent: string, expected: Expectation]
     ['siege-onager', 'arbalester', 'wins'],
 ];
 
+/** Turns the stutter-step off: a shooter that cannot outrun its chaser stands its ground. */
+const NO_STUTTER = { kiteOverheadSeconds: Number.POSITIVE_INFINITY };
+
 const VARIANTS: readonly Variant[] = [
     { label: 'stand', model: 'stand', upgradeLevel: 'full' },
-    { label: 'skirmish', model: 'skirmish', upgradeLevel: 'full' },
-    { label: 'army', model: 'army', upgradeLevel: 'full', battles: { kiteOverheadSeconds: Number.POSITIVE_INFINITY } },
-    { label: 'kite+0s', model: 'army', upgradeLevel: 'full', battles: { kiteOverheadSeconds: 0 } },
+    { label: 'skirmish', model: 'skirmish', upgradeLevel: 'full', combat: NO_STUTTER },
+    { label: 'skirm+kite', model: 'skirmish', upgradeLevel: 'full' },
+    { label: 'army', model: 'army', upgradeLevel: 'full', combat: NO_STUTTER },
     { label: 'army+kite', model: 'army', upgradeLevel: 'full' },
-    { label: 'kite+0.4s', model: 'army', upgradeLevel: 'full', battles: { kiteOverheadSeconds: 0.4 } },
     { label: 'kite/base', model: 'army', upgradeLevel: 'base' },
 ];
 
 const services = createServices();
 
 function matchupsFor(variant: Variant): MatchupService {
-    const battles = new BattleSimulator({
-        combat: services.combat,
-        armyValue: ASSUMPTIONS.armyValue.value,
-        meleeFrontage: ASSUMPTIONS.meleeFrontage.value,
+    const combat = new CombatService({
+        damageCalculator: new DamageCalculator(),
+        maxFreeHits: ASSUMPTIONS.maxFreeHits.value,
         kiteRepeats: ASSUMPTIONS.kiteRepeats.value,
         kiteOverheadSeconds: ASSUMPTIONS.kiteOverheadSeconds.value,
+        ...variant.combat,
+    });
+    const battles = new BattleSimulator({
+        combat,
+        armyValue: ASSUMPTIONS.armyValue.value,
+        meleeFrontage: ASSUMPTIONS.meleeFrontage.value,
         ...variant.battles,
     });
 
     return new MatchupService({
         catalog: services.catalog,
-        combat: services.combat,
+        combat,
         battles,
         upgrades: services.upgrades,
         resourceWeights: RESOURCE_WEIGHTS,

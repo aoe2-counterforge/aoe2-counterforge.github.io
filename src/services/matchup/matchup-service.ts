@@ -351,7 +351,8 @@ export class MatchupService {
      *
      * The outranged side spends the approach unable to answer, so its damage is scaled by the
      * slice of the engagement it actually spends in contact. Losing the speed race on top of the
-     * range gap means the approach never ends, which is what kiting costs.
+     * range gap means the approach never ends, which is what kiting costs; a shooter that cannot
+     * outrun the victim still stretches the approach by walking away between its shots.
      */
     private exposureOf(victim: UnitStats, shooter: UnitStats, model: EngagementModel): number {
         if (model === 'stand') return 1;
@@ -359,10 +360,11 @@ export class MatchupService {
         const gap = shooter.range - victim.range;
         if (gap < 1) return 1;
 
-        const approachSeconds = gap / Math.max(MIN_SPEED, victim.speed);
+        const kited = gap >= 2 && shooter.speed > victim.speed;
+        const closing = kited ? Math.max(MIN_SPEED, victim.speed) : this.config.combat.closingSpeed(shooter, victim);
+        const approachSeconds = gap / closing;
         const contactSeconds = shooter.hp / Math.max(MIN_DPS, this.dpsOf(victim, shooter));
         const share = contactSeconds / (approachSeconds + contactSeconds);
-        const kited = gap >= 2 && shooter.speed > victim.speed;
 
         return Math.max(MIN_EXPOSURE, kited ? share * KITE_PENALTY : share);
     }

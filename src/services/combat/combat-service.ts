@@ -7,6 +7,8 @@ export interface CombatServiceConfig {
     maxFreeHits: number;
     /** How many approach phases a faster, longer-ranged unit is assumed to win. */
     kiteRepeats: number;
+    /** Seconds a kiting shooter loses on each shot on top of its own attack delay. */
+    kiteOverheadSeconds: number;
 }
 
 /**
@@ -120,20 +122,38 @@ export class CombatService {
     }
 
     /**
-     * How many hits the longer-ranged unit lands while its opponent closes the gap.
+     * How fast a chaser eats into the gap a longer-ranged shooter keeps open.
      *
-     * A unit that both outranges and outruns its opponent replays that approach several times,
-     * which is what kiting looks like once it is boiled down to a single number.
+     * A shooter that outruns its chaser replays the approach several times, which is what kiting
+     * looks like once it is boiled down to a single number. One that cannot outrun it still only
+     * has to stand still until its missile leaves and can walk away for the rest of its reload, so
+     * it holds off a chaser of its own speed and slows down a somewhat faster one; however well
+     * that is done, it never wins more approaches than outrunning the chaser would.
+     *
+     * @param shooter - Stat line of the unit keeping its distance.
+     * @param chaser - Stat line of the unit closing in.
+     * @returns Tiles per second the gap shrinks by; the chaser's own speed when nothing slows it.
      */
+    public closingSpeed(shooter: UnitStats, chaser: UnitStats): number {
+        const chase = Math.max(MIN_SPEED, chaser.speed);
+        if (shooter.range - chaser.range < 2 || !shooter.isRanged()) return chase;
+
+        const floor = chase / this.config.kiteRepeats;
+        if (shooter.speed > chase) return floor;
+
+        const standing = shooter.attackDelay + this.config.kiteOverheadSeconds;
+        const walking = Math.max(0, 1 - standing / Math.max(MIN_RELOAD, shooter.reloadTime));
+
+        return Math.max(floor, chase - shooter.speed * walking);
+    }
+
+    /** How many hits the longer-ranged unit lands while its opponent closes the gap. */
     private freeHits(attacker: UnitStats, defender: UnitStats): number {
         const gap = attacker.range - Math.max(defender.range, 0);
         if (gap < 1) return 0;
 
-        const approachSeconds = gap / Math.max(MIN_SPEED, defender.speed);
-        const perApproach = Math.floor(approachSeconds / Math.max(MIN_RELOAD, attacker.reloadTime));
-        const canKite = gap >= 2 && attacker.speed > defender.speed;
-        const repeats = canKite ? this.config.kiteRepeats : 1;
+        const approachSeconds = gap / this.closingSpeed(attacker, defender);
 
-        return Math.min(this.config.maxFreeHits, perApproach * repeats);
+        return Math.min(this.config.maxFreeHits, Math.floor(approachSeconds / Math.max(MIN_RELOAD, attacker.reloadTime)));
     }
 }

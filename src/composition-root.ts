@@ -119,14 +119,13 @@ export function createServices(): AppServices {
         damageCalculator: new DamageCalculator(),
         maxFreeHits: ASSUMPTIONS.maxFreeHits.value,
         kiteRepeats: ASSUMPTIONS.kiteRepeats.value,
+        kiteOverheadSeconds: ASSUMPTIONS.kiteOverheadSeconds.value,
     });
 
     const battles = new BattleSimulator({
         combat,
         armyValue: ASSUMPTIONS.armyValue.value,
         meleeFrontage: ASSUMPTIONS.meleeFrontage.value,
-        kiteRepeats: ASSUMPTIONS.kiteRepeats.value,
-        kiteOverheadSeconds: ASSUMPTIONS.kiteOverheadSeconds.value,
     });
 
     const upgrades = new UpgradeService({ catalog });

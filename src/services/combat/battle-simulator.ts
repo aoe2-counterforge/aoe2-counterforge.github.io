@@ -7,10 +7,6 @@ export interface BattleSimulatorConfig {
     armyValue: number;
     /** Melee attackers that fit around a formation, per square root of the units in it. */
     meleeFrontage: number;
-    /** How many approach phases a faster, longer-ranged army is assumed to win. */
-    kiteRepeats: number;
-    /** Seconds a kiting shooter loses on each shot on top of its own attack delay. */
-    kiteOverheadSeconds: number;
 }
 
 export interface Army {
@@ -40,7 +36,6 @@ export interface BattleResult {
 const TICK = 0.05;
 /** Past ten minutes neither side is going to finish the other. */
 const MAX_SECONDS = 600;
-const MIN_SPEED = 0.1;
 
 interface Formation {
     stats: UnitStats;
@@ -81,7 +76,7 @@ export class BattleSimulator {
 
         const longer = attacker.stats.range >= defender.stats.range ? attacker : defender;
         const shorter = longer === attacker ? defender : attacker;
-        const closingSpeed = this.closingSpeed(longer.stats, shorter.stats);
+        const closingSpeed = this.config.combat.closingSpeed(longer.stats, shorter.stats);
 
         let distance = longer.stats.range;
         let seconds = 0;
@@ -102,27 +97,6 @@ export class BattleSimulator {
             defender: this.sideOf(defender),
             seconds,
         };
-    }
-
-    /**
-     * How fast the shorter-ranged army eats into the gap.
-     *
-     * A shooter only has to stand still until its missile leaves and can walk away for the rest of
-     * its reload, so it holds off a chaser of its own speed and slows down a somewhat faster one.
-     * However well it is done, kiting is assumed to win no more approaches than a faster shooter
-     * would, because a whole army never steps back as cleanly as one unit.
-     */
-    private closingSpeed(shooter: UnitStats, chaser: UnitStats): number {
-        const chase = Math.max(MIN_SPEED, chaser.speed);
-        if (shooter.range - chaser.range < 2 || !shooter.isRanged()) return chase;
-
-        const floor = chase / this.config.kiteRepeats;
-        if (shooter.speed > chase) return floor;
-
-        const standing = shooter.attackDelay + this.config.kiteOverheadSeconds;
-        const walking = Math.max(0, 1 - standing / Math.max(TICK, shooter.reloadTime));
-
-        return Math.max(floor, chase - shooter.speed * walking);
     }
 
     private formationOf(army: Army, enemy: UnitStats): Formation {

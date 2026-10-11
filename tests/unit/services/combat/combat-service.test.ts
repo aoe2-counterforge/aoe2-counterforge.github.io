@@ -8,6 +8,7 @@ describe('CombatService', () => {
         damageCalculator: new DamageCalculator(),
         maxFreeHits: 6,
         kiteRepeats: 3,
+        kiteOverheadSeconds: 0.2,
     });
 
     it('divides damage per hit by the reload time to get damage per second', () => {
@@ -55,6 +56,22 @@ describe('CombatService', () => {
         expect(duel.attacker.freeHits).toBeGreaterThan(0);
     });
 
+    it('lets a shooter no faster than its chaser stretch the approach by walking between shots', () => {
+        const attacker = makeStats({ range: 6, speed: 1, reloadTime: 2, attackDelay: 0.3, attacks: { 'base-pierce': 5 } });
+        const defender = makeStats({ hp: 200, range: 0, speed: 1 });
+        const standing = new CombatService({
+            damageCalculator: new DamageCalculator(),
+            maxFreeHits: 6,
+            kiteRepeats: 3,
+            kiteOverheadSeconds: Number.POSITIVE_INFINITY,
+        });
+
+        const kiting = combat.duel({ attacker, defender }).attacker.freeHits;
+        const still = standing.duel({ attacker, defender }).attacker.freeHits;
+
+        expect(kiting).toBeGreaterThan(still);
+    });
+
     it('ignores range entirely in the stand-and-fight model', () => {
         const attacker = makeStats({ range: 8, reloadTime: 2, attacks: { 'base-pierce': 5 } });
         const defender = makeStats({ hp: 200, range: 0, speed: 0.8 });
@@ -70,6 +87,7 @@ describe('CombatService single-use units', () => {
         damageCalculator: new DamageCalculator(),
         maxFreeHits: 6,
         kiteRepeats: 3,
+        kiteOverheadSeconds: 0.2,
     });
 
     it('reports no sustained damage for a unit that never reloads', () => {
