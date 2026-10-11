@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Matchup } from '../../services/matchup/matchup-service.ts';
-import { efficiency } from '../format.ts';
+import { efficiency, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { VERDICT_COLOUR } from '../verdict-colour.ts';
 import { DuelBreakdown } from './duel-breakdown.tsx';
@@ -55,7 +55,7 @@ export function MatchupRow({ matchup, subjectName, fromOpponent = false }: Match
                 aria-expanded={isOpen}
                 onClick={() => { setIsOpen((open) => !open); }}
             >
-                <GameIcon path={matchup.opponent.icon === null ? null : `Unit/${matchup.opponent.icon}.png`} alt="" />
+                <GameIcon path={unitIconPath(matchup.opponent.icon)} alt="" />
                 <span className="list-item__body">
                     <span className="list-item__title">{opponentName}</span>
                     <span className="matchup__notes">

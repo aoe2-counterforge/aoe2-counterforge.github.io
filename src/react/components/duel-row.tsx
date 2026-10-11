@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Duel } from '../../services/matchup/matchup-service.ts';
-import { efficiency } from '../format.ts';
+import { efficiency, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { VERDICT_COLOUR } from '../verdict-colour.ts';
 import { DuelBreakdown } from './duel-breakdown.tsx';
@@ -53,7 +53,7 @@ export function DuelRow({ duel }: DuelRowProps) {
                 <span className="duel__names">
                     <span className="duel__side duel__side--winner">
                         <GameIcon
-                            path={duel.winner.icon === null ? null : `Unit/${duel.winner.icon}.png`}
+                            path={unitIconPath(duel.winner.icon)}
                             alt=""
                             size="sm"
                         />
@@ -62,7 +62,7 @@ export function DuelRow({ duel }: DuelRowProps) {
                     <span className="duel__side duel__side--loser">
                         <span className="duel__name">{loserName}</span>
                         <GameIcon
-                            path={duel.loser.icon === null ? null : `Unit/${duel.loser.icon}.png`}
+                            path={unitIconPath(duel.loser.icon)}
                             alt=""
                             size="sm"
                         />

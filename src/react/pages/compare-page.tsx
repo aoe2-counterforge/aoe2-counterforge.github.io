@@ -12,9 +12,10 @@ import { PageMeta } from '../components/page-meta.tsx';
 import { SegmentedControl } from '../components/segmented-control.tsx';
 import { UnitPicker } from '../components/unit-picker.tsx';
 import { buildingNames } from '../building-names.ts';
-import { short } from '../format.ts';
+import { short, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { useReplaceParam } from '../hooks/use-replace-param.ts';
 import { useServices } from '../hooks/use-services.ts';
 
 const MAX_UNITS = 4;
@@ -80,7 +81,8 @@ export function ComparePage() {
     const { catalog, upgrades, matchups, economy } = useServices();
     const text = useGameText();
     const { preferences } = usePreferences();
-    const [params, setParams] = useSearchParams();
+    const [params] = useSearchParams();
+    const replaceParam = useReplaceParam();
     const [mode, setMode] = useState<StatsMode>('upgraded');
 
     const keys = useMemo(
@@ -162,10 +164,7 @@ export function ComparePage() {
 
     const setUnits = (next: readonly string[]) => {
         const unique = [...new Set(next)].slice(0, MAX_UNITS);
-        const merged = new URLSearchParams(params);
-        if (unique.length > 0) merged.set('units', unique.join(','));
-        else merged.delete('units');
-        setParams(merged, { replace: true });
+        replaceParam('units', unique.length > 0 ? unique.join(',') : null);
     };
 
     return (
@@ -212,11 +211,7 @@ export function ComparePage() {
                                             <th scope="col" key={column.unit.key}>
                                                 <Link to={`/unit/${column.unit.key}`} className="compare-table__head">
                                                     <GameIcon
-                                                        path={
-                                                            column.unit.icon === null
-                                                                ? null
-                                                                : `Unit/${column.unit.icon}.png`
-                                                        }
+                                                        path={unitIconPath(column.unit.icon)}
                                                         alt=""
                                                     />
                                                     {column.name}

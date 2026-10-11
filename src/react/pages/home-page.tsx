@@ -11,6 +11,7 @@ import { useGameText } from '../hooks/use-game-text.ts';
 import { useMatchups } from '../hooks/use-matchups.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
+import { unitIconPath } from '../format.ts';
 
 /** The unit the landing page answers before anyone types anything. */
 const OPENING_QUESTION = 'knight';
@@ -32,7 +33,7 @@ export function HomePage() {
                     value: unit.key,
                     label: text.unit(unit.key).name,
                     visual: (
-                        <GameIcon path={unit.icon === null ? null : `Unit/${unit.icon}.png`} alt="" size="sm" />
+                        <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
                     ),
                 }))
                 .sort((left, right) => left.label.localeCompare(right.label)),

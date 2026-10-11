@@ -18,6 +18,7 @@ import { precise, short } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useNameFilter } from '../hooks/use-name-filter.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { useReplaceParam } from '../hooks/use-replace-param.ts';
 import { useServices } from '../hooks/use-services.ts';
 
 type SortOption = UnitSortKey | 'name';
@@ -46,7 +47,8 @@ export function UnitsPage() {
     const text = useGameText();
     const matchesName = useNameFilter();
     const { preferences } = usePreferences();
-    const [params, setParams] = useSearchParams();
+    const [params] = useSearchParams();
+    const setFilter = useReplaceParam();
 
     const rawCategory = params.get('category');
     const category = isUnitCategory(rawCategory ?? '') ? (rawCategory as UnitCategory) : null;
@@ -57,13 +59,6 @@ export function UnitsPage() {
     const uniqueOnly = params.get('unique') === '1';
     const linesOnly = params.get('lines') === '1';
     const upgraded = params.get('upgraded') === '1';
-
-    const setFilter = (name: string, value: string | null) => {
-        const next = new URLSearchParams(params);
-        if (value) next.set(name, value);
-        else next.delete(name);
-        setParams(next, { replace: true });
-    };
 
     const rows = useMemo(() => {
         let pool = catalog

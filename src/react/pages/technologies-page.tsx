@@ -11,6 +11,7 @@ import { useGameText } from '../hooks/use-game-text.ts';
 import { useNameFilter } from '../hooks/use-name-filter.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
+import { techIconPath } from '../format.ts';
 
 /** Directory of every technology, filtered the way the roster is. */
 export function TechnologiesPage() {
@@ -99,7 +100,7 @@ export function TechnologiesPage() {
             >
                 {(technology) => (
                     <Link className="list-item" to={`/tech/${technology.key}`}>
-                        <GameIcon path={technology.icon === null ? null : `Tech/${technology.icon}.png`} alt="" />
+                        <GameIcon path={techIconPath(technology.icon)} alt="" />
                         <span className="list-item__body">
                             <span className="list-item__title">{text.technology(technology.key).name}</span>
                             <span className="list-item__subtitle">

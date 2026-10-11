@@ -5,6 +5,7 @@ import type { RosterStep } from '../../services/game-catalog/game-catalog-servic
 import { useGameText } from '../hooks/use-game-text.ts';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
+import { unitIconPath } from '../format.ts';
 
 export interface LineChainProps {
     /** One entry per upgrade step, each holding the alternatives at that point. */
@@ -49,7 +50,7 @@ export function LineChain({ steps, missing, standalone = false }: LineChainProps
                                     title={unavailable ?? undefined}
                                 >
                                     <GameIcon
-                                        path={entry.unit.icon === null ? null : `Unit/${String(entry.unit.icon)}.png`}
+                                        path={unitIconPath(entry.unit.icon)}
                                         alt=""
                                         size="sm"
                                     />

@@ -1,17 +1,19 @@
 import { ECONOMY_RECORD } from '../../data/dataset.ts';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Unit } from '../../domain/entities/unit.ts';
+import type { AgeId } from '../../domain/enums/age.ts';
 import type { Resource } from '../../domain/enums/resource.ts';
 import {
     FOOD_SOURCES,
     type FoodSource,
 } from '../../services/economy/gather-rates.ts';
-import { iconUrl, precise, short } from '../format.ts';
+import { precise, short, techIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useProductionPlan } from '../hooks/use-production-plan.ts';
 import { useServices } from '../hooks/use-services.ts';
+import { AgeLabel } from './age-label.tsx';
 import { CheckChip } from './check-chip.tsx';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
@@ -28,7 +30,7 @@ const MAX_BUILDINGS = 10;
 const CONSCRIPTION_BUILDINGS = ['barracks', 'archery-range', 'stable', 'castle', 'krepost', 'donjon'];
 
 interface TechGroup {
-    age: number;
+    age: AgeId;
     techs: readonly string[];
 }
 
@@ -40,7 +42,7 @@ interface TechGroup {
 function techGroupsFor(
     spent: ReadonlySet<Resource>,
     onFarms: boolean,
-    ageOf: (tech: string) => number,
+    ageOf: (tech: string) => AgeId,
 ): TechGroup[] {
     const gathering = ECONOMY_RECORD.gatherUpgrades
         .filter((upgrade) => spent.has(upgrade.resource as Resource) || (upgrade.resource === 'wood' && onFarms))
@@ -52,7 +54,7 @@ function techGroupsFor(
         ...(onFarms ? ECONOMY_RECORD.farmUpgrades.map((upgrade) => upgrade.tech) : []),
     ];
 
-    const byAge = new Map<number, string[]>();
+    const byAge = new Map<AgeId, string[]>();
     for (const tech of new Set(all)) {
         const age = ageOf(tech);
         byAge.set(age, [...(byAge.get(age) ?? []), tech]);
@@ -82,17 +84,15 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
     const { preferences } = usePreferences();
     const civ = preferences.civ;
 
+    const techByKey = useMemo(() => new Map(catalog.technologies().map((entry) => [entry.key, entry])), [catalog]);
+    const technology = (key: string) => techByKey.get(key) ?? null;
     // With a civilization chosen, a technology it never gets stays on the board but drained, and a
     // tick it may already carry stops counting: the reader sees what that civilization goes without.
-    const technology = (key: string) => catalog.technologies().find((entry) => entry.key === key) ?? null;
-    const canResearch = (tech: string) => technology(tech)?.availableTo(civ) ?? true;
-    const researched = useMemo(
-        () =>
-            gatherTechs.filter(
-                (tech) => catalog.technologies().find((entry) => entry.key === tech)?.availableTo(civ) ?? true,
-            ),
-        [gatherTechs, civ, catalog],
+    const canResearch = useCallback(
+        (tech: string) => techByKey.get(tech)?.availableTo(civ) ?? true,
+        [techByKey, civ],
     );
+    const researched = useMemo(() => gatherTechs.filter(canResearch), [gatherTechs, canResearch]);
     const conscripted = conscription && canResearch('conscription');
 
     const trainTime = useMemo(
@@ -108,14 +108,16 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
     });
 
     const spent = new Set(unit.cost.spentResources());
-    const onFarms = spent.has('food') && foodSource === 'farm' && includeFarmUpkeep;
+    const farmsMatter = spent.has('food') && foodSource === 'farm';
+    const onFarms = farmsMatter && includeFarmUpkeep;
     const groups = techGroupsFor(spent, onFarms, (tech) => technology(tech)?.age ?? 2);
-    const iconOf = (tech: string) => technology(tech)?.icon ?? null;
+    const techIcon = (tech: string) => (
+        <GameIcon path={techIconPath(technology(tech)?.icon ?? null)} alt="" size="sm" />
+    );
     const availableTechs = groups.flatMap((group) => group.techs).filter(canResearch);
     // One switch does both: on researches everything, off clears it; a mixed set reads as off.
     const allResearched = availableTechs.every((tech) => gatherTechs.includes(tech));
     const conscriptionAvailable = unit.buildings.some((building) => CONSCRIPTION_BUILDINGS.includes(building));
-    const farmsMatter = spent.has('food') && foodSource === 'farm';
     const civName = civ === null ? '' : text.civilization(civ).name;
     const unavailable = (tech: string) =>
         canResearch(tech) ? undefined : t('economy.techUnavailable', { civ: civName, tech: text.technology(tech).name });
@@ -256,27 +258,15 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
                         <div className="planner__tiles planner__tiles--options">
                             {conscriptionAvailable ? (
                                 <CheckChip
-                                    className="toggle--tech"
                                     label={t('economy.withConscription')}
                                     checked={conscription}
                                     onChange={setConscription}
                                     unavailable={unavailable('conscription')}
-                                    icon={
-                                        <GameIcon
-                                            path={
-                                                iconOf('conscription') === null
-                                                    ? null
-                                                    : `Tech/${String(iconOf('conscription'))}.png`
-                                            }
-                                            alt=""
-                                            size="sm"
-                                        />
-                                    }
+                                    icon={techIcon('conscription')}
                                 />
                             ) : null}
                             {farmsMatter ? (
                                 <CheckChip
-                                    className="toggle--tech"
                                     label={t('economy.countFarmUpkeep')}
                                     checked={includeFarmUpkeep}
                                     onChange={setIncludeFarmUpkeep}
@@ -299,29 +289,17 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
 
                             {groups.map((group) => (
                                 <div className="planner__tiles planner__age" key={group.age}>
-                                    <span className="planner__age-label">
-                                        <img
-                                            className="planner__age-shield"
-                                            src={iconUrl(`ui/age-${String(group.age)}.png`)}
-                                            alt=""
-                                        />
-                                        <span className="planner__age-name">{t(`ages.${group.age}`)}</span>
-                                    </span>
+                                    <div className="planner__age-label">
+                                        <AgeLabel age={group.age} />
+                                    </div>
                                     {group.techs.map((tech) => (
                                         <CheckChip
                                             key={tech}
-                                            className="toggle--tech"
                                             label={text.technology(tech).name}
                                             checked={gatherTechs.includes(tech)}
                                             onChange={() => { toggleTech(tech); }}
                                             unavailable={unavailable(tech)}
-                                            icon={
-                                                <GameIcon
-                                                    path={iconOf(tech) === null ? null : `Tech/${String(iconOf(tech))}.png`}
-                                                    alt=""
-                                                    size="sm"
-                                                />
-                                            }
+                                            icon={techIcon(tech)}
                                         />
                                     ))}
                                 </div>

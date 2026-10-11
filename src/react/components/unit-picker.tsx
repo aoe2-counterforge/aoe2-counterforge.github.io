@@ -4,6 +4,7 @@ import { useGameText } from '../hooks/use-game-text.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { GameIcon } from './game-icon.tsx';
 import { TagPicker } from './tag-picker.tsx';
+import { unitIconPath } from '../format.ts';
 
 export interface UnitPickerProps {
     label: string;
@@ -27,7 +28,7 @@ export function UnitPicker({ label, values, onChange, max }: UnitPickerProps) {
                     value: unit.key,
                     label: text.unit(unit.key).name,
                     visual: (
-                        <GameIcon path={unit.icon === null ? null : `Unit/${unit.icon}.png`} alt="" size="sm" />
+                        <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
                     ),
                 }))
                 .sort((left, right) => left.label.localeCompare(right.label)),

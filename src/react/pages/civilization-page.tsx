@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { EntityNotFoundError } from '../../domain/errors/domain-error.ts';
 import { CivilizationRoster } from '../components/civilization-roster.tsx';
 import { Forge } from '../components/forge.tsx';
@@ -9,16 +9,18 @@ import { PageMeta } from '../components/page-meta.tsx';
 import { UnitListItem } from '../components/unit-list-item.tsx';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { useSearchParam } from '../hooks/use-search-param.ts';
 import { useServices } from '../hooks/use-services.ts';
-import { isRosterView, type RosterView } from '../roster-view.ts';
+import { ROSTER_VIEWS } from '../roster-view.ts';
 import { NotFoundPage } from './not-found-page.tsx';
 import { BackLink } from '../components/back-link.tsx';
+import { techIconPath, unitIconPath } from '../format.ts';
 
 /** Civilization profile: bonuses, unique units and technologies, and the roster by category. */
 export function CivilizationPage() {
     const { t } = useTranslation();
     const { key } = useParams<{ key: string }>();
-    const [params, setParams] = useSearchParams();
+    const [view, setView] = useSearchParam('roster', ROSTER_VIEWS);
     const { catalog } = useServices();
     const text = useGameText();
     const { preferences, update } = usePreferences();
@@ -46,15 +48,6 @@ export function CivilizationPage() {
     }, [catalog, civilization]);
 
     if (!civilization) return <NotFoundPage />;
-
-    // The list is the default, so an address only says anything when it asks for the lines.
-    const view: RosterView = isRosterView(params.get('roster')) ? (params.get('roster') as RosterView) : 'list';
-    const setView = (next: RosterView) => {
-        const search = new URLSearchParams(params);
-        if (next === 'list') search.delete('roster');
-        else search.set('roster', next);
-        setParams(search, { replace: true });
-    };
 
     const civText = text.civilization(civilization.key);
     const isActive = preferences.civ === civilization.key;
@@ -94,9 +87,7 @@ export function CivilizationPage() {
                                   <Link className="badge badge--gold" key={unitKey} to={`/unit/${unitKey}`}>
                                       <GameIcon
                                           path={
-                                              catalog.unit(unitKey).icon === null
-                                                  ? null
-                                                  : `Unit/${String(catalog.unit(unitKey).icon)}.png`
+                                              unitIconPath(catalog.unit(unitKey).icon)
                                           }
                                           alt=""
                                           size="sm"
@@ -178,7 +169,7 @@ export function CivilizationPage() {
                                 <li key={techKey}>
                                     <Link className="list-item" to={`/tech/${techKey}`}>
                                         <GameIcon
-                                            path={technology.icon === null ? null : `Tech/${technology.icon}.png`}
+                                            path={techIconPath(technology.icon)}
                                             alt=""
                                         />
                                         <span className="list-item__body">

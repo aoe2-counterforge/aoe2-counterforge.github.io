@@ -4,8 +4,9 @@ import type { Civilization } from '../../domain/entities/civilization.ts';
 import { LAND_CATEGORIES } from '../../domain/enums/unit-category.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useServices } from '../hooks/use-services.ts';
+import { categoryLines, hasGaps } from '../roster-lines.ts';
 import type { RosterView } from '../roster-view.ts';
-import { LineChain } from './line-chain.tsx';
+import { RosterLines } from './roster-lines.tsx';
 import { SegmentedControl } from './segmented-control.tsx';
 import { UnitListItem } from './unit-list-item.tsx';
 
@@ -37,24 +38,14 @@ export function CivilizationRoster({ civilization, view, onViewChange }: Civiliz
         [catalog, civilization],
     );
 
-    // Units that upgrade into nothing share one box per category, so a lone Trebuchet is not a line.
     const lines = useMemo(
         () =>
-            LAND_CATEGORIES.map((category) => {
-                const all = catalog.rosterLines({ civ: civilization.key, category });
-
-                return {
-                    category,
-                    chains: all.filter((line) => line.steps.length > 1),
-                    standalone: all.filter((line) => line.steps.length === 1).flatMap((line) => line.steps),
-                };
-            }).filter((group) => group.chains.length > 0 || group.standalone.length > 0),
+            LAND_CATEGORIES.map((category) =>
+                categoryLines(category, catalog.rosterLines({ civ: civilization.key, category })),
+            ).filter((group) => group !== null),
         [catalog, civilization],
     );
-
-    const hasGaps = lines.some((group) =>
-        group.chains.some((line) => line.steps.some((step) => step.some((entry) => !entry.available))),
-    );
+    const gaps = view === 'lines' && hasGaps(lines);
 
     return (
         <section className="card">
@@ -84,21 +75,9 @@ export function CivilizationRoster({ civilization, view, onViewChange }: Civiliz
                           </ul>
                       </div>
                   ))
-                : lines.map((group) => (
-                      <div className="roster__group" key={group.category}>
-                          <div className="section-label roster__label">{t(`categories.${group.category}`)}</div>
-                          <div className="list">
-                              {group.chains.map((line) => (
-                                  <LineChain key={line.line} steps={line.steps} missing={missing} />
-                              ))}
-                              {group.standalone.length > 0 ? (
-                                  <LineChain steps={group.standalone} missing={missing} standalone />
-                              ) : null}
-                          </div>
-                      </div>
-                  ))}
+                : <RosterLines groups={lines} missing={missing} />}
 
-            {view === 'lines' && hasGaps ? (
+            {gaps ? (
                 <p className="card__hint roster__hint">{t('civ.linesHint', { civ: civName })}</p>
             ) : null}
         </section>

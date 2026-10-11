@@ -77,3 +77,23 @@ export function assetUrl(relativePath: string): string {
 export function iconUrl(relativePath: string): string {
     return assetUrl(`img/${relativePath}`);
 }
+
+/**
+ * Path of a unit's sprite inside the icon folder.
+ *
+ * @param icon - Sprite number the unit carries, or null when it ships without one.
+ * @returns The path, or null when there is no sprite to show.
+ */
+export function unitIconPath(icon: number | null): string | null {
+    return icon === null ? null : `Unit/${String(icon)}.png`;
+}
+
+/**
+ * Path of a technology's sprite inside the icon folder.
+ *
+ * @param icon - Sprite number the technology carries, or null when it ships without one.
+ * @returns The path, or null when there is no sprite to show.
+ */
+export function techIconPath(icon: number | null): string | null {
+    return icon === null ? null : `Tech/${String(icon)}.png`;
+}

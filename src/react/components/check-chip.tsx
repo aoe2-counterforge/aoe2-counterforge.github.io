@@ -7,7 +7,6 @@ export interface CheckChipProps {
     onChange: (checked: boolean) => void;
     /** A picture before the label, such as the technology the chip stands for. */
     icon?: ReactNode;
-    className?: string;
     /** Why the chip cannot be turned on here; given, the chip is drawn drained and refuses the click. */
     unavailable?: string;
 }
@@ -18,10 +17,10 @@ export interface CheckChipProps {
  * The native box stays in the markup for the keyboard and the screen reader; only the eye sees
  * the pill. A chip that is unavailable keeps its place so the reader sees what is missing.
  */
-export function CheckChip({ label, checked, onChange, icon, className, unavailable }: CheckChipProps) {
+export function CheckChip({ label, checked, onChange, icon, unavailable }: CheckChipProps) {
     return (
         <label
-            className={['toggle', className].filter(Boolean).join(' ')}
+            className="toggle"
             data-unavailable={unavailable === undefined ? undefined : true}
             title={unavailable}
         >

@@ -5,7 +5,7 @@ import type { Technology } from '../../domain/entities/technology.ts';
 import type { Unit } from '../../domain/entities/unit.ts';
 import type { AppliedUpgrade } from '../../services/upgrade/upgrade-service.ts';
 import { describeEffect } from '../effect-description.ts';
-import { iconUrl, short } from '../format.ts';
+import { iconUrl, short, techIconPath, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
@@ -25,7 +25,7 @@ function TechnologyItem({ technology, effects }: { technology: Technology; effec
 
     return (
         <li className="upgrade-item">
-            <GameIcon path={technology.icon === null ? null : `Tech/${technology.icon}.png`} alt="" />
+            <GameIcon path={techIconPath(technology.icon)} alt="" />
             <div className="upgrade-item__body">
                 <Link to={`/tech/${technology.key}`} className="list-item__title">
                     {technologyText.name}
@@ -100,7 +100,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                         {lineUpgrades.map((member) => (
                             <li key={member.key} className="upgrade-item">
                                 <GameIcon
-                                    path={member.icon === null ? null : `Unit/${member.icon}.png`}
+                                    path={unitIconPath(member.icon)}
                                     alt=""
                                 />
                                 <div className="upgrade-item__body">

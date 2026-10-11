@@ -897,22 +897,6 @@
     align-items: center;
 }
 
-.big-number {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    font-size: 2.25rem;
-    font-weight: 750;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.1;
-}
-
-.big-number small {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-}
-
 .demand-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
@@ -1356,6 +1340,24 @@ details[open] > summary::after {
     margin-top: var(--space-3);
 }
 
+/* The heading of one age's part of a list: its shield, then its name. */
+.age-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.age-label__shield {
+    width: 1.5rem;
+    height: 1.3rem;
+    object-fit: contain;
+}
+
 /* Past a phone a unit row is mostly empty space, so two share the width. */
 @media (min-width: 48rem) {
     .list--columns {
@@ -1717,36 +1719,26 @@ details[open] > summary::after {
 
 /* Every switch is a tile in a grid, the way the game's own tech tree reads: the icon, the name
    under it, the mark in the corner. An age is such a grid with a header line and its shield. */
+.planner {
+    --tile-min: 6.25rem;
+}
+
 .planner__tiles {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6.25rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
     gap: var(--space-2);
 }
 
 /* The two options carry longer names than any technology, so their tiles start wider. */
 .planner__tiles--options {
-    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    --tile-min: 7.5rem;
 }
 
 .planner__age-label {
-    display: flex;
     grid-column: 1 / -1;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-faint);
 }
 
-.planner__age-shield {
-    width: 1.5rem;
-    height: 1.3rem;
-    object-fit: contain;
-}
-
-.planner .toggle--tech {
+.planner .toggle {
     position: relative;
     flex-direction: column;
     justify-content: flex-start;
@@ -1758,21 +1750,21 @@ details[open] > summary::after {
     text-align: center;
 }
 
-.planner .toggle--tech .toggle__mark {
+.planner .toggle .toggle__mark {
     position: absolute;
     top: 5px;
     right: 5px;
 }
 
-.planner .toggle--tech .icon,
-.planner .toggle--tech .resource-icon {
+.planner .toggle .icon,
+.planner .toggle .resource-icon {
     width: 2.25rem;
     height: 2.25rem;
     border-radius: var(--radius);
 }
 
 /* A name gets two lines at most, so a long one never pushes its tile taller than the row. */
-.planner .toggle--tech .toggle__label {
+.planner .toggle .toggle__label {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -1910,7 +1902,6 @@ details[open] > summary::after {
     }
 
     .demand__number {
-        margin-top: 0;
         font-size: 1.125rem;
     }
 
@@ -1950,25 +1941,21 @@ details[open] > summary::after {
         height: 1rem;
     }
 
-    .planner__tiles {
-        grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr));
+    .planner {
+        --tile-min: 5.25rem;
     }
 
-    .planner__tiles--options {
-        grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
-    }
-
-    .planner__age-shield {
+    .planner .age-label__shield {
         width: 1.4rem;
         height: 1.2rem;
     }
 
-    .planner .toggle--tech {
+    .planner .toggle {
         font-size: 0.6875rem;
     }
 
-    .planner .toggle--tech .icon,
-    .planner .toggle--tech .resource-icon {
+    .planner .toggle .icon,
+    .planner .toggle .resource-icon {
         width: 2.1rem;
         height: 2.1rem;
     }

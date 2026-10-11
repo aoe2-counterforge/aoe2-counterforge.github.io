@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { Icon } from '../components/icon.tsx';
+import { Tabs } from '../components/tabs.tsx';
 import { UnitForge } from '../components/unit-forge.tsx';
 import { ResourceCostRow } from '../components/resource-cost-row.tsx';
 import { UnitCountersPanel } from '../components/unit-counters-panel.tsx';
@@ -11,6 +12,7 @@ import { buildingNames } from '../building-names.ts';
 import { short } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { useSearchParam } from '../hooks/use-search-param.ts';
 import { useUnit } from '../hooks/use-unit.ts';
 import { useUnitUpgrades } from '../hooks/use-unit-upgrades.ts';
 import { NotFoundPage } from './not-found-page.tsx';
@@ -19,17 +21,11 @@ import { PageMeta } from '../components/page-meta.tsx';
 
 const TABS = ['overview', 'counters', 'upgrades', 'economy'] as const;
 
-type TabKey = (typeof TABS)[number];
-
-function isTabKey(value: string | null): value is TabKey {
-    return TABS.includes((value ?? '') as TabKey);
-}
-
 /** Detail page of a single unit, split into overview, counters, upgrades and economy. */
 export function UnitPage() {
     const { t } = useTranslation();
     const { key } = useParams<{ key: string }>();
-    const [params, setParams] = useSearchParams();
+    const [tab, setTab] = useSearchParam('tab', TABS);
     const unit = useUnit(key);
     const text = useGameText();
     const { preferences } = usePreferences();
@@ -37,7 +33,6 @@ export function UnitPage() {
 
     if (!unit || !upgrades) return <NotFoundPage />;
 
-    const tab: TabKey = isTabKey(params.get('tab')) ? (params.get('tab') as TabKey) : 'overview';
     const unitText = text.unit(unit.key);
     const civName = preferences.civ ? text.civilization(preferences.civ).name : '';
     const unavailable = preferences.civ !== null && !unit.availableTo(preferences.civ);
@@ -91,20 +86,11 @@ export function UnitPage() {
                 ) : null}
             </header>
 
-            <div className="tabs" role="tablist">
-                {TABS.map((entry) => (
-                    <button
-                        key={entry}
-                        type="button"
-                        role="tab"
-                        className="tabs__item"
-                        aria-selected={entry === tab}
-                        onClick={() => { setParams(entry === 'overview' ? {} : { tab: entry }, { replace: true }); }}
-                    >
-                        {t(`unit.tabs.${entry}`)}
-                    </button>
-                ))}
-            </div>
+            <Tabs
+                value={tab}
+                options={TABS.map((entry) => ({ value: entry, label: t(`unit.tabs.${entry}`) }))}
+                onChange={setTab}
+            />
 
             {tab === 'overview' ? <UnitOverviewPanel unit={unit} upgradedStats={upgrades.upgradedStats} /> : null}
             {tab === 'counters' ? <UnitCountersPanel key={unit.key} unit={unit} /> : null}

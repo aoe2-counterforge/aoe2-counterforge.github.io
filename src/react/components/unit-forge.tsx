@@ -7,6 +7,7 @@ import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { Forge } from './forge.tsx';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
+import { unitIconPath } from '../format.ts';
 
 export interface UnitForgeProps {
     unit: Unit;
@@ -41,7 +42,7 @@ export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
             age={unit.age}
             meta={meta}
             portrait={
-                <GameIcon path={unit.icon === null ? null : `Unit/${String(unit.icon)}.png`} alt="" size="lg" />
+                <GameIcon path={unitIconPath(unit.icon)} alt="" size="lg" />
             }
         >
             {steps.length > 1 ? (
@@ -65,9 +66,7 @@ export function UnitForge({ unit, name, subtitle, meta }: UnitForgeProps) {
                                                 data-here={member.key === unit.key || undefined}
                                             >
                                                 <GameIcon
-                                                    path={
-                                                        member.icon === null ? null : `Unit/${String(member.icon)}.png`
-                                                    }
+                                                    path={unitIconPath(member.icon)}
                                                     alt=""
                                                     size="sm"
                                                 />

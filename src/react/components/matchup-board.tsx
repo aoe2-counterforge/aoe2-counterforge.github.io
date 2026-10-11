@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
 import { UNIT_CATEGORIES, isUnitCategory, type UnitCategory } from '../../domain/enums/unit-category.ts';
 import type { EngagementModel } from '../../services/combat/combat-service.ts';
 import type { Matchup, OpponentPool, UpgradeLevel } from '../../services/matchup/matchup-service.ts';
 import { useNameFilter } from '../hooks/use-name-filter.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { useSearchParam } from '../hooks/use-search-param.ts';
 import { Icon } from './icon.tsx';
 import { MatchupRow } from './matchup-row.tsx';
 import { Picker } from './picker.tsx';
@@ -50,11 +50,8 @@ export function MatchupBoard({ matchups, subjectName, ownRoster = null }: Matchu
     const { t } = useTranslation();
     const matchesName = useNameFilter();
     const { preferences, update } = usePreferences();
-    const [params, setParams] = useSearchParams();
-
     // The end being read travels in the address, so a link lands on the answer it was sent for.
-    const asked = params.get('side');
-    const side: Side = SIDES.includes(asked as Side) ? (asked as Side) : 'strong';
+    const [side, setSide] = useSearchParam('side', SIDES);
     const [term, setTerm] = useState('');
     const [category, setCategory] = useState<UnitCategory | null>(null);
 
@@ -166,11 +163,7 @@ export function MatchupBoard({ matchups, subjectName, ownRoster = null }: Matchu
                 <SegmentedControl<Side>
                     label={t('counters.side')}
                     value={side}
-                    onChange={(next) => {
-                        const merged = new URLSearchParams(params);
-                        merged.set('side', next);
-                        setParams(merged, { replace: true });
-                    }}
+                    onChange={setSide}
                     options={[
                         { value: 'strong', label: t('counters.sides.strong'), count: counts.strong, tone: 'good' },
                         { value: 'weak', label: t('counters.sides.weak'), count: counts.weak, tone: 'bad' },

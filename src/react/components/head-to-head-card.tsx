@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
 import type { HeadToHead } from '../../services/matchup/matchup-service.ts';
-import { efficiency } from '../format.ts';
+import { efficiency, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
+import { useSearchParam } from '../hooks/use-search-param.ts';
 import { VERDICT_COLOUR } from '../verdict-colour.ts';
 import { DuelRow } from './duel-row.tsx';
 import { GameIcon } from './game-icon.tsx';
@@ -52,7 +52,7 @@ function StandingsTable({ headToHead }: HeadToHeadCardProps) {
                                 <span className="standing">
                                     <span className="standing__rank">{index + 1}</span>
                                     <GameIcon
-                                        path={standing.unit.icon === null ? null : `Unit/${standing.unit.icon}.png`}
+                                        path={unitIconPath(standing.unit.icon)}
                                         alt=""
                                         size="sm"
                                     />
@@ -132,19 +132,9 @@ function Grid({ headToHead }: HeadToHeadCardProps) {
  */
 export function HeadToHeadCard({ headToHead }: HeadToHeadCardProps) {
     const { t } = useTranslation();
-    const [params, setParams] = useSearchParams();
-
     const views = VIEWS.filter((view) => view !== 'standings' || headToHead.units.length >= STANDINGS_MIN_UNITS);
     // The view travels in the address, so a link lands on the table it was sent for.
-    const asked = params.get('view');
-    const view: View = views.includes(asked as View) ? (asked as View) : 'duels';
-
-    const choose = (next: View) => {
-        const merged = new URLSearchParams(params);
-        if (next === 'duels') merged.delete('view');
-        else merged.set('view', next);
-        setParams(merged, { replace: true });
-    };
+    const [view, choose] = useSearchParam('view', views);
 
     return (
         <section className="card">
