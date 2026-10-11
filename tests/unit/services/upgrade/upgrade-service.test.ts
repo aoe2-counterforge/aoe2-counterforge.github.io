@@ -5,7 +5,8 @@ import { UpgradeService } from '../../../../src/services/upgrade/upgrade-service
 import type { TechEffectRecord } from '../../../../src/data/records.ts';
 import { civilizationRecord, technologyRecord, unitRecord } from '../../../fixtures/records.ts';
 
-/** Classes as the game files them: six is infantry, twelve is cavalry. */
+/** Classes as the game files them: four is the villager, six is infantry, twelve is cavalry. */
+const VILLAGER = 4;
 const INFANTRY = 6;
 const CAVALRY = 12;
 
@@ -28,8 +29,15 @@ function buildService() {
                 // A civilization only upgrades what it can train, so the roster has to say who trains it.
                 civs: ['franks', 'britons', 'gurjaras', 'khitans'],
             }),
+            unitRecord({ key: 'villager', id: 3, classId: VILLAGER, category: 'civilian', age: 1, hp: 25 }),
         ],
         technologies: [
+            technologyRecord({
+                key: 'loom',
+                age: 1,
+                building: 'town-center',
+                effects: [{ mode: 'add', unit: null, unitClass: VILLAGER, attribute: 'hp', value: 15 }],
+            }),
             technologyRecord({
                 key: 'forging',
                 age: 2,
@@ -122,6 +130,22 @@ describe('UpgradeService', () => {
         const affecting = upgrades.affecting(catalog.unit('knight'));
 
         expect(affecting.map((entry) => entry.technology.key)).toEqual(['forging', 'bloodlines']);
+    });
+
+    it('lists a civilian among the units a technology changes', () => {
+        const { catalog, upgrades } = buildService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('loom'));
+
+        expect(changed.map(({ unit, delta }) => [unit.key, delta.hp])).toEqual([['villager', 15]]);
+    });
+
+    it('lists every soldier a technology reaches and no civilian it does not', () => {
+        const { catalog, upgrades } = buildService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('forging'));
+
+        expect(changed.map(({ unit }) => unit.key)).toEqual(['champion', 'knight']);
     });
 
     it('drops technologies the chosen civilization cannot research', () => {

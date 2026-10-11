@@ -175,11 +175,13 @@ export class UpgradeService {
      * Every unit one technology reaches, which is the upgrades tab read backwards.
      *
      * @param technology - Technology to inspect.
-     * @returns One entry per unit it changes, ordered the way the roster is.
+     * @returns One entry per unit it changes, civilians included, ordered the way the roster is.
      */
     public unitsChangedBy(technology: Technology): ChangedUnit[] {
+        // Loom and Wheelbarrow reach nothing but the Villager; leaving civilians out would claim
+        // they change no unit at all.
         return this.catalog
-            .units({ combatOnly: true })
+            .units()
             .map((unit) => ({ unit, applied: this.upgradeFor(unit, technology) }))
             .filter((entry): entry is { unit: Unit; applied: AppliedUpgrade } => entry.applied !== null)
             .map(({ unit, applied }) => ({ unit, delta: applied.delta, qualitative: applied.qualitative }));
