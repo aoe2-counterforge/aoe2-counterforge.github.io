@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { DaylightField } from '../effects/daylight-field.ts';
 import { EmberField } from '../effects/ember-field.ts';
+import type { ParticleFieldConfig } from '../effects/particle-field.ts';
 
 export interface EmberFieldOptions {
     density?: number;
@@ -12,8 +13,8 @@ export interface EmberFieldOptions {
 /**
  * Runs the forge's air on a canvas for as long as it is on screen.
  *
- * At night the canvas carries embers; by day, sunlit dust and a little smoke. Which scene paints
- * is decided every frame, so switching the theme changes the picture without remounting anything.
+ * At night the canvas carries embers; by day, sparks. Which scene paints is decided every frame,
+ * so switching the theme changes the picture without remounting anything.
  *
  * @param options - Density, wind, and where new particles are allowed to appear.
  * @returns The ref to attach to the canvas.
@@ -31,34 +32,21 @@ export function useEmberField(options: EmberFieldOptions = {}): RefObject<HTMLCa
         // A browser without a 2d context simply goes without the effect.
         if (!element.getContext('2d')) return;
 
-        const isLight = (): boolean => {
-            const chosen = document.documentElement.dataset.theme;
-
-            return chosen === 'light' || (chosen === undefined && !matchMedia('(prefers-color-scheme: dark)').matches);
+        // Both scenes breathe the same air, read live: the owner may change the density and the
+        // wind between renders without either field being rebuilt.
+        const air: ParticleFieldConfig = {
+            canvas: element,
+            get density() {
+                return latest.current.density;
+            },
+            get wind() {
+                return latest.current.wind;
+            },
+            column: latest.current.column,
         };
-
-        const night = new EmberField({
-            canvas: element,
-            get density() {
-                return latest.current.density;
-            },
-            get wind() {
-                return latest.current.wind;
-            },
-            column: latest.current.column,
-            isLight,
-        });
-        const day = new DaylightField({
-            canvas: element,
-            get density() {
-                return latest.current.density;
-            },
-            get wind() {
-                return latest.current.wind;
-            },
-            column: latest.current.column,
-        });
-        const scene = () => (isLight() ? day : night);
+        const night = new EmberField(air);
+        const day = new DaylightField(air);
+        const scene = () => (document.documentElement.dataset.theme === 'light' ? day : night);
 
         let visible = true;
         let frame = requestAnimationFrame(function loop() {

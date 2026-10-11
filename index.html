@@ -7,6 +7,20 @@
         <meta name="theme-color" content="#12100d" />
         <meta name="color-scheme" content="dark light" />
         <link rel="icon" type="image/svg+xml" href="/brand.svg" />
+        <script>
+            // The stylesheet dresses one theme at a time, so the choice is settled before the first
+            // paint: the one the reader stored, else the one the system asks for.
+            (function () {
+                var choice = null;
+                try {
+                    choice = JSON.parse(localStorage.getItem('aoe2-guide.preferences') || '{}').theme;
+                } catch (error) {
+                    choice = null;
+                }
+                var dark = choice === 'dark' || (choice !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+            })();
+        </script>
         <!--page-head-->
     </head>
     <body>

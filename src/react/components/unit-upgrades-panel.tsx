@@ -11,6 +11,7 @@ import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { useUnitUpgrades } from '../hooks/use-unit-upgrades.ts';
+import { EffectChips } from './effect-chips.tsx';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
 import { ResourceCostRow } from './resource-cost-row.tsx';
@@ -33,15 +34,7 @@ function TechnologyItem({ technology, effects }: { technology: Technology; effec
                 </Link>
                 <p className="card__hint">{technologyText.description}</p>
                 <div className="upgrade-item__effects">
-                    {effects.length === 0 ? (
-                        <span className="effect-chip effect-chip--muted">{t('upgrades.qualitative')}</span>
-                    ) : (
-                        effects.map((effect) => (
-                            <span key={effect} className="effect-chip">
-                                {effect}
-                            </span>
-                        ))
-                    )}
+                    <EffectChips effects={effects} />
                 </div>
                 <div className="row" style={{ marginTop: 'var(--space-2)' }}>
                     <ResourceCostRow

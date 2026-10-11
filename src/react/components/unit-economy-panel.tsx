@@ -9,6 +9,7 @@ import {
     type FoodSource,
 } from '../../services/economy/gather-rates.ts';
 import { precise, short, techIconPath } from '../format.ts';
+import { groupBy } from '../group-by.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useProductionPlan } from '../hooks/use-production-plan.ts';
@@ -54,15 +55,9 @@ function techGroupsFor(
         ...(onFarms ? ECONOMY_RECORD.farmUpgrades.map((upgrade) => upgrade.tech) : []),
     ];
 
-    const byAge = new Map<AgeId, string[]>();
-    for (const tech of new Set(all)) {
-        const age = ageOf(tech);
-        byAge.set(age, [...(byAge.get(age) ?? []), tech]);
-    }
-
-    return [...byAge]
-        .sort(([left], [right]) => left - right)
-        .map(([age, techs]) => ({ age, techs }));
+    return groupBy([...new Set(all)], (tech) => String(ageOf(tech)))
+        .map((techs) => ({ age: ageOf(techs[0]), techs }))
+        .sort((left, right) => left.age - right.age);
 }
 
 /**
@@ -216,7 +211,7 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
                             })}
                         </p>
                     ) : null}
-                    <p className="card__hint planner__note planner__note--long">{t('economy.note')}</p>
+                    <p className="card__hint planner__note">{t('economy.note')}</p>
                 </div>
 
                 <div className="planner__plan">

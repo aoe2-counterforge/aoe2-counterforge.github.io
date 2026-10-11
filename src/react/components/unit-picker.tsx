@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { GameIcon } from './game-icon.tsx';
 import { TagPicker } from './tag-picker.tsx';
-import { unitIconPath } from '../format.ts';
 
 export interface UnitPickerProps {
     label: string;

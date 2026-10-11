@@ -1,12 +1,4 @@
-export interface DaylightFieldConfig {
-    canvas: HTMLCanvasElement;
-    /** Sparks per ten thousand square pixels; one is the calm setting. */
-    density?: number;
-    /** How hard the air pushes sideways; one is a light draught. */
-    wind?: number;
-    /** Keeps new sparks inside one part of the canvas, such as the open tab. */
-    column?: () => { from: number; width: number };
-}
+import { ParticleField, type ParticleFieldConfig } from './particle-field.ts';
 
 interface Spark {
     x: number;
@@ -20,10 +12,7 @@ interface Spark {
 }
 
 const AREA_PER_SPARK = 6000;
-const MAX_PIXEL_RATIO = 2;
-
-/** No banner is wider than this; anything beyond it is a layout mistake, not a request. */
-const MAX_SIDE = 4096;
+const SPARKS_IN_COLUMN = 5;
 
 /** How much a spark slows each frame once thrown; it climbs, hangs, and falls back. */
 const GRAVITY = 0.012;
@@ -35,67 +24,20 @@ const TRAIL = 7;
  * The forge by day: sparks thrown up from the hearth, each drawn as the streak it leaves.
  *
  * A glowing dot is nothing against a pale plate, so by day a spark is its trail: a short stroke of
- * saturated orange that the eye reads as motion. Like the embers, the field only owns a canvas;
- * whoever created it decides when to measure and when to advance a frame.
+ * saturated orange that the eye reads as motion.
  */
-export class DaylightField {
-    private readonly config: DaylightFieldConfig;
-    private readonly paint: CanvasRenderingContext2D;
-    private readonly sparks: Spark[] = [];
-    private width = 0;
-    private height = 0;
-
-    constructor(config: DaylightFieldConfig) {
-        const paint = config.canvas.getContext('2d');
-        if (!paint) throw new Error('This browser refused a 2d canvas for the daylight field.');
-
-        this.config = config;
-        this.paint = paint;
+export class DaylightField extends ParticleField<Spark> {
+    constructor(config: ParticleFieldConfig) {
+        super(config, { areaPerParticle: AREA_PER_SPARK, inColumn: SPARKS_IN_COLUMN });
         this.paint.lineCap = 'round';
-        this.measure();
     }
 
-    /** Matches the drawing buffer to the size the page gave the canvas. */
-    public measure(): void {
-        const ratio = Math.min(devicePixelRatio || 1, MAX_PIXEL_RATIO);
-        const box = this.config.canvas.getBoundingClientRect();
-
-        this.width = Math.min(box.width, MAX_SIDE);
-        this.height = Math.min(box.height, MAX_SIDE);
-        this.config.canvas.width = Math.max(1, Math.round(this.width * ratio));
-        this.config.canvas.height = Math.max(1, Math.round(this.height * ratio));
-        this.paint.setTransform(ratio, 0, 0, ratio, 0, 0);
-        this.sparks.length = 0;
-    }
-
-    /** Advances every spark one frame and repaints the canvas. */
-    public step(): void {
-        this.paint.clearRect(0, 0, this.width, this.height);
-        if (this.width < 1 || this.height < 1) return;
-
-        this.fill();
-
-        this.paint.globalCompositeOperation = 'source-over';
-        for (const spark of this.sparks) this.advance(spark);
-    }
-
-    /** Clears the canvas, for when the effect is switched off. */
-    public clear(): void {
-        this.paint.clearRect(0, 0, this.width, this.height);
-    }
-
-    private fill(): void {
-        const density = this.config.density ?? 1;
-        const wanted = this.config.column
-            ? Math.round(5 * density)
-            : Math.round(((this.width * this.height) / AREA_PER_SPARK) * density);
-
-        while (this.sparks.length < wanted) this.sparks.push(this.spawn(true));
-        while (this.sparks.length > wanted) this.sparks.pop();
+    protected frame(): void {
+        for (const spark of this.particles) this.advance(spark);
     }
 
     /** A spark leaves the hearth in the middle of the floor, or whatever column it was pointed at. */
-    private spawn(seeded: boolean): Spark {
+    protected spawn(seeded: boolean): Spark {
         const column = this.config.column?.() ?? { from: this.width * 0.25, width: this.width * 0.5 };
         const span = 70 + Math.random() * 80;
 
@@ -121,7 +63,7 @@ export class DaylightField {
         spark.y += spark.vy;
 
         if (spark.age >= spark.span || spark.y > this.height + 10 || spark.x < -10 || spark.x > this.width + 10) {
-            Object.assign(spark, this.spawn(false));
+            this.recycle(spark);
 
             return;
         }

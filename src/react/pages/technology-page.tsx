@@ -6,8 +6,10 @@ import type { AgeId } from '../../domain/enums/age.ts';
 import { LAND_CATEGORIES, UNIT_CATEGORIES, type UnitCategory } from '../../domain/enums/unit-category.ts';
 import { EntityNotFoundError } from '../../domain/errors/domain-error.ts';
 import type { RosterLine } from '../../services/game-catalog/game-catalog-service.ts';
+import { categoryLines, hasGaps, type CategoryLines } from '../category-lines.ts';
 import { AgeLabel } from '../components/age-label.tsx';
 import { BackLink } from '../components/back-link.tsx';
+import { EffectChips } from '../components/effect-chips.tsx';
 import { Forge } from '../components/forge.tsx';
 import { GameIcon } from '../components/game-icon.tsx';
 import { PageMeta } from '../components/page-meta.tsx';
@@ -19,9 +21,9 @@ import { describeEffect } from '../effect-description.ts';
 import { iconUrl, short, techIconPath, unitIconPath } from '../format.ts';
 import { groupBy } from '../group-by.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
+import { usePreferences } from '../hooks/use-preferences.ts';
 import { useSearchParam } from '../hooks/use-search-param.ts';
 import { useServices } from '../hooks/use-services.ts';
-import { categoryLines, hasGaps, type CategoryLines } from '../roster-lines.ts';
 import { ROSTER_VIEWS } from '../roster-view.ts';
 import { NotFoundPage } from './not-found-page.tsx';
 
@@ -74,6 +76,7 @@ export function TechnologyPage() {
     const [view, setView] = useSearchParam('view', ROSTER_VIEWS);
     const { catalog, upgrades } = useServices();
     const text = useGameText();
+    const { preferences } = usePreferences();
 
     const technology = useMemo(() => {
         if (!key) return null;
@@ -110,13 +113,15 @@ export function TechnologyPage() {
             .sort((left, right) => right.length - left.length)
             .map((members) => {
                 const units = members.map((entry) => entry.unit);
-                const ages = groupBy(units, (unit) => String(unit.age))
-                    .map((bucket) => ({ age: bucket[0].age, units: bucket.sort(byName) }))
+                // Filed under the age the chosen civilization reaches each unit in, as the roster lists it.
+                const ageOf = (unit: Unit) => unit.ageFor(preferences.civ);
+                const ages = groupBy(units, (unit) => String(ageOf(unit)))
+                    .map((bucket) => ({ age: ageOf(bucket[0]), units: bucket.sort(byName) }))
                     .sort((left, right) => left.age - right.age);
 
                 return { effects: members[0].effects, ages };
             });
-    }, [touched, text]);
+    }, [touched, text, preferences.civ]);
 
     // The same units as the lines they belong to, gathered under the change they share the same
     // way, with the steps the technology skips faded out: a reader sees the whole Knight line
@@ -160,17 +165,6 @@ export function TechnologyPage() {
     const technologyText = text.technology(technology.key);
     const missing = t('tech.notChanged', { tech: technologyText.name });
     const gaps = view === 'lines' && lines.some((group) => hasGaps(group.categories));
-
-    const chips = (effects: string[]) =>
-        effects.length === 0 ? (
-            <span className="effect-chip effect-chip--muted">{t('upgrades.qualitative')}</span>
-        ) : (
-            effects.map((effect) => (
-                <span key={effect} className="effect-chip">
-                    {effect}
-                </span>
-            ))
-        );
 
     return (
         <div className="stack">
@@ -245,7 +239,9 @@ export function TechnologyPage() {
                     {view === 'list'
                         ? groups.map((group) => (
                               <div key={effectKey(group.effects)} className="roster__group">
-                                  <div className="upgrade-item__effects">{chips(group.effects)}</div>
+                                  <div className="upgrade-item__effects">
+                                      <EffectChips effects={group.effects} />
+                                  </div>
                                   {group.ages.map((bucket) => (
                                       <div className="tech-ages" key={bucket.age}>
                                           <AgeLabel age={bucket.age} />
@@ -263,7 +259,9 @@ export function TechnologyPage() {
                           ))
                         : lines.map((group) => (
                               <div key={effectKey(group.effects)} className="roster__group">
-                                  <div className="upgrade-item__effects">{chips(group.effects)}</div>
+                                  <div className="upgrade-item__effects">
+                                      <EffectChips effects={group.effects} />
+                                  </div>
                                   <div className="tech-lines">
                                       <RosterLines groups={group.categories} missing={missing} />
                                   </div>

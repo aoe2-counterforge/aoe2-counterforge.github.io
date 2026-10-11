@@ -781,12 +781,6 @@
     background: var(--bad-dim);
 }
 
-.toggle-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-}
-
 .toggle {
     position: relative;
     display: inline-flex;
@@ -1633,7 +1627,6 @@ details[open] > summary::after {
 }
 
 /* The planner is square-cornered throughout, so its chips and stepper match the tiles. */
-.planner .toggle,
 .planner .chip,
 .planner .stepper {
     border-radius: var(--radius-lg);
@@ -1641,10 +1634,6 @@ details[open] > summary::after {
 
 .planner .stepper__button {
     border-radius: var(--radius);
-}
-
-.planner .toggle__mark {
-    border-radius: var(--radius-sm);
 }
 
 .planner__techs {
@@ -1745,7 +1734,6 @@ details[open] > summary::after {
 }
 
 .planner .toggle {
-    position: relative;
     flex-direction: column;
     justify-content: flex-start;
     gap: var(--space-1);
@@ -1754,12 +1742,14 @@ details[open] > summary::after {
     font-size: 0.75rem;
     line-height: 1.2;
     text-align: center;
+    border-radius: var(--radius-lg);
 }
 
 .planner .toggle .toggle__mark {
     position: absolute;
     top: 5px;
     right: 5px;
+    border-radius: var(--radius-sm);
 }
 
 .planner .toggle .icon,

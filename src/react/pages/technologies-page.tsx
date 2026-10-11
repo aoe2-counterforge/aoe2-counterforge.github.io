@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { AGE_IDS } from '../../domain/enums/age.ts';
 import { Directory } from '../components/directory.tsx';
-import { PageMeta } from '../components/page-meta.tsx';
-import { GameIcon } from '../components/game-icon.tsx';
 import { FilterPicker } from '../components/filter-picker.tsx';
+import { GameIcon } from '../components/game-icon.tsx';
+import { PageMeta } from '../components/page-meta.tsx';
 import { SearchField } from '../components/search-field.tsx';
+import { techIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useNameFilter } from '../hooks/use-name-filter.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
-import { techIconPath } from '../format.ts';
 
 /** Directory of every technology, filtered the way the roster is. */
 export function TechnologiesPage() {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { RosterLine, RosterStep } from '../../../src/services/game-catalog/game-catalog-service.ts';
-import { categoryLines, hasGaps } from '../../../src/react/roster-lines.ts';
+import { categoryLines, hasGaps } from '../../../src/react/category-lines.ts';
 import { makeUnit } from '../../fixtures/unit-builder.ts';
 
 function step(key: string, available = true): RosterStep[] {

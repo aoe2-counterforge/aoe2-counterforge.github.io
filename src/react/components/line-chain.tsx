@@ -2,10 +2,10 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { RosterStep } from '../../services/game-catalog/game-catalog-service.ts';
+import { unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
-import { unitIconPath } from '../format.ts';
 
 export interface LineChainProps {
     /** One entry per upgrade step, each holding the alternatives at that point. */

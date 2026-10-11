@@ -2,13 +2,13 @@ import { Fragment, useEffect, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Unit } from '../../domain/entities/unit.ts';
+import { unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { Forge } from './forge.tsx';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
-import { unitIconPath } from '../format.ts';
 
 export interface UnitForgeProps {
     unit: Unit;

@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Unit } from '../../domain/entities/unit.ts';
+import { unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { GameIcon } from './game-icon.tsx';
-import { unitIconPath } from '../format.ts';
 
 export interface UnitListItemProps {
     unit: Unit;

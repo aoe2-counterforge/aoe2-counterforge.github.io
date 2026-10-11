@@ -10,6 +10,9 @@ export interface Theme {
 /**
  * Applies the stored theme to the document.
  *
+ * The document always names the theme it wears, light or dark: following the system means
+ * writing down whichever it asks for and keeping up when that changes.
+ *
  * @returns The current choice and a way to change it.
  */
 export function useTheme(): Theme {
@@ -17,8 +20,23 @@ export function useTheme(): Theme {
     const choice = preferences.theme;
 
     useEffect(() => {
-        if (choice === 'system') delete document.documentElement.dataset.theme;
-        else document.documentElement.dataset.theme = choice;
+        const root = document.documentElement;
+        if (choice !== 'system') {
+            root.dataset.theme = choice;
+
+            return;
+        }
+
+        const system = matchMedia('(prefers-color-scheme: dark)');
+        const follow = () => {
+            root.dataset.theme = system.matches ? 'dark' : 'light';
+        };
+        follow();
+        system.addEventListener('change', follow);
+
+        return () => {
+            system.removeEventListener('change', follow);
+        };
     }, [choice]);
 
     return {

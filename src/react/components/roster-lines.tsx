@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import type { CategoryLines } from '../roster-lines.ts';
+import type { CategoryLines } from '../category-lines.ts';
 import { LineChain } from './line-chain.tsx';
 
 export interface RosterLinesProps {

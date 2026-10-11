@@ -2,19 +2,19 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import { EntityNotFoundError } from '../../domain/errors/domain-error.ts';
+import { BackLink } from '../components/back-link.tsx';
 import { CivilizationRoster } from '../components/civilization-roster.tsx';
 import { Forge } from '../components/forge.tsx';
 import { GameIcon } from '../components/game-icon.tsx';
 import { PageMeta } from '../components/page-meta.tsx';
 import { UnitListItem } from '../components/unit-list-item.tsx';
+import { techIconPath, unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useSearchParam } from '../hooks/use-search-param.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { ROSTER_VIEWS } from '../roster-view.ts';
 import { NotFoundPage } from './not-found-page.tsx';
-import { BackLink } from '../components/back-link.tsx';
-import { techIconPath, unitIconPath } from '../format.ts';
 
 /** Civilization profile: bonuses, unique units and technologies, and the roster by category. */
 export function CivilizationPage() {

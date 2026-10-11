@@ -7,11 +7,11 @@ import { Icon } from '../components/icon.tsx';
 import { MatchupRow } from '../components/matchup-row.tsx';
 import { PageMeta } from '../components/page-meta.tsx';
 import { PickerField } from '../components/picker-field.tsx';
+import { unitIconPath } from '../format.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useMatchups } from '../hooks/use-matchups.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useServices } from '../hooks/use-services.ts';
-import { unitIconPath } from '../format.ts';
 
 /** The unit the landing page answers before anyone types anything. */
 const OPENING_QUESTION = 'knight';

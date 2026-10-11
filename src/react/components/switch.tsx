@@ -16,7 +16,7 @@ export function Switch({ label, checked, onChange }: SwitchProps) {
                 onChange(!checked);
             }}
         >
-            <span className="switch__label">{label}</span>
+            {label}
             <span className="switch__track" aria-hidden="true">
                 <span className="switch__knob" />
             </span>

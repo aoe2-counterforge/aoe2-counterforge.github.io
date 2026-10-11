@@ -12,7 +12,7 @@ describe('EmberField', () => {
     it('matches the drawing buffer to the pixels the screen actually has', () => {
         const recording = createCanvas(BOX);
 
-        new EmberField({ canvas: recording.canvas, isLight: () => false });
+        new EmberField({ canvas: recording.canvas });
 
         expect([recording.canvas.width, recording.canvas.height]).toEqual([520, 320]);
     });
@@ -21,8 +21,8 @@ describe('EmberField', () => {
         const small = createCanvas({ width: 100, height: 100 });
         const large = createCanvas({ width: 300, height: 300 });
 
-        new EmberField({ canvas: small.canvas, isLight: () => false }).step();
-        new EmberField({ canvas: large.canvas, isLight: () => false }).step();
+        new EmberField({ canvas: small.canvas }).step();
+        new EmberField({ canvas: large.canvas }).step();
 
         expect(large.circles.length).toBeGreaterThan(small.circles.length);
     });
@@ -31,19 +31,15 @@ describe('EmberField', () => {
         const calm = createCanvas(BOX);
         const busy = createCanvas(BOX);
 
-        new EmberField({ canvas: calm.canvas, density: 0.5, isLight: () => false }).step();
-        new EmberField({ canvas: busy.canvas, density: 2, isLight: () => false }).step();
+        new EmberField({ canvas: calm.canvas, density: 0.5 }).step();
+        new EmberField({ canvas: busy.canvas, density: 2 }).step();
 
         expect(busy.circles.length).toBeGreaterThan(calm.circles.length * 2);
     });
 
     it('keeps new embers inside the column it is pointed at', () => {
         const recording = createCanvas(BOX);
-        const field = new EmberField({
-            canvas: recording.canvas,
-            isLight: () => false,
-            column: () => ({ from: 100, width: 40 }),
-        });
+        const field = new EmberField({ canvas: recording.canvas, column: () => ({ from: 100, width: 40 }) });
 
         field.step();
 
@@ -51,32 +47,25 @@ describe('EmberField', () => {
         expect(strays).toEqual([]);
     });
 
-    it('adds light over a dark plate and ink over a pale one', () => {
-        const dark = createCanvas(BOX);
-        const light = createCanvas(BOX);
-        let mode = false;
+    it('leaves the canvas painting plainly once a frame is done', () => {
+        const recording = createCanvas(BOX);
 
-        new EmberField({ canvas: dark.canvas, isLight: () => mode }).step();
-        expect(dark.paint.globalCompositeOperation).toBe('source-over');
+        new EmberField({ canvas: recording.canvas }).step();
 
-        mode = true;
-        const field = new EmberField({ canvas: light.canvas, isLight: () => mode });
-        field.step();
-
-        expect(light.paint.createRadialGradient).toHaveBeenCalled();
+        expect(recording.paint.globalCompositeOperation).toBe('source-over');
     });
 
     it('paints nothing at all on a canvas the page gave no room', () => {
         const recording = createCanvas({ width: 0, height: 0 });
 
-        new EmberField({ canvas: recording.canvas, isLight: () => false }).step();
+        new EmberField({ canvas: recording.canvas }).step();
 
         expect(recording.circles).toEqual([]);
     });
 
     it('wipes the canvas when the effect is switched off', () => {
         const recording = createCanvas(BOX);
-        const field = new EmberField({ canvas: recording.canvas, isLight: () => false });
+        const field = new EmberField({ canvas: recording.canvas });
 
         field.clear();
 

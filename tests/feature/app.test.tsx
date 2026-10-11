@@ -380,4 +380,12 @@ describe('App', () => {
 
         expect(await screen.findByText('Aldeões no total')).toBeDefined();
     });
+
+    it('names the theme the document wears while following the system', async () => {
+        render(<App locale="pt-BR" />);
+
+        await waitFor(() => {
+            expect(['light', 'dark']).toContain(document.documentElement.dataset.theme);
+        });
+    });
 });
