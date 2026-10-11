@@ -14,7 +14,8 @@
         radial-gradient(circle at 9px 9px, var(--rivet) 1.5px, transparent 2px),
         radial-gradient(circle at calc(100% - 9px) 9px, var(--rivet) 1.5px, transparent 2px),
         radial-gradient(circle at 9px calc(100% - 9px), var(--rivet) 1.5px, transparent 2px),
-        radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), var(--rivet) 1.5px, transparent 2px);
+        radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), var(--rivet) 1.5px, transparent 2px),
+        linear-gradient(180deg, transparent, var(--plate-tint));
     box-shadow: var(--emboss);
 }
 
@@ -23,49 +24,11 @@
     background-repeat: no-repeat;
 }
 
-/* ---------- the light that runs along the gold edge ---------- */
+/* ---------- the gold edge under the header ---------- */
 
 .topbar {
     position: sticky;
     box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--gold) 38%, transparent);
-}
-
-.topbar::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 -1px;
-    height: 2px;
-    pointer-events: none;
-    background: linear-gradient(
-        90deg,
-        transparent 46%,
-        color-mix(in srgb, var(--gold) 30%, transparent) 47.6%,
-        var(--gold) 49.4%,
-        var(--glass) 50%,
-        var(--gold) 50.6%,
-        color-mix(in srgb, var(--gold) 30%, transparent) 52.4%,
-        transparent 54%
-    );
-    background-size: 260% 100%;
-    background-position: 150% 0;
-    background-repeat: no-repeat;
-    filter: blur(0.6px);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .topbar::after {
-        animation: edge-light 7.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    }
-}
-
-@keyframes edge-light {
-    0% {
-        background-position: 150% 0;
-    }
-    55%,
-    100% {
-        background-position: -50% 0;
-    }
 }
 
 /* ---------- fire under the open tab ---------- */
@@ -126,6 +89,14 @@
 .forge {
     --banner-ink: #f8f2e6;
     --banner-muted: #c6b79d;
+    --forge-glow: rgb(255 132 44 / 30%);
+    /* The name is lettered in metal: dark at the edges, lit in the middle, and crossed by a glint. */
+    --name-deep: #b98b3a;
+    --name-lit: #ecc57a;
+    --name-glint: rgb(255 248 225 / 95%);
+    /* The band of light that sweeps the plate: a soft gold lamp at night, bright daylight by day. */
+    --sweep: rgb(255 232 190 / 22%);
+    --sweep-edge: rgb(255 232 190 / 10%);
     position: relative;
     display: flex;
     align-items: flex-end;
@@ -139,27 +110,174 @@
     border-bottom: 1px solid var(--border);
 }
 
-.forge--light {
-    --banner-ink: #1e160d;
-    --banner-muted: #5a4a30;
-    --forge-glow: rgb(198 74 24 / 26%);
-    background: linear-gradient(178deg, #f6efe1 0%, #e2d6bf 100%);
+/* A band of light sweeps the plate in step with the glint on the name, as if one lamp passed over both. */
+.forge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        100deg,
+        transparent 35%,
+        var(--sweep-edge) 46%,
+        var(--sweep) 50%,
+        var(--sweep-edge) 54%,
+        transparent 65%
+    );
+    animation: sweep 6s ease-in-out infinite;
 }
 
+/*
+ * By day the hearth is a plate of brushed steel, cool and pale, with the fire's warmth breathing
+ * at its foot, and the canvas throws sparks up from it instead of embers.
+ */
 @media (prefers-color-scheme: light) {
     :root:not([data-theme='dark']) .forge {
-        --banner-ink: #1e160d;
-        --banner-muted: #5a4a30;
-        --forge-glow: rgb(198 74 24 / 26%);
-        background: linear-gradient(178deg, #f6efe1 0%, #e2d6bf 100%);
+        --banner-ink: #16202b;
+        --banner-muted: #2a3542;
+        --name-deep: #693c00;
+        --name-lit: #9f6200;
+        --name-glint: rgb(255 236 180 / 95%);
+        --sweep: rgb(255 255 255 / 80%);
+        --sweep-edge: rgb(255 255 255 / 45%);
+        isolation: isolate;
+        border-bottom-color: rgb(80 100 125 / 30%);
+        background:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.14'/%3E%3C/svg%3E") 0 0 / 400px 200px,
+            linear-gradient(180deg, rgb(255 255 255 / 60%), transparent 38%, rgb(255 255 255 / 30%) 55%, transparent 72%),
+            linear-gradient(178deg, #eef1f5 0%, #aebac5 100%);
+    }
+
+    :root:not([data-theme='dark']) .forge__floor {
+        /* Fire on steel is a reflection, not paint: overlaid, the amber brightens the metal where it is
+           already light and only warms it where it is not. */
+        mix-blend-mode: overlay;
+        background: radial-gradient(110% 140% at 50% 145%, rgb(255 120 30 / 55%) 0%, rgb(255 120 30 / 30%) 40%, transparent 68%);
+        animation: hearth 5s ease-in-out infinite;
+    }
+
+    /* The mouth of the hearth: a hot core screened onto the plate, brighter than the daylight around it. */
+    :root:not([data-theme='dark']) .forge::after {
+        content: '';
+        position: absolute;
+        inset: auto 0 0;
+        z-index: 0;
+        height: 45%;
+        pointer-events: none;
+        background: radial-gradient(50% 95% at 50% 112%, rgb(255 232 205 / 80%), rgb(255 205 150 / 30%) 45%, transparent 72%);
+        mix-blend-mode: screen;
+        animation: hearth 5s ease-in-out infinite;
+    }
+
+    :root:not([data-theme='dark']) .forge__shield {
+        filter: drop-shadow(0 2px 6px rgb(20 30 45 / 35%));
+    }
+
+    /* Over pale steel the pills need a touch of white to lift off the plate; :where() keeps the theme
+       guard from outranking the hover, current-step and gold variants. */
+    :where(:root:not([data-theme='dark'])) .forge__step,
+    :where(:root:not([data-theme='dark'])) .forge__meta .badge:not(.badge--gold) {
+        background: rgb(255 255 255 / 50%);
+        border-color: rgb(22 32 43 / 24%);
+    }
+
+    :where(:root:not([data-theme='dark'])) .forge__fork {
+        background: rgb(22 32 43 / 6%);
+    }
+
+    /* The plate under the hero is the same steel, so the bar beneath it belongs to the banner. */
+    :root:not([data-theme='dark']) .card:has(> .forge) {
+        background-color: #ebeff3;
     }
 }
 
 :root[data-theme='light'] .forge {
-    --banner-ink: #1e160d;
-    --banner-muted: #5a4a30;
-    --forge-glow: rgb(198 74 24 / 26%);
-    background: linear-gradient(178deg, #f6efe1 0%, #e2d6bf 100%);
+    --banner-ink: #16202b;
+    --banner-muted: #2a3542;
+    --name-deep: #693c00;
+    --name-lit: #9f6200;
+    --name-glint: rgb(255 236 180 / 95%);
+    --sweep: rgb(255 255 255 / 80%);
+    --sweep-edge: rgb(255 255 255 / 45%);
+    isolation: isolate;
+    border-bottom-color: rgb(80 100 125 / 30%);
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.14'/%3E%3C/svg%3E") 0 0 / 400px 200px,
+        linear-gradient(180deg, rgb(255 255 255 / 60%), transparent 38%, rgb(255 255 255 / 30%) 55%, transparent 72%),
+        linear-gradient(178deg, #eef1f5 0%, #aebac5 100%);
+}
+
+:root[data-theme='light'] .forge__floor {
+    /* Fire on steel is a reflection, not paint: overlaid, the amber brightens the metal where it is
+       already light and only warms it where it is not. */
+    mix-blend-mode: overlay;
+    background: radial-gradient(110% 140% at 50% 145%, rgb(255 120 30 / 55%) 0%, rgb(255 120 30 / 30%) 40%, transparent 68%);
+    animation: hearth 5s ease-in-out infinite;
+}
+
+:root[data-theme='light'] .forge::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 0;
+    height: 45%;
+    pointer-events: none;
+    background: radial-gradient(50% 95% at 50% 112%, rgb(255 232 205 / 80%), rgb(255 205 150 / 30%) 45%, transparent 72%);
+    mix-blend-mode: screen;
+    animation: hearth 5s ease-in-out infinite;
+}
+
+:root[data-theme='light'] .forge__shield {
+    filter: drop-shadow(0 2px 6px rgb(20 30 45 / 35%));
+}
+
+:where(:root[data-theme='light']) .forge__step,
+:where(:root[data-theme='light']) .forge__meta .badge:not(.badge--gold) {
+    background: rgb(255 255 255 / 50%);
+    border-color: rgb(22 32 43 / 24%);
+}
+
+:where(:root[data-theme='light']) .forge__fork {
+    background: rgb(22 32 43 / 6%);
+}
+
+:root[data-theme='light'] .card:has(> .forge) {
+    background-color: #ebeff3;
+}
+
+/* The band starts off the left edge and ends off the right, on the same clock as the glint. */
+@keyframes sweep {
+    0% {
+        transform: translateX(-80%);
+    }
+    20%,
+    100% {
+        transform: translateX(80%);
+    }
+}
+
+@keyframes hearth {
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/*
+ * The shine is a band three times wider than the name, clear outside its centre, so it waits off
+ * one end until its turn comes and the loop restarts without the bronze underneath shifting.
+ */
+@keyframes glint {
+    0% {
+        background-position: 100% 0, 0 0;
+    }
+    20%,
+    100% {
+        background-position: 0% 0, 0 0;
+    }
 }
 
 .embers {
@@ -180,13 +298,15 @@
 .forge__floor {
     inset: auto 0 0;
     height: 62%;
-    background: radial-gradient(120% 130% at 50% 145%, var(--forge-glow, rgb(255 132 44 / 30%)), transparent 68%);
+    background: radial-gradient(120% 130% at 50% 145%, var(--forge-glow), transparent 68%);
 }
 
 /* On a phone the portrait and the name share the top row, and the upgrade line and the badges take
    the whole width under them instead of squeezing beside the portrait. */
 .forge__body {
     position: relative;
+    /* Above the light the hearth throws, which is painted last in the banner. */
+    z-index: 1;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     column-gap: var(--space-3);
@@ -210,15 +330,22 @@
     margin-top: var(--space-3);
 }
 
+/* A band of light three times the name's width crosses the metal lettering, then waits off one end. */
 .forge__name {
     margin: 0;
     font-family: var(--font-display);
     font-size: clamp(1.35rem, 1rem + 1.8vw, 2.1rem);
     font-weight: 700;
     line-height: 1.05;
-    color: var(--banner-ink);
+    color: transparent;
+    background:
+        linear-gradient(100deg, transparent 44%, var(--name-glint) 50%, transparent 56%) 0 0 / 300% 100% no-repeat,
+        linear-gradient(100deg, var(--name-deep) 0%, var(--name-lit) 50%, var(--name-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
     overflow-wrap: anywhere;
     hyphens: auto;
+    animation: glint 6s ease-in-out infinite;
 }
 
 .forge__meta {

@@ -3,6 +3,8 @@
 
     /* Blued steel, the alloy the guide is forged from. */
     --bg: #0b0e12;
+    --bg-image: none;
+    --plate-tint: transparent;
     --bg-elevated: #0e1319;
     --surface: #141a21;
     --surface-2: #1a222b;
@@ -42,7 +44,6 @@
     --spark: #ff9247;
     --heat: rgb(255 146 71 / 20%);
     --halo: rgb(255 138 56 / 34%);
-    --glass: #fff6e0;
     --sheen: rgb(198 226 255 / 14%);
     --rivet: rgb(178 199 219 / 55%);
     --emboss: inset 0 1px 0 rgb(226 240 255 / 7%);
@@ -75,94 +76,110 @@
 
 @media (prefers-color-scheme: light) {
     :root:not([data-theme='dark']) {
-        --bg: #e7e3da;
-        --bg-elevated: #efece4;
-        --surface: #f8f6f1;
-        --surface-2: #f1ede4;
-        --surface-3: #e6e0d3;
-        --border: #cfc7b8;
-        --border-strong: #b3a894;
+        /* The forge by daylight: cool stone and steel for everything the reader looks at for long, and
+           warm bronze and fire only where the forge shows through. Every neutral is one cool hue at a
+           different brightness, so page, plates and hero read as one material. */
+        --bg: #e4e8ed;
+        /* Stone is not plastic: a fine grain over the daylight gradient keeps the page from going flat. */
+        --bg-image:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E"),
+            linear-gradient(180deg, #eff2f6 0, #e4e8ed 36rem);
+        --plate-tint: rgb(40 60 90 / 5%);
+        --bg-elevated: #eff2f6;
+        --surface: #f8fafc;
+        --surface-2: #edf1f4;
+        --surface-3: #dee4e9;
+        --border: #ccd4da;
+        --border-strong: #a2acb6;
 
-        --text: #1c1a16;
-        --text-muted: #5b5344;
-        --text-faint: #7a705d;
+        --text: #1a222b;
+        --text-muted: #48515b;
+        --text-faint: #606a74;
 
-        --gold: #6a4a07;
+        --gold: #955900;
+        --gold-ink: #fef6e8;
+        --gold-soft: #7c4200;
+        --gold-dim: rgb(149 89 0 / 12%);
 
-        --gold-ink: #fbf3e4;
-        --gold-soft: #4f3705;
-        --gold-dim: rgb(106 74 7 / 12%);
+        --good: #21763c;
+        --good-dim: rgb(33 118 60 / 13%);
+        --bad: #ac3225;
+        --bad-dim: rgb(172 50 37 / 12%);
+        --even: #39659b;
+        --even-dim: rgb(57 101 155 / 13%);
 
-        --good: #2a5f2e;
-        --good-dim: rgb(42 95 46 / 12%);
-        --bad: #93291a;
-        --bad-dim: rgb(147 41 26 / 10%);
-        --even: #3c5f8f;
-        --even-dim: rgb(60 95 143 / 12%);
+        --food: #ca4b20;
+        --wood: #518133;
+        --gold-res: #c88b00;
+        --stone: #69737d;
 
-        --food: #c1462a;
-        --wood: #4a7a2c;
-        --gold-res: #9a7a10;
-        --stone: #6b6152;
-
-        --spark: #983116;
-        --heat: rgb(152 49 22 / 12%);
-        --halo: rgb(198 74 24 / 26%);
-        --glass: #c98a1c;
-        --sheen: rgb(255 255 255 / 62%);
-        --rivet: rgb(106 74 7 / 42%);
-        --emboss: inset 0 1px 0 rgb(255 255 255 / 75%);
-        --fire: #ef7a1c;
+        /* Daylight cannot be outshone, so the fire shows as amber warmth multiplied into the plate, and
+           the plates themselves lift off the page on a soft shadow. */
+        --spark: #fa8f19;
+        --heat: rgb(250 143 25 / 14%);
+        --halo: rgb(252 159 48 / 40%);
+        --sheen: rgb(255 255 255 / 92%);
+        --rivet: rgb(149 89 0 / 45%);
+        --emboss:
+            inset 0 1px 0 rgb(255 255 255 / 90%),
+            0 1px 2px rgb(20 35 55 / 5%),
+            0 12px 32px -16px rgb(20 35 55 / 22%);
+        --fire: #fa8f19;
         --fire-blend: multiply;
-        --fire-alpha: 0.62;
+        --fire-alpha: 0.55;
 
-        --shadow: 0 8px 24px rgb(60 45 20 / 12%);
-        --shadow-lg: 0 24px 60px rgb(60 45 20 / 18%);
+        --shadow: 0 8px 24px rgb(20 35 55 / 12%);
+        --shadow-lg: 0 24px 60px rgb(20 35 55 / 20%);
     }
 }
 
 :root[data-theme='light'] {
-        --bg: #e7e3da;
-        --bg-elevated: #efece4;
-        --surface: #f8f6f1;
-        --surface-2: #f1ede4;
-        --surface-3: #e6e0d3;
-        --border: #cfc7b8;
-        --border-strong: #b3a894;
+    --bg: #e4e8ed;
+    --bg-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.05'/%3E%3C/svg%3E"),
+        linear-gradient(180deg, #eff2f6 0, #e4e8ed 36rem);
+    --plate-tint: rgb(40 60 90 / 5%);
+    --bg-elevated: #eff2f6;
+    --surface: #f8fafc;
+    --surface-2: #edf1f4;
+    --surface-3: #dee4e9;
+    --border: #ccd4da;
+    --border-strong: #a2acb6;
 
-        --text: #1c1a16;
-        --text-muted: #5b5344;
-        --text-faint: #7a705d;
+    --text: #1a222b;
+    --text-muted: #48515b;
+    --text-faint: #606a74;
 
-        --gold: #6a4a07;
+    --gold: #955900;
+    --gold-ink: #fef6e8;
+    --gold-soft: #7c4200;
+    --gold-dim: rgb(149 89 0 / 12%);
 
-        --gold-ink: #fbf3e4;
-        --gold-soft: #4f3705;
-        --gold-dim: rgb(106 74 7 / 12%);
+    --good: #21763c;
+    --good-dim: rgb(33 118 60 / 13%);
+    --bad: #ac3225;
+    --bad-dim: rgb(172 50 37 / 12%);
+    --even: #39659b;
+    --even-dim: rgb(57 101 155 / 13%);
 
-        --good: #2a5f2e;
-        --good-dim: rgb(42 95 46 / 12%);
-        --bad: #93291a;
-        --bad-dim: rgb(147 41 26 / 10%);
-        --even: #3c5f8f;
-        --even-dim: rgb(60 95 143 / 12%);
+    --food: #ca4b20;
+    --wood: #518133;
+    --gold-res: #c88b00;
+    --stone: #69737d;
 
-        --food: #c1462a;
-        --wood: #4a7a2c;
-        --gold-res: #9a7a10;
-        --stone: #6b6152;
+    --spark: #fa8f19;
+    --heat: rgb(250 143 25 / 14%);
+    --halo: rgb(252 159 48 / 40%);
+    --sheen: rgb(255 255 255 / 92%);
+    --rivet: rgb(149 89 0 / 45%);
+    --emboss:
+        inset 0 1px 0 rgb(255 255 255 / 90%),
+        0 1px 2px rgb(20 35 55 / 5%),
+        0 12px 32px -16px rgb(20 35 55 / 22%);
+    --fire: #fa8f19;
+    --fire-blend: multiply;
+    --fire-alpha: 0.55;
 
-        --spark: #983116;
-        --heat: rgb(152 49 22 / 12%);
-        --halo: rgb(198 74 24 / 26%);
-        --glass: #c98a1c;
-        --sheen: rgb(255 255 255 / 62%);
-        --rivet: rgb(106 74 7 / 42%);
-        --emboss: inset 0 1px 0 rgb(255 255 255 / 75%);
-        --fire: #ef7a1c;
-        --fire-blend: multiply;
-        --fire-alpha: 0.62;
-
-        --shadow: 0 8px 24px rgb(60 45 20 / 12%);
-        --shadow-lg: 0 24px 60px rgb(60 45 20 / 18%);
+    --shadow: 0 8px 24px rgb(20 35 55 / 12%);
+    --shadow-lg: 0 24px 60px rgb(20 35 55 / 20%);
 }
