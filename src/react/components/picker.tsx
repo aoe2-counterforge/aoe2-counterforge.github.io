@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useListbox } from '../hooks/use-listbox.ts';
-import { narrowOptions, needsFilter } from '../narrow-options.ts';
+import { usePickerBox } from '../hooks/use-picker-box.ts';
+import { needsFilter } from '../picker-search.ts';
 import { Icon } from './icon.tsx';
 import { SelectField } from './select-field.tsx';
 
@@ -49,37 +49,30 @@ export function Picker(props: PickerProps) {
 /** The small shape: a button whose list, and the filter for a long one, open in a popup under it. */
 function MenuPicker({ label, value, options, onChange, compact, prefix, id, align = 'end' }: PickerProps) {
     const { t } = useTranslation();
-    const [term, setTerm] = useState('');
     const container = useRef<HTMLDivElement>(null);
     const popup = useRef<HTMLDivElement>(null);
     const [shift, setShift] = useState(0);
     const search = useRef<HTMLInputElement>(null);
     const searchable = needsFilter(options.length);
 
-    const visible = useMemo(() => narrowOptions(options, term), [options, term]);
-
-    const current = options.find((option) => option.value === value) ?? options[0];
-    const list = useListbox({
+    const box = usePickerBox({
         container,
-        count: visible.length,
-        selected: Math.max(
-            0,
-            visible.findIndex((option) => option.value === value),
-        ),
-        onPick: (index) => {
-            const picked = visible[index];
-            if (picked) onChange(picked.value);
-            setTerm('');
+        options,
+        value,
+        onPick: (option) => {
+            onChange(option.value);
         },
     });
 
+    const current = options.find((option) => option.value === value) ?? options[0];
+
     useEffect(() => {
-        if (list.isOpen) search.current?.focus();
-    }, [list.isOpen]);
+        if (box.isOpen) search.current?.focus();
+    }, [box.isOpen]);
 
     // A list anchored to a small button can hang off the screen, so it slides back into it.
     useLayoutEffect(() => {
-        if (!list.isOpen || !popup.current) {
+        if (!box.isOpen || !popup.current) {
             setShift(0);
 
             return;
@@ -92,24 +85,24 @@ function MenuPicker({ label, value, options, onChange, compact, prefix, id, alig
         if (past > 0) setShift(-past);
         else if (before > 0) setShift(before);
         else setShift(0);
-    }, [list.isOpen]);
+    }, [box.isOpen]);
 
     return (
         <div
             className={prefix === undefined ? 'picker' : 'picker picker--labelled'}
             ref={container}
-            onKeyDown={list.onKeyDown}
+            onKeyDown={box.onKeyDown}
         >
             <button
                 id={id}
                 type="button"
                 className="picker__button"
                 aria-haspopup="listbox"
-                aria-expanded={list.isOpen}
+                aria-expanded={box.isOpen}
+                aria-controls={box.isOpen ? box.listId : undefined}
                 aria-label={compact || prefix !== undefined ? `${label}: ${current.label}` : undefined}
                 onClick={() => {
-                    setTerm('');
-                    list.toggle();
+                    box.toggle();
                 }}
             >
                 {current.visual}
@@ -118,7 +111,7 @@ function MenuPicker({ label, value, options, onChange, compact, prefix, id, alig
                 <Icon name="down" className="picker__caret" />
             </button>
 
-            {list.isOpen ? (
+            {box.isOpen ? (
                 <div
                     ref={popup}
                     className="picker__popup"
@@ -130,29 +123,32 @@ function MenuPicker({ label, value, options, onChange, compact, prefix, id, alig
                             ref={search}
                             type="search"
                             className="picker__search"
-                            value={term}
+                            value={box.query}
                             placeholder={t('common.filter')}
                             aria-label={label}
+                            aria-controls={box.listId}
+                            aria-activedescendant={box.active ? box.optionId(box.active.value) : undefined}
                             onChange={(event) => {
-                                setTerm(event.target.value);
+                                box.setQuery(event.target.value);
                             }}
                         />
                     ) : null}
 
-                    {visible.length === 0 ? (
+                    {box.visible.length === 0 ? (
                         <p className="picker__empty">{t('common.noMatch')}</p>
                     ) : (
-                        <ul className="picker__list" role="listbox" aria-label={label}>
-                            {visible.map((option, index) => (
+                        <ul id={box.listId} className="picker__list" role="listbox" aria-label={label}>
+                            {box.visible.map((option) => (
                                 <li key={option.value}>
                                     <button
                                         type="button"
+                                        id={box.optionId(option.value)}
                                         role="option"
                                         aria-selected={option.value === value}
                                         className="picker__option"
-                                        data-active={index === list.active || undefined}
+                                        data-active={option.value === box.active?.value || undefined}
                                         onClick={() => {
-                                            list.pick(index);
+                                            box.pick(option);
                                         }}
                                     >
                                         {option.visual}

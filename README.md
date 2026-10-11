@@ -78,6 +78,10 @@ npm run dev
 Then open <http://localhost:5173/aoe2-counterforge/>. No game install, no API key, no network — the data is in
 the repository.
 
+Every drop-down is driven by [select-box](https://github.com/giovani-freitag/select-box), which is not on npm
+yet. Its packages are vendored as tarballs under `vendor/select-box/`, packed from the `v0.1.0` tag with
+`pnpm pack`, and `npm install` picks them up from there.
+
 `npm run build` writes a page for every address into `dist/`, for the address in `homepage`. To publish
 somewhere else, set `SITE_URL` to the full address first, such as `SITE_URL=https://example.com/ npm run build`.
 

@@ -1,6 +1,6 @@
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { useListbox } from '../hooks/use-listbox.ts';
-import { narrowOptions, needsFilter } from '../narrow-options.ts';
+import { useEffect, useRef, type KeyboardEvent } from 'react';
+import { usePickerBox } from '../hooks/use-picker-box.ts';
+import { needsFilter } from '../picker-search.ts';
 import { Icon } from './icon.tsx';
 import { OptionList } from './option-list.tsx';
 import type { PickerOption } from './picker.tsx';
@@ -16,34 +16,27 @@ export interface SelectFieldProps {
 
 /** A full-width single choice that reads like a select and, for a long list, takes the filter typed into itself. */
 export function SelectField({ label, value, options, onChange, id }: SelectFieldProps) {
-    const [term, setTerm] = useState('');
     const container = useRef<HTMLDivElement>(null);
     const button = useRef<HTMLButtonElement>(null);
     const input = useRef<HTMLInputElement>(null);
     // Set when the list closes from inside the field, so the focus lands back on it instead of the page.
     const refocus = useRef(false);
-    const listId = useId();
     const searchable = needsFilter(options.length);
 
-    const visible = useMemo(() => narrowOptions(options, term), [options, term]);
-    const current = options.find((option) => option.value === value) ?? options[0];
-
-    const list = useListbox({
+    const box = usePickerBox({
         container,
-        count: visible.length,
-        selected: Math.max(
-            0,
-            visible.findIndex((option) => option.value === value),
-        ),
-        onPick: (index) => {
-            const picked = visible[index];
-            if (picked) onChange(picked.value);
+        options,
+        value,
+        onPick: (option) => {
+            onChange(option.value);
             refocus.current = true;
         },
     });
 
+    const current = options.find((option) => option.value === value) ?? options[0];
+
     useEffect(() => {
-        if (list.isOpen) {
+        if (box.isOpen) {
             input.current?.focus();
 
             return;
@@ -53,30 +46,28 @@ export function SelectField({ label, value, options, onChange, id }: SelectField
             refocus.current = false;
             button.current?.focus();
         }
-    }, [list.isOpen]);
+    }, [box.isOpen]);
 
     const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && list.isOpen) {
+        if (event.key === 'Escape' && box.isOpen) {
             // Closing the list is all this key does here, not closing the sheet the field sits in.
             event.stopPropagation();
             refocus.current = true;
         }
 
-        if (!list.isOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) setTerm('');
-
-        list.onKeyDown(event);
+        box.onKeyDown(event);
     };
 
     return (
-        <div ref={container} className="select-field" data-open={list.isOpen || undefined} onKeyDown={onKeyDown}>
-            {list.isOpen && searchable ? (
+        <div ref={container} className="select-field" data-open={box.isOpen || undefined} onKeyDown={onKeyDown}>
+            {box.isOpen && searchable ? (
                 <div
                     className="select-field__box"
                     onMouseDown={(event) => {
                         if (event.target !== input.current) event.preventDefault();
                     }}
                 >
-                    {term === '' ? current.visual : <Icon name="search" />}
+                    {box.query === '' ? current.visual : <Icon name="search" />}
                     <input
                         ref={input}
                         id={id}
@@ -85,16 +76,15 @@ export function SelectField({ label, value, options, onChange, id }: SelectField
                         role="combobox"
                         aria-label={label}
                         aria-expanded
-                        aria-controls={listId}
+                        aria-controls={box.listId}
                         aria-autocomplete="list"
-                        aria-activedescendant={visible.length > 0 ? `${listId}-${String(list.active)}` : undefined}
-                        value={term}
+                        aria-activedescendant={box.active ? box.optionId(box.active.value) : undefined}
+                        value={box.query}
                         placeholder={current.label}
                         autoComplete="off"
                         spellCheck={false}
                         onChange={(event) => {
-                            setTerm(event.target.value);
-                            list.open();
+                            box.setQuery(event.target.value);
                         }}
                     />
                     <Icon name="down" className="select-field__caret" />
@@ -106,10 +96,10 @@ export function SelectField({ label, value, options, onChange, id }: SelectField
                     type="button"
                     className="select-field__box"
                     aria-haspopup="listbox"
-                    aria-expanded={list.isOpen}
+                    aria-expanded={box.isOpen}
+                    aria-controls={box.isOpen ? box.listId : undefined}
                     onClick={() => {
-                        setTerm('');
-                        list.toggle();
+                        box.toggle();
                     }}
                 >
                     {current.visual}
@@ -118,14 +108,15 @@ export function SelectField({ label, value, options, onChange, id }: SelectField
                 </button>
             )}
 
-            {list.isOpen ? (
+            {box.isOpen ? (
                 <OptionList
-                    id={listId}
+                    id={box.listId}
                     label={label}
-                    options={visible}
-                    active={list.active}
+                    options={box.visible}
+                    active={box.active}
+                    optionId={box.optionId}
                     chosen={value}
-                    onPick={list.pick}
+                    onPick={box.pick}
                 />
             ) : null}
         </div>

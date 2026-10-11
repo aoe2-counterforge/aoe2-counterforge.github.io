@@ -1,6 +1,5 @@
-import { useId, useMemo, useRef, useState } from 'react';
-import { useListbox } from '../hooks/use-listbox.ts';
-import { narrowOptions } from '../narrow-options.ts';
+import { useMemo, useRef } from 'react';
+import { usePickerBox } from '../hooks/use-picker-box.ts';
 import { Icon } from './icon.tsx';
 import { OptionList } from './option-list.tsx';
 import type { PickerOption } from './picker.tsx';
@@ -21,10 +20,8 @@ export interface TagPickerProps {
 
 /** A select that keeps several choices as tags, with the filter typed in the field right after them. */
 export function TagPicker({ label, values, options, onChange, placeholder, removeLabel, max }: TagPickerProps) {
-    const [term, setTerm] = useState('');
     const container = useRef<HTMLDivElement>(null);
     const input = useRef<HTMLInputElement>(null);
-    const listId = useId();
 
     const chosen = useMemo(
         () =>
@@ -34,28 +31,20 @@ export function TagPicker({ label, values, options, onChange, placeholder, remov
         [values, options],
     );
 
-    const visible = useMemo(
-        () =>
-            narrowOptions(
-                options.filter((option) => !values.includes(option.value)),
-                term,
-            ),
-        [options, values, term],
-    );
+    // An entry held as a tag leaves the list, so the same one cannot be added twice.
+    const offered = useMemo(() => options.filter((option) => !values.includes(option.value)), [options, values]);
 
-    const full = max !== undefined && chosen.length >= max;
-
-    const list = useListbox({
+    const box = usePickerBox({
         container,
-        count: visible.length,
-        selected: 0,
-        onPick: (index) => {
-            const picked = visible[index];
-            if (picked) onChange([...values, picked.value]);
-            setTerm('');
+        options: offered,
+        value: null,
+        onPick: (option) => {
+            onChange([...values, option.value]);
             input.current?.focus();
         },
     });
+
+    const full = max !== undefined && chosen.length >= max;
 
     return (
         <div
@@ -63,7 +52,7 @@ export function TagPicker({ label, values, options, onChange, placeholder, remov
             className="select-field"
             role="group"
             aria-label={label}
-            data-open={list.isOpen || undefined}
+            data-open={box.isOpen || undefined}
         >
             <div
                 className="select-field__box tag-picker"
@@ -71,7 +60,7 @@ export function TagPicker({ label, values, options, onChange, placeholder, remov
                     // A tag's own button takes it out; anywhere else in the field reaches for the filter.
                     if (full || (event.target instanceof Element && event.target.closest('button'))) return;
                     input.current?.focus();
-                    if (!list.isOpen) list.open();
+                    box.open();
                 }}
             >
                 <div className="tag-picker__values">
@@ -99,27 +88,25 @@ export function TagPicker({ label, values, options, onChange, placeholder, remov
                             className="select-field__input"
                             role="combobox"
                             aria-label={label}
-                            aria-expanded={list.isOpen}
-                            aria-controls={list.isOpen ? listId : undefined}
+                            aria-expanded={box.isOpen}
+                            aria-controls={box.isOpen ? box.listId : undefined}
                             aria-autocomplete="list"
-                            aria-activedescendant={
-                                list.isOpen && visible.length > 0 ? `${listId}-${String(list.active)}` : undefined
-                            }
-                            value={term}
+                            aria-activedescendant={box.active ? box.optionId(box.active.value) : undefined}
+                            value={box.query}
                             placeholder={placeholder}
                             autoComplete="off"
                             onChange={(event) => {
-                                setTerm(event.target.value);
-                                list.open();
+                                box.open();
+                                box.setQuery(event.target.value);
                             }}
                             onKeyDown={(event) => {
-                                if (event.key === 'Backspace' && term === '' && values.length > 0) {
+                                if (event.key === 'Backspace' && box.query === '' && values.length > 0) {
                                     onChange(values.slice(0, -1));
 
                                     return;
                                 }
 
-                                list.onKeyDown(event);
+                                box.onKeyDown(event);
                             }}
                         />
                     )}
@@ -128,8 +115,15 @@ export function TagPicker({ label, values, options, onChange, placeholder, remov
                 {full ? null : <Icon name="down" className="select-field__caret" />}
             </div>
 
-            {list.isOpen ? (
-                <OptionList id={listId} label={label} options={visible} active={list.active} onPick={list.pick} />
+            {box.isOpen ? (
+                <OptionList
+                    id={box.listId}
+                    label={label}
+                    options={box.visible}
+                    active={box.active}
+                    optionId={box.optionId}
+                    onPick={box.pick}
+                />
             ) : null}
         </div>
     );
