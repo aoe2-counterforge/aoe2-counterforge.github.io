@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.0...v0.8.0) (2026-10-13)
+
+
+### Features
+
+* add an army versus army engagement with stutter-step kiting ([2950e93](https://github.com/giovani-freitag/aoe2-counterforge/commit/2950e936b69f7fec75fe8511ae7d4ded0791ac35))
+* extract the attack delay of every unit from the game data ([0e93e14](https://github.com/giovani-freitag/aoe2-counterforge/commit/0e93e1449513a1442e45d8221537fd81c1e89a66))
+* let a shooter stutter-step in the one-on-one skirmish too ([7e877b6](https://github.com/giovani-freitag/aoe2-counterforge/commit/7e877b6f3e5379980dcca9b0932fc0d2302e9885))
+
+
+### Bug Fixes
+
+* show the charge attack a technology gives a unit on its page ([e7e4021](https://github.com/giovani-freitag/aoe2-counterforge/commit/e7e4021c78aea5301dc4d9f762635ad12734a388))
+* show unit swaps, spawns, training places and missile changes on technology pages ([0887d5a](https://github.com/giovani-freitag/aoe2-counterforge/commit/0887d5a351cbeec3d6cabfb0ba14447df4b508b8))
+* stop describing non-converting units without an attack as converters ([f9798af](https://github.com/giovani-freitag/aoe2-counterforge/commit/f9798afd2984670e172e3bcf446b8e18bd55ab27))
+
 ## [0.7.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.6.0...v0.7.0) (2026-10-11)
 
 
