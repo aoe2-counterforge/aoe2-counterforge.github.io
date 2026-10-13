@@ -465,6 +465,7 @@
         "civCount_other": "{{count}} Völker",
         "uniqueTo": "Spezialtechnologie der {{civ}}",
         "trainsFaster": "Einheiten werden dort, wo sie entwickelt ist, {{value}}% schneller ausgebildet.",
+        "worksFaster": "Seine Einheiten arbeiten {{value}}% schneller, wo es erforscht ist.",
         "changesNoUnit": "Diese Technologie ändert die Werte keiner Einheit. Was sie tut — eine Marktgebühr, ein Tribut, wie ein Mönch arbeitet, eine Verbesserung einer anderen Einheit — steht oben in ihrer Beschreibung.",
         "linesHint": "Ausgegraute Schritte sind Einheiten, die {{tech}} nicht ändert.",
         "notChanged": "{{tech}} ändert diese Einheit nicht"

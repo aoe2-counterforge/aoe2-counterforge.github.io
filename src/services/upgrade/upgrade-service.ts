@@ -220,6 +220,23 @@ export class UpgradeService {
     public productionSpeed(key: string): number {
         const factors = this.catalog
             .technology(key)
+            .effects.filter((effect) => effect.attribute === 'productionRate' && effect.mode === 'multiply')
+            .map((effect) => effect.value);
+
+        return factors.length > 0 ? Math.max(...factors) : 1;
+    }
+
+    /**
+     * How much faster the units a technology reaches do their job, other than training units.
+     *
+     * Gathering, building, trading and healing all run on the same work rate in the game's table.
+     *
+     * @param key - Technology slug.
+     * @returns The factor the work is sped up by, or one when the technology does not touch it.
+     */
+    public workSpeed(key: string): number {
+        const factors = this.catalog
+            .technology(key)
             .effects.filter((effect) => effect.attribute === 'workRate' && effect.mode === 'multiply')
             .map((effect) => effect.value);
 

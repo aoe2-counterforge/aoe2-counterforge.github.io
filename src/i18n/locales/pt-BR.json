@@ -465,6 +465,7 @@
         "civCount_other": "{{count}} civilizações",
         "uniqueTo": "Exclusiva de {{civ}}",
         "trainsFaster": "As unidades treinam {{value}}% mais rápido onde ela é pesquisada.",
+        "worksFaster": "Suas unidades trabalham {{value}}% mais rápido onde ela é pesquisada.",
         "changesNoUnit": "Esta tecnologia não muda o número de nenhuma unidade. O que ela faz — uma taxa de mercado, um tributo, o trabalho de um monge, a melhoria para outra unidade — está na descrição acima.",
         "linesHint": "Os passos apagados são unidades que {{tech}} não altera.",
         "notChanged": "{{tech}} não altera esta unidade"

@@ -151,6 +151,7 @@ export function TechnologyPage() {
     }, [catalog, touched]);
 
     const faster = technology ? upgrades.productionSpeed(technology.key) : 1;
+    const quicker = technology ? upgrades.workSpeed(technology.key) : 1;
 
     const civilizations = useMemo(
         () =>
@@ -224,7 +225,11 @@ export function TechnologyPage() {
                         )}
                     </div>
 
-                    {changed.length === 0 && faster === 1 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
+                    {changed.length === 0 && faster === 1 && quicker === 1 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
+
+                    {quicker === 1 ? null : (
+                        <p className="card__hint">{t('tech.worksFaster', { value: short((quicker - 1) * 100) })}</p>
+                    )}
 
                     {faster === 1 ? null : (
                         <p className="card__hint">{t('tech.trainsFaster', { value: short((faster - 1) * 100) })}</p>

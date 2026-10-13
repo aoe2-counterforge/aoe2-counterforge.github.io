@@ -305,6 +305,7 @@ export class DatasetBuilder {
     /** Age of every age advance, resolved once because every bonus asks for it. */
     private ages: Map<number, number> | null = null;
     private shooters: Map<number, number[]> | null = null;
+    private producers: Set<number> | null = null;
     /** Units the tech tree lists, which are the only ones the guide has a page for. */
     private treeUnits: ReadonlySet<number> = new Set();
 
@@ -995,6 +996,51 @@ export class DatasetBuilder {
         return sibling ?? null;
     }
 
+    /**
+     * The guide's name for what a command changes.
+     *
+     * The game has one work rate for everything: a villager's gathering, a trade cart's trips and
+     * a barracks turning out soldiers are all the same number. Only a building that is the place
+     * some unit is trained at makes units faster; everything else with a work rate simply works
+     * faster, and saying it trains units is wrong.
+     *
+     * @param command - The command being read.
+     * @returns The attribute's name, or undefined when the guide has none for it.
+     */
+    private attributeOf(command: { unit: number; attribute: number }): string | undefined {
+        const name = ATTRIBUTES[command.attribute];
+        if (name !== 'workRate') return name;
+
+        return this.trainingPlaces().has(command.unit) ? 'productionRate' : name;
+    }
+
+    /**
+     * Every building some unit is trained at, under each of the ids the game files it with.
+     *
+     * A barracks exists once per age and per kind of civilization, and a technology names the
+     * copies it means; what they share is their name.
+     */
+    private trainingPlaces(): ReadonlySet<number> {
+        if (this.producers) return this.producers;
+
+        const units = this.referenceUnits();
+        // A builder or a fishing ship is also named as the place a building comes from; only a
+        // building is a place units are turned out at.
+        const places = new Set(
+            [...units.values()]
+                .flatMap((unit) => unit.trainLocationIds)
+                .filter((id) => units.get(id)?.type === UNIT_TYPE.building),
+        );
+        const names = new Set([...places].map((id) => units.get(id)?.nameStringId));
+        this.producers = new Set(
+            [...units.values()]
+                .filter((unit) => unit.type === UNIT_TYPE.building && (places.has(unit.id) || names.has(unit.nameStringId)))
+                .map((unit) => unit.id),
+        );
+
+        return this.producers;
+    }
+
     /** Turns the game's own effect commands into the guide's vocabulary. */
     private effectsOf(effectId: number, structural = false): TechEffectRecord[] {
         const effect = this.config.game.effects[effectId];
@@ -1022,7 +1068,7 @@ export class DatasetBuilder {
         const commands = effect.commands.map((command) => ({
             command,
             mode: MODES[command.type],
-            attribute: ATTRIBUTES[command.attribute],
+            attribute: this.attributeOf(command),
         }));
 
         // Swaps, spawns and the like are what a technology does; a civilization's bonus text already says its own.

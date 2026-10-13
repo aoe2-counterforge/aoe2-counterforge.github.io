@@ -465,6 +465,7 @@
         "civCount_other": "{{count}} civilisations",
         "uniqueTo": "Unique aux {{civ}}",
         "trainsFaster": "Les unités se forment {{value}}% plus vite là où elle est développée.",
+        "worksFaster": "Ses unités travaillent {{value}}% plus vite là où elle est recherchée.",
         "changesNoUnit": "Cette technologie ne change les chiffres d'aucune unité. Ce qu'elle fait — une taxe de marché, un tribut, la façon dont un moine travaille, une amélioration d'une autre unité — figure dans sa description ci-dessus.",
         "linesHint": "Les étapes estompées sont des unités que {{tech}} ne change pas.",
         "notChanged": "{{tech}} ne change pas cette unité"

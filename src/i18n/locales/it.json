@@ -465,6 +465,7 @@
         "civCount_other": "{{count}} civiltà",
         "uniqueTo": "Esclusiva di {{civ}}",
         "trainsFaster": "Le unità si addestrano il {{value}}% più in fretta dove viene ricercata.",
+        "worksFaster": "Le sue unità lavorano il {{value}}% più velocemente dove viene ricercata.",
         "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa — una tassa di mercato, un tributo, il lavoro di un monaco, un potenziamento a un'altra unità — è nella descrizione qui sopra.",
         "linesHint": "I passi sbiaditi sono unità che {{tech}} non modifica.",
         "notChanged": "{{tech}} non modifica questa unità"

@@ -328,3 +328,45 @@ describe('UpgradeService charges', () => {
         expect(changed).toEqual([]);
     });
 });
+
+describe('UpgradeService work rates', () => {
+    function buildRateService() {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [unitRecord({ key: 'villager', id: 3, classId: VILLAGER, category: 'civilian', age: 1 })],
+            technologies: [
+                technologyRecord({
+                    key: 'conscription',
+                    age: 4,
+                    building: 'castle',
+                    effects: [{ mode: 'multiply', unit: 12, unitClass: null, attribute: 'productionRate', value: 1.33 }],
+                }),
+                technologyRecord({
+                    key: 'gold-mining',
+                    age: 2,
+                    building: 'mining-camp',
+                    effects: [{ mode: 'multiply', unit: 3, unitClass: null, attribute: 'workRate', value: 1.15 }],
+                }),
+            ],
+            civilizations: [civilizationRecord('franks')],
+        });
+
+        return new UpgradeService({ catalog });
+    }
+
+    it('counts a training place that works faster as units trained faster, and nothing else', () => {
+        const upgrades = buildRateService();
+
+        const rates = [upgrades.productionSpeed('conscription'), upgrades.workSpeed('conscription')];
+
+        expect(rates).toEqual([1.33, 1]);
+    });
+
+    it('counts a gatherer that works faster as work, never as training', () => {
+        const upgrades = buildRateService();
+
+        const rates = [upgrades.productionSpeed('gold-mining'), upgrades.workSpeed('gold-mining')];
+
+        expect(rates).toEqual([1, 1.15]);
+    });
+});

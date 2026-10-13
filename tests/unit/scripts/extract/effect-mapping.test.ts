@@ -48,4 +48,18 @@ describe('technology effects', () => {
         expect([warships?.attribute, warships?.value]).toEqual(['upgradesTo', idOf('war-galley')]);
         expect(siphons?.attribute).toBe('maxCharge');
     });
+
+    it('words a work rate by what the target does rather than as training', () => {
+        const attributesOf = (key: string) => [
+            ...new Set(
+                (technologies.find((technology) => technology.key === key)?.effects ?? [])
+                    .filter((effect) => effect.attribute.endsWith('Rate'))
+                    .map((effect) => effect.attribute),
+            ),
+        ];
+
+        const rates = [attributesOf('conscription'), attributesOf('gold-mining'), attributesOf('double-bit-axe')];
+
+        expect(rates).toEqual([['productionRate'], ['workRate'], ['workRate']]);
+    });
 });
