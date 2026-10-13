@@ -240,6 +240,12 @@
             "bonusResistance": "Subit {{value}}% de dégâts bonus en moins",
             "ignoresArmour": "Les attaques ignorent l'armure",
             "charge": "Gagne une attaque chargée",
+            "upgradesTo": "Évolue en {{unit}}",
+            "spawns": "Fait apparaître {{count}}",
+            "trainableAt": "Entraînable à : {{building}}",
+            "newMissile": "Tire un autre projectile",
+            "chargeBlast": "Modifie l'explosion de sa charge",
+            "aftereffect": "Ses coups laissent un effet durable",
             "minRange": "Portée minimale réduite à {{value}}",
             "population": "{{value}} de population",
             "damageReflection": "Renvoie {{value}}% des dégâts de mêlée"

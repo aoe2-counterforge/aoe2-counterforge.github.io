@@ -75,6 +75,12 @@ const MODELLED = new Set([
     'rechargeRate',
     'chargeEvent',
     'chargeType',
+    'upgradesTo',
+    'spawns',
+    'trainLocation',
+    'projectileUnit',
+    'chargeProjectile',
+    'onHitEffect',
     'population',
     'damageReflection',
     'cost',
@@ -116,6 +122,12 @@ function canonical(delta: StatDelta): string {
         delta.minRangeCeiling,
         delta.ignoresArmour,
         delta.charge,
+        delta.upgradesTo?.join(','),
+        delta.spawns,
+        delta.trainableAt?.join(','),
+        delta.newMissile,
+        delta.chargeBlast,
+        delta.aftereffect,
         delta.population,
         delta.damageReflection,
     ].map((value) => String(value ?? ''));
@@ -151,6 +163,7 @@ function scaled(delta: StatDelta): boolean {
 /** Answers which technologies touch a unit, and what the unit looks like once they are researched. */
 export class UpgradeService {
     private readonly catalog: GameCatalogService;
+    private keysById: Map<number, string> | null = null;
 
     constructor(config: UpgradeServiceConfig) {
         this.catalog = config.catalog;
@@ -372,6 +385,8 @@ export class UpgradeService {
                 continue;
             }
 
+            if (this.describeStructure(delta, effect)) continue;
+
             // The other charge attributes only tune a charge; the capacity is what gives the unit one.
             if (effect.attribute === 'maxCharge') {
                 if (effect.mode !== 'multiply' && effect.value > 0) delta.charge = true;
@@ -444,6 +459,55 @@ export class UpgradeService {
         if (classed.armour.scaled.size > 0) delta.armourMultipliers = list(classed.armour.scaled);
 
         return delta;
+    }
+
+    /**
+     * Records the changes that are not numbers: a swap, a spawn, a place to train, a new missile.
+     *
+     * @param delta - The change being built for one unit.
+     * @param effect - The command being read.
+     * @returns True when the command was one of those and has been taken care of.
+     */
+    private describeStructure(delta: StatDelta, effect: TechEffect): boolean {
+        switch (effect.attribute) {
+            case 'upgradesTo': {
+                const key = this.unitKeys().get(effect.value);
+                if (key !== undefined) delta.upgradesTo = [...(delta.upgradesTo ?? []), key];
+
+                return true;
+            }
+            case 'spawns':
+                delta.spawns = (delta.spawns ?? 0) + effect.value;
+
+                return true;
+            case 'trainLocation':
+                if (effect.building !== undefined) {
+                    delta.trainableAt = [...(delta.trainableAt ?? []), effect.building];
+                }
+
+                return true;
+            case 'projectileUnit':
+                delta.newMissile = true;
+
+                return true;
+            case 'chargeProjectile':
+                delta.chargeBlast = true;
+
+                return true;
+            case 'onHitEffect':
+                delta.aftereffect = true;
+
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** Slug of every unit, by the id the game's effects name it with. */
+    private unitKeys(): Map<number, string> {
+        this.keysById ??= new Map(this.catalog.units().map((unit) => [unit.id, unit.key]));
+
+        return this.keysById;
     }
 
     private mergePatch(deltas: readonly StatDelta[]): UnitStatsPatch {

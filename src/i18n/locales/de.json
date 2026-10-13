@@ -240,6 +240,12 @@
             "bonusResistance": "Erleidet {{value}}% weniger Bonusschaden",
             "ignoresArmour": "Angriffe ignorieren Rüstung",
             "charge": "Erhält einen Ladungsangriff",
+            "upgradesTo": "Wird zu {{unit}} aufgerüstet",
+            "spawns": "Erzeugt {{count}}",
+            "trainableAt": "Ausbildbar in: {{building}}",
+            "newMissile": "Verschießt ein anderes Geschoss",
+            "chargeBlast": "Verändert die Explosion seiner Ladung",
+            "aftereffect": "Seine Treffer wirken nach",
             "minRange": "Mindestreichweite auf {{value}} gesenkt",
             "population": "{{value}} Bevölkerung",
             "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück"

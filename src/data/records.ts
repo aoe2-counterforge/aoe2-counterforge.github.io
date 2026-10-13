@@ -73,6 +73,8 @@ export interface TechEffectRecord {
     damageClass?: string;
     /** Age the change arrives in, for a bonus the game hands out once per age. */
     age?: number;
+    /** For a training place, the building the unit becomes trainable at. */
+    building?: string;
 }
 
 export interface TechnologyRecord {

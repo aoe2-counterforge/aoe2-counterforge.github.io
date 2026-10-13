@@ -96,9 +96,9 @@ export function TechnologyPage() {
         () =>
             changed.map((entry) => ({
                 unit: entry.unit,
-                effects: entry.qualitative ? [] : describeEffect(entry.delta, t),
+                effects: entry.qualitative ? [] : describeEffect(entry.delta, t, (unitKey) => text.unit(unitKey).name),
             })),
-        [changed, t],
+        [changed, t, text],
     );
 
     // Bloodlines reaches eighty-three units with the same twenty hit points; that is one fact, not

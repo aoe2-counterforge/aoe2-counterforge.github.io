@@ -57,6 +57,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
     const { preferences } = usePreferences();
     const view = useUnitUpgrades(unit);
     const steps = useUnitLine(unit);
+    const unitName = (key: string) => text.unit(key).name;
 
     const grouped = useMemo(() => {
         const byBuilding = new Map<string, AppliedUpgrade[]>();
@@ -143,7 +144,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                                     <TechnologyItem
                                         key={upgrade.technology.key}
                                         technology={upgrade.technology}
-                                        effects={upgrade.qualitative ? [] : describeEffect(upgrade.delta, t)}
+                                        effects={upgrade.qualitative ? [] : describeEffect(upgrade.delta, t, unitName)}
                                     />
                                 ))}
                             </ul>
@@ -189,7 +190,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                                                 <span className="list-item__title">{t(`upgrades.${kind}`)}</span>
                                                 <p className="card__hint">{t(`upgrades.${kind}Hint`)}</p>
                                                 <div className="upgrade-item__effects">
-                                                    {describeEffect(delta, t).map((effect) => (
+                                                    {describeEffect(delta, t, unitName).map((effect) => (
                                                         <span key={effect} className="effect-chip">
                                                             {effect}
                                                         </span>
@@ -203,7 +204,7 @@ export function UnitUpgradesPanel({ unit }: UnitUpgradesPanelProps) {
                                     <TechnologyItem
                                         key={upgrade.technology.key}
                                         technology={upgrade.technology}
-                                        effects={upgrade.qualitative ? [] : describeEffect(upgrade.delta, t)}
+                                        effects={upgrade.qualitative ? [] : describeEffect(upgrade.delta, t, unitName)}
                                     />
                                 ))}
                             </ul>

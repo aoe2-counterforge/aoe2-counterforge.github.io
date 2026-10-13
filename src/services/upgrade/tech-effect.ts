@@ -42,6 +42,18 @@ export interface StatDelta {
     minRangeCeiling?: number;
     /** True once a technology has given the unit a charge it can spend, such as the fire ship's explosive one. */
     charge?: boolean;
+    /** Slugs of the units this one turns into once the technology is researched. */
+    upgradesTo?: readonly string[];
+    /** How many of this unit the technology hands over for free. */
+    spawns?: number;
+    /** Slugs of the buildings the technology makes this unit trainable at. */
+    trainableAt?: readonly string[];
+    /** True once its shots are a different missile, with the damage that missile carries. */
+    newMissile?: boolean;
+    /** True once the explosion its charge makes is a different one. */
+    chargeBlast?: boolean;
+    /** True once its hits leave a lingering effect on the target, such as poison. */
+    aftereffect?: boolean;
     /** True once a technology has taught the unit's attacks to go through armour. */
     ignoresArmour?: boolean;
     /** Fraction of the damage from bonus classes the unit stops taking. */

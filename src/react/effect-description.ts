@@ -13,10 +13,14 @@ const BROAD_ENOUGH = 3;
  * @param t - Translator bound to the active interface language.
  * @returns One label per measurable change, empty when the effect is qualitative.
  */
-export function describeEffect(change: StatDelta, t: TFunction): string[] {
+export function describeEffect(
+    change: StatDelta,
+    t: TFunction,
+    unitName: (key: string) => string = (key) => key,
+): string[] {
     const ages = change.perAge ?? 1;
     if (ages > 1) {
-        return describeEffect({ ...divided(change, ages), perAge: undefined }, t).map((effect) =>
+        return describeEffect({ ...divided(change, ages), perAge: undefined }, t, unitName).map((effect) =>
             t('upgrades.effect.perAge', { effect }),
         );
     }
@@ -64,6 +68,16 @@ export function describeEffect(change: StatDelta, t: TFunction): string[] {
     if (change.ballistics) labels.push(t('upgrades.effect.ballistics'));
     if (change.ignoresArmour) labels.push(t('upgrades.effect.ignoresArmour'));
     if (change.charge) labels.push(t('upgrades.effect.charge'));
+    for (const key of change.upgradesTo ?? []) {
+        labels.push(t('upgrades.effect.upgradesTo', { unit: unitName(key) }));
+    }
+    if (change.spawns !== undefined) labels.push(t('upgrades.effect.spawns', { count: short(change.spawns) }));
+    for (const building of change.trainableAt ?? []) {
+        labels.push(t('upgrades.effect.trainableAt', { building: t(`buildings.${building}`, building) }));
+    }
+    if (change.newMissile) labels.push(t('upgrades.effect.newMissile'));
+    if (change.chargeBlast) labels.push(t('upgrades.effect.chargeBlast'));
+    if (change.aftereffect) labels.push(t('upgrades.effect.aftereffect'));
     if (change.population !== undefined) {
         labels.push(t('upgrades.effect.population', { value: delta(change.population) }));
     }

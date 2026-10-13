@@ -159,10 +159,13 @@ const ATTRIBUTES: Record<number, string> = {
     12: 'range',
     13: 'workRate',
     14: 'carryCapacity',
+    16: 'projectileUnit',
     19: 'ballistics',
     20: 'minRange',
     22: 'blastWidth',
     24: 'bonusDamageResistance',
+    42: 'trainLocation',
+    57: 'chargeProjectile',
     59: 'maxCharge',
     60: 'rechargeRate',
     61: 'chargeEvent',
@@ -178,7 +181,15 @@ const ATTRIBUTES: Record<number, string> = {
     109: 'regeneration',
     110: 'population',
     118: 'damageReflection',
+    145: 'onHitEffect',
 };
+
+/** Effect command that swaps a unit for another, and the one that makes a number of units appear. */
+const UPGRADE_COMMAND = 3;
+const SPAWN_COMMAND = 7;
+
+/** Attributes whose value names a unit or a building rather than measuring something. */
+const REFERENCES = new Set(['projectileUnit', 'trainLocation', 'chargeProjectile', 'onHitEffect']);
 
 /** Commands that change a number; the rest enable units, swap graphics or rename things. */
 /**
@@ -294,6 +305,8 @@ export class DatasetBuilder {
     /** Age of every age advance, resolved once because every bonus asks for it. */
     private ages: Map<number, number> | null = null;
     private shooters: Map<number, number[]> | null = null;
+    /** Units the tech tree lists, which are the only ones the guide has a page for. */
+    private treeUnits: ReadonlySet<number> = new Set();
 
     constructor(config: DatasetBuilderConfig) {
         this.config = config;
@@ -306,6 +319,7 @@ export class DatasetBuilder {
      */
     public build(): GeneratedDataset {
         const nodes = this.collectNodes();
+        this.treeUnits = new Set(nodes.units.keys());
         const upgrades = this.lineUpgrades(nodes);
         const stats = this.referenceUnits();
 
@@ -955,8 +969,34 @@ export class DatasetBuilder {
         return this.shooters;
     }
 
+    /**
+     * The guide's own id for a unit the game names, which may be a sibling of the one it lists.
+     *
+     * The game keeps a male and a female copy of some units that the tech tree shows as one; the
+     * copies share a name, so the one the guide has a page for is found by that name.
+     *
+     * @param id - Unit id as an effect command states it.
+     * @returns The id of the listed unit, or null when none carries that name.
+     */
+    private listedUnit(id: number): number | null {
+        if (this.treeUnits.has(id)) return id;
+
+        const nameOf = (unitId: number): string => {
+            const unit = this.referenceUnits().get(unitId);
+
+            // The game files the male and the female copy as 'Name (Male)' and 'Name (Female)'.
+            return unit ? this.text(this.config.fallbackLocale, unit.nameStringId).replace(/ \((?:Male|Female)\)$/, '') : '';
+        };
+        const name = nameOf(id);
+        if (name === '') return null;
+
+        const sibling = [...this.treeUnits].sort((left, right) => left - right).find((listed) => nameOf(listed) === name);
+
+        return sibling ?? null;
+    }
+
     /** Turns the game's own effect commands into the guide's vocabulary. */
-    private effectsOf(effectId: number): TechEffectRecord[] {
+    private effectsOf(effectId: number, structural = false): TechEffectRecord[] {
         const effect = this.config.game.effects[effectId];
         if (!effect) return [];
 
@@ -970,7 +1010,12 @@ export class DatasetBuilder {
             const key = [record.unit, record.unitClass, record.attribute, record.damageClass, record.mode].join('|');
             if (derived && emitted.has(key)) return;
 
+            // Setting a number to the value it was just set to says nothing new.
+            const exact = `${key}|${record.value}|${record.building ?? ''}`;
+            if (record.mode === 'set' && emitted.has(exact)) return;
+
             emitted.add(key);
+            emitted.add(exact);
             records.push(record);
         };
 
@@ -979,6 +1024,24 @@ export class DatasetBuilder {
             mode: MODES[command.type],
             attribute: ATTRIBUTES[command.attribute],
         }));
+
+        // Swaps, spawns and the like are what a technology does; a civilization's bonus text already says its own.
+        for (const command of structural ? effect.commands : []) {
+            const swapped = command.type === UPGRADE_COMMAND ? this.listedUnit(command.unitClass) : null;
+            if (swapped !== null && this.treeUnits.has(command.unit)) {
+                add(
+                    { mode: 'set', unit: command.unit, unitClass: null, attribute: 'upgradesTo', value: swapped },
+                    false,
+                );
+            }
+            // A spawn names the unit that appears; the building it appears at is not the unit's concern.
+            if (command.type === SPAWN_COMMAND && this.treeUnits.has(command.unit)) {
+                add(
+                    { mode: 'set', unit: command.unit, unitClass: null, attribute: 'spawns', value: command.attribute },
+                    false,
+                );
+            }
+        }
 
         for (const pass of ['direct', 'derived'] as const) {
             for (const { command, mode, attribute } of commands) {
@@ -991,6 +1054,15 @@ export class DatasetBuilder {
                 const damageClass = packed === null ? undefined : CLASSES[packed.classId];
                 if (packed !== null && !damageClass) continue;
 
+                // Negative values are the table's way of saying nothing, not a place or a unit.
+                if (REFERENCES.has(attribute) && (!structural || command.value < 0)) continue;
+                // A unit the tech tree does not list has no page to show the change on.
+                if (REFERENCES.has(attribute) && !shooters && command.unit >= 0 && !this.treeUnits.has(command.unit)) {
+                    continue;
+                }
+                const building = attribute === 'trainLocation' ? BUILDINGS[command.value] : undefined;
+                if (attribute === 'trainLocation' && building === undefined) continue;
+
                 for (const target of shooters ?? [command.unit >= 0 ? command.unit : null]) {
                     add(
                         {
@@ -1000,6 +1072,7 @@ export class DatasetBuilder {
                             attribute,
                             value: packed === null ? this.round(command.value) : packed.value,
                             ...(damageClass ? { damageClass } : {}),
+                            ...(building ? { building } : {}),
                         },
                         pass === 'derived',
                     );
@@ -1273,7 +1346,7 @@ export class DatasetBuilder {
                 cost: this.cost(tech.costs),
                 researchTime: tech.researchTime,
                 civs: entry.civs,
-                effects: this.effectsOf(tech.effectId),
+                effects: this.effectsOf(tech.effectId, true),
             });
 
             for (const locale of this.config.strings.keys()) {

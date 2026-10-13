@@ -240,6 +240,12 @@
             "bonusResistance": "Takes {{value}}% less bonus damage",
             "ignoresArmour": "Attacks ignore armour",
             "charge": "Gains a charge attack",
+            "upgradesTo": "Upgrades to {{unit}}",
+            "spawns": "Spawns {{count}}",
+            "trainableAt": "Trainable at the {{building}}",
+            "newMissile": "Fires a different missile",
+            "chargeBlast": "Changes the explosion of its charge",
+            "aftereffect": "Its hits leave a lingering effect",
             "minRange": "Minimum range down to {{value}}",
             "population": "{{value}} population",
             "damageReflection": "Sends {{value}}% of melee damage back"
