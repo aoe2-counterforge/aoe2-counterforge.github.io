@@ -13,6 +13,8 @@ export interface TechEffectConfig {
     damageClass?: string;
     /** Age the change arrives in, for a bonus the game hands out once per age. */
     age?: number;
+    /** For a training place, the building the unit becomes trainable at. */
+    building?: string;
 }
 
 /** One change a technology makes, taken from the game's own effect table. */
@@ -38,6 +40,11 @@ export class TechEffect {
     /** Age the change arrives in, or null when the game states it without one. */
     public get age(): number | null {
         return this.config.age ?? null;
+    }
+
+    /** Building a training-place change points at, when it is one. */
+    public get building(): string | undefined {
+        return this.config.building;
     }
 
     public get damageClass(): string | undefined {

@@ -283,6 +283,15 @@ describe('UpgradeService charges', () => {
                     ],
                 }),
                 technologyRecord({
+                    key: 'refit',
+                    age: 3,
+                    building: 'dock',
+                    effects: [
+                        { mode: 'set', unit: FIRE_SHIP, unitClass: null, attribute: 'upgradesTo', value: FIRE_SHIP },
+                        { mode: 'set', unit: FIRE_SHIP, unitClass: null, attribute: 'trainLocation', value: 45, building: 'dock' },
+                    ],
+                }),
+                technologyRecord({
                     key: 'retune',
                     age: 3,
                     building: 'university',
@@ -301,6 +310,14 @@ describe('UpgradeService charges', () => {
         const changed = upgrades.unitsChangedBy(catalog.technology('siphons'));
 
         expect(changed.map(({ unit, delta }) => [unit.key, delta.charge])).toEqual([['fire-ship', true]]);
+    });
+
+    it('carries a swap and a training place without a number', () => {
+        const { catalog, upgrades } = buildChargeService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('refit'));
+
+        expect(changed.map(({ delta }) => [delta.upgradesTo, delta.trainableAt])).toEqual([[['fire-ship'], ['dock']]]);
     });
 
     it('leaves out a technology that only retunes a charge', () => {

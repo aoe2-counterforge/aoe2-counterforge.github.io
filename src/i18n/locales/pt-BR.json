@@ -241,6 +241,12 @@
             "bonusResistance": "Recebe {{value}}% menos dano bônus",
             "ignoresArmour": "Ataques ignoram armadura",
             "charge": "Ganha um ataque de carga",
+            "upgradesTo": "Evolui para {{unit}}",
+            "spawns": "Gera {{count}}",
+            "trainableAt": "Treinável em: {{building}}",
+            "newMissile": "Dispara outro projétil",
+            "chargeBlast": "Muda a explosão da sua carga",
+            "aftereffect": "Seus golpes deixam um efeito duradouro",
             "minRange": "Alcance mínimo cai para {{value}}",
             "population": "{{value}} de população",
             "damageReflection": "Devolve {{value}}% do dano corpo a corpo"

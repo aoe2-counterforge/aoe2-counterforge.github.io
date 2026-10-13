@@ -241,6 +241,12 @@
             "bonusResistance": "Subisce il {{value}}% in meno di danni bonus",
             "ignoresArmour": "Gli attacchi ignorano la corazza",
             "charge": "Ottiene un attacco a carica",
+            "upgradesTo": "Diventa {{unit}}",
+            "spawns": "Genera {{count}}",
+            "trainableAt": "Addestrabile in: {{building}}",
+            "newMissile": "Lancia un altro proiettile",
+            "chargeBlast": "Cambia l'esplosione della sua carica",
+            "aftereffect": "I suoi colpi lasciano un effetto persistente",
             "minRange": "Gittata minima ridotta a {{value}}",
             "population": "{{value}} popolazione",
             "damageReflection": "Restituisce il {{value}}% dei danni da mischia"

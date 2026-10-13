@@ -17,6 +17,18 @@ describe('describeEffect', () => {
         expect(labels).toEqual(['Gains a charge attack']);
     });
 
+    it('names the unit a technology turns another into', () => {
+        const labels = describeEffect({ upgradesTo: ['war-galley'] }, t, () => 'War Galley');
+
+        expect(labels).toEqual(['Upgrades to War Galley']);
+    });
+
+    it('says where a unit becomes trainable and how many a technology spawns', () => {
+        const labels = describeEffect({ trainableAt: ['barracks'], spawns: 5 }, t);
+
+        expect(labels).toEqual(['Spawns 5', 'Trainable at the Barracks']);
+    });
+
     it('writes a factor as the percentage it adds', () => {
         const labels = describeEffect({ hpMultiplier: 1.2 }, t);
 

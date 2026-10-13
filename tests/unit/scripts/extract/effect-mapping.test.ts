@@ -20,7 +20,7 @@ describe('technology effects', () => {
             return technology.effects.flatMap((effect) => {
                 if (effect.unit === null || !listed.has(effect.unit)) return [];
 
-                const key = [effect.unit, effect.attribute, effect.damageClass ?? '', effect.mode].join('|');
+                const key = [effect.unit, effect.attribute, effect.damageClass ?? '', effect.mode, effect.value].join('|');
                 if (!seen.has(key)) {
                     seen.add(key);
 
@@ -32,5 +32,20 @@ describe('technology effects', () => {
         });
 
         expect(repeated).toEqual([]);
+    });
+
+    it('keeps what a technology does to a unit that is not a number', () => {
+        const idOf = (key: string) => units.find((unit) => unit.key === key)?.id;
+        const effectsOf = (key: string) => technologies.find((technology) => technology.key === key)?.effects ?? [];
+
+        const anarchy = effectsOf('anarchy').find((effect) => effect.unit === idOf('huskarl'));
+        const warships = effectsOf('medium-warships').find((effect) => effect.unit === idOf('galley'));
+        const siphons = effectsOf('siphons').find(
+            (effect) => effect.unit === idOf('fire-ship') && effect.attribute === 'maxCharge',
+        );
+
+        expect([anarchy?.attribute, anarchy?.building]).toEqual(['trainLocation', 'barracks']);
+        expect([warships?.attribute, warships?.value]).toEqual(['upgradesTo', idOf('war-galley')]);
+        expect(siphons?.attribute).toBe('maxCharge');
     });
 });
