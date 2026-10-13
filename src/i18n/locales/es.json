@@ -183,7 +183,8 @@
             "volley_one": "{{count}} proyectil más",
             "volley_other": "{{count}} proyectiles más"
         },
-        "noAttack": "{{unit}} no tiene ataque: convierte unidades enemigas en lugar de luchar.",
+        "noAttackConverter": "{{unit}} no tiene ataque: convierte unidades enemigas en lugar de luchar.",
+        "noAttack": "{{unit}} no tiene ataque y no combate, así que no tiene counters.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Filtrar oponente",
         "filterHint": "p. ej. piquero",

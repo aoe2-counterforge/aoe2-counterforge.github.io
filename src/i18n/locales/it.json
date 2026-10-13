@@ -183,7 +183,8 @@
             "volley_one": "{{count}} altro proiettile",
             "volley_other": "{{count}} altri proiettili"
         },
-        "noAttack": "{{unit}} non ha attacco: converte le unità nemiche invece di combatterle.",
+        "noAttackConverter": "{{unit}} non ha attacco: converte le unità nemiche invece di combatterle.",
+        "noAttack": "{{unit}} non ha attacco e non combatte, quindi non ha counter.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Filtra avversario",
         "filterHint": "es. picchiere",

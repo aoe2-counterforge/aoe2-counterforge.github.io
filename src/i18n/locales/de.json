@@ -183,7 +183,8 @@
             "volley_one": "{{count}} weiteres Geschoss",
             "volley_other": "{{count}} weitere Geschosse"
         },
-        "noAttack": "{{unit}} hat keinen Angriff: Statt zu kämpfen, bekehrt die Einheit ihre Gegner.",
+        "noAttackConverter": "{{unit}} hat keinen Angriff: Statt zu kämpfen, bekehrt die Einheit ihre Gegner.",
+        "noAttack": "{{unit}} hat keinen Angriff und kämpft nicht, daher gibt es keine Konter.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Gegner filtern",
         "filterHint": "z. B. Pikenier",

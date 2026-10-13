@@ -183,7 +183,8 @@
             "volley_one": "mais {{count}} projétil",
             "volley_other": "mais {{count}} projéteis"
         },
-        "noAttack": "{{unit}} não tem ataque: ela converte unidades inimigas em vez de lutar.",
+        "noAttackConverter": "{{unit}} não tem ataque: ela converte unidades inimigas em vez de lutar.",
+        "noAttack": "{{unit}} não tem ataque e não luta, então não tem counters.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Filtrar adversário",
         "filterHint": "Ex.: piqueiro",

@@ -183,7 +183,8 @@
             "volley_one": "{{count}} projectile supplémentaire",
             "volley_other": "{{count}} projectiles supplémentaires"
         },
-        "noAttack": "{{unit}} n'a pas d'attaque : l'unité convertit les ennemis au lieu de les combattre.",
+        "noAttackConverter": "{{unit}} n'a pas d'attaque : l'unité convertit les ennemis au lieu de les combattre.",
+        "noAttack": "{{unit}} n'a pas d'attaque et ne combat pas : elle n'a donc aucun contre.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Filtrer l'adversaire",
         "filterHint": "ex. piquier",
