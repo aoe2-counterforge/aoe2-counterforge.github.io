@@ -40,6 +40,8 @@ export interface StatDelta {
     damageReflection?: number;
     /** Value the minimum range is brought down to, for an effect that sets it outright. */
     minRangeCeiling?: number;
+    /** True once a technology has given the unit a charge it can spend, such as the fire ship's explosive one. */
+    charge?: boolean;
     /** True once a technology has taught the unit's attacks to go through armour. */
     ignoresArmour?: boolean;
     /** Fraction of the damage from bonus classes the unit stops taking. */

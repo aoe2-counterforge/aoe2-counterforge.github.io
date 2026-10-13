@@ -239,6 +239,7 @@
             "accuracyFloor": "Precisione portata al {{value}}%",
             "bonusResistance": "Subisce il {{value}}% in meno di danni bonus",
             "ignoresArmour": "Gli attacchi ignorano la corazza",
+            "charge": "Ottiene un attacco a carica",
             "minRange": "Gittata minima ridotta a {{value}}",
             "population": "{{value}} popolazione",
             "damageReflection": "Restituisce il {{value}}% dei danni da mischia"

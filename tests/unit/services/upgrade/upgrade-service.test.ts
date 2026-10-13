@@ -263,3 +263,51 @@ describe('UpgradeService', () => {
         expect(outcome.stats.hp).toBe(upgrades.fullyUpgraded(catalog.unit('champion')).stats.hp);
     });
 });
+
+describe('UpgradeService charges', () => {
+    const FIRE_SHIP = 9;
+    const NAVAL = 22;
+
+    function buildChargeService() {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [unitRecord({ key: 'fire-ship', id: FIRE_SHIP, classId: NAVAL, category: 'naval', hp: 100 })],
+            technologies: [
+                technologyRecord({
+                    key: 'siphons',
+                    age: 3,
+                    building: 'university',
+                    effects: [
+                        { mode: 'set', unit: FIRE_SHIP, unitClass: null, attribute: 'maxCharge', value: 1 },
+                        { mode: 'set', unit: FIRE_SHIP, unitClass: null, attribute: 'chargeType', value: 6 },
+                    ],
+                }),
+                technologyRecord({
+                    key: 'retune',
+                    age: 3,
+                    building: 'university',
+                    effects: [{ mode: 'add', unit: FIRE_SHIP, unitClass: null, attribute: 'chargeEvent', value: 1 }],
+                }),
+            ],
+            civilizations: [civilizationRecord('franks')],
+        });
+
+        return { catalog, upgrades: new UpgradeService({ catalog }) };
+    }
+
+    it('lists the unit that gains a charge as changed', () => {
+        const { catalog, upgrades } = buildChargeService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('siphons'));
+
+        expect(changed.map(({ unit, delta }) => [unit.key, delta.charge])).toEqual([['fire-ship', true]]);
+    });
+
+    it('leaves out a technology that only retunes a charge', () => {
+        const { catalog, upgrades } = buildChargeService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('retune'));
+
+        expect(changed).toEqual([]);
+    });
+});

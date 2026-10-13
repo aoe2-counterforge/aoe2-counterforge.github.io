@@ -11,6 +11,12 @@ describe('describeEffect', () => {
         expect(labels).toEqual(['+20 HP']);
     });
 
+    it('says a unit gained a charge attack', () => {
+        const labels = describeEffect({ charge: true }, t);
+
+        expect(labels).toEqual(['Gains a charge attack']);
+    });
+
     it('writes a factor as the percentage it adds', () => {
         const labels = describeEffect({ hpMultiplier: 1.2 }, t);
 

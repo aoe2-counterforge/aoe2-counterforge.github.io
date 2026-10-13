@@ -71,6 +71,10 @@ const MODELLED = new Set([
     'bonusDamageResistance',
     'minRange',
     'combatAbility',
+    'maxCharge',
+    'rechargeRate',
+    'chargeEvent',
+    'chargeType',
     'population',
     'damageReflection',
     'cost',
@@ -79,6 +83,9 @@ const MODELLED = new Set([
     'costGold',
     'costStone',
 ]);
+
+/** The charge attributes that adjust an existing charge instead of granting one. */
+const CHARGE_TUNING = new Set(['rechargeRate', 'chargeEvent', 'chargeType']);
 
 /** The resource each cost attribute scales, with the whole price under its own name. */
 const COST_OF: Record<string, string> = {
@@ -108,6 +115,7 @@ function canonical(delta: StatDelta): string {
         delta.bonusDamageResistance,
         delta.minRangeCeiling,
         delta.ignoresArmour,
+        delta.charge,
         delta.population,
         delta.damageReflection,
     ].map((value) => String(value ?? ''));
@@ -299,6 +307,10 @@ export class UpgradeService {
         if (reaching.length === 0) return null;
 
         const delta = this.toDelta(reaching);
+        // A technology that only retunes a charge the unit already had says nothing worth listing.
+        if (reaching.every((effect) => CHARGE_TUNING.has(effect.attribute)) && Object.keys(delta).length === 0) {
+            return null;
+        }
 
         return { technology, delta, qualitative: Object.keys(delta).length === 0 };
     }
@@ -356,6 +368,13 @@ export class UpgradeService {
                 const current = table.get(effect.damageClass);
                 const value = effect.value;
                 table.set(effect.damageClass, scale ? (current ?? 1) * value : (current ?? 0) + value);
+
+                continue;
+            }
+
+            // The other charge attributes only tune a charge; the capacity is what gives the unit one.
+            if (effect.attribute === 'maxCharge') {
+                if (effect.mode !== 'multiply' && effect.value > 0) delta.charge = true;
 
                 continue;
             }

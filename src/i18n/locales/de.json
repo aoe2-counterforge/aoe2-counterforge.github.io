@@ -239,6 +239,7 @@
             "accuracyFloor": "Genauigkeit auf {{value}}% angehoben",
             "bonusResistance": "Erleidet {{value}}% weniger Bonusschaden",
             "ignoresArmour": "Angriffe ignorieren Rüstung",
+            "charge": "Erhält einen Ladungsangriff",
             "minRange": "Mindestreichweite auf {{value}} gesenkt",
             "population": "{{value}} Bevölkerung",
             "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück"
