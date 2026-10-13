@@ -4,6 +4,7 @@ import type { Unit } from '../../domain/entities/unit.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { useMatchups } from '../hooks/use-matchups.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
+import { countersReason } from '../counters-reason.ts';
 import { MatchupBoard } from './matchup-board.tsx';
 
 export interface UnitCountersPanelProps {
@@ -23,9 +24,9 @@ export function UnitCountersPanel({ unit }: UnitCountersPanelProps) {
     const report = useMatchups(unit, { opponentCiv: restricted ? civ : null });
     const subjectName = text.unit(unit.key).name;
 
-    if (!unit.stats.canAttack() || unit.hasTag('demolition')) {
-        const reason = unit.hasTag('demolition') ? 'counters.demolition' : 'counters.noAttack';
+    const reason = countersReason(unit);
 
+    if (reason !== null) {
         return (
             <section className="card">
                 <p className="prose">{t(reason, { unit: subjectName })}</p>

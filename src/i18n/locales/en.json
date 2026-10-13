@@ -184,7 +184,8 @@
             "volley_one": "{{count}} further missile",
             "volley_other": "{{count}} further missiles"
         },
-        "noAttack": "{{unit}} has no attack: it converts enemy units instead of fighting them.",
+        "noAttackConverter": "{{unit}} has no attack: it converts enemy units instead of fighting them.",
+        "noAttack": "{{unit}} has no attack and does not fight, so it has no counters.",
         "seconds": "{{value}} s",
         "filterPlaceholder": "Filter opponent",
         "filterHint": "e.g. pikeman",
