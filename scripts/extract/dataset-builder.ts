@@ -1392,7 +1392,9 @@ export class DatasetBuilder {
                 cost: this.cost(tech.costs),
                 researchTime: tech.researchTime,
                 civs: entry.civs,
-                effects: this.effectsOf(tech.effectId, true),
+                // An age advance carries the civilization bonuses that arrive with the age, which are
+                // listed on each civilization; read as the advance's own they credit it with them.
+                effects: this.ageTechs().has(id) ? [] : this.effectsOf(tech.effectId, true),
             });
 
             for (const locale of this.config.strings.keys()) {

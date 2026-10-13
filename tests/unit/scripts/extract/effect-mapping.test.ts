@@ -62,4 +62,12 @@ describe('technology effects', () => {
 
         expect(rates).toEqual([['productionRate'], ['workRate'], ['workRate']]);
     });
+
+    it('leaves the civilization bonuses an age advance carries off the advance itself', () => {
+        const ages = ['feudal-age', 'castle-age', 'imperial-age'];
+
+        const counts = ages.map((key) => technologies.find((technology) => technology.key === key)?.effects.length);
+
+        expect(counts).toEqual([0, 0, 0]);
+    });
 });
