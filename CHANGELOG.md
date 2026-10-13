@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.1](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.0...v0.7.1) (2026-10-13)
+
+
+### Bug Fixes
+
+* show the charge attack a technology gives a unit on its page ([83fd6c3](https://github.com/giovani-freitag/aoe2-counterforge/commit/83fd6c3bd03e3fbf38d7ba00c70eaa100f38545a))
+* show unit swaps, spawns, training places and missile changes on technology pages ([d68517c](https://github.com/giovani-freitag/aoe2-counterforge/commit/d68517c8845c1eec532141821a1b8fd6abbcf6a0))
+* stop describing non-converting units without an attack as converters ([24ed905](https://github.com/giovani-freitag/aoe2-counterforge/commit/24ed905c4d8056e6f5211189f36acaf0ed49418c))
+
 ## [0.7.0](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.6.0...v0.7.0) (2026-10-11)
 
 
