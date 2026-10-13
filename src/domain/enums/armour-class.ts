@@ -12,7 +12,7 @@ export const ARMOUR_CLASSES = [
     'condottiero',
     'fishing-ship',
     'hero-king',
-    'royal-heir',
+    'mounted-unit',
     'archer',
     'skirmisher',
     'spearman',

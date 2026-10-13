@@ -29,7 +29,9 @@ export function UnitOverviewPanel({ unit, upgradedStats }: UnitOverviewPanelProp
     const base = unit.stats.toRecord();
     const upgraded = upgradedStats.toRecord();
     const bonuses = unit.stats.attack.bonuses();
-    const classes = unit.stats.armour.classes().filter((armourClass) => !armourClass.startsWith('base-'));
+    const classes = unit.stats.armour.classes().filter(
+        (armourClass) => !armourClass.startsWith('base-') && !armourClass.startsWith('unused-'),
+    );
 
     return (
         <div className="stack">

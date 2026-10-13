@@ -134,7 +134,7 @@ const CLASSES: Record<number, string> = {
     36: 'hero-king',
     37: 'heavy-siege',
     38: 'skirmisher',
-    39: 'royal-heir',
+    39: 'mounted-unit',
     40: 'unused-40',
     41: 'fire-ship',
     60: 'ship-secondary',
