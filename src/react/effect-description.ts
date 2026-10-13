@@ -63,6 +63,7 @@ export function describeEffect(change: StatDelta, t: TFunction): string[] {
     }
     if (change.ballistics) labels.push(t('upgrades.effect.ballistics'));
     if (change.ignoresArmour) labels.push(t('upgrades.effect.ignoresArmour'));
+    if (change.charge) labels.push(t('upgrades.effect.charge'));
     if (change.population !== undefined) {
         labels.push(t('upgrades.effect.population', { value: delta(change.population) }));
     }

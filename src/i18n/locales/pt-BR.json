@@ -240,6 +240,7 @@
             "accuracyFloor": "Precisão elevada a {{value}}%",
             "bonusResistance": "Recebe {{value}}% menos dano bônus",
             "ignoresArmour": "Ataques ignoram armadura",
+            "charge": "Ganha um ataque de carga",
             "minRange": "Alcance mínimo cai para {{value}}",
             "population": "{{value}} de população",
             "damageReflection": "Devolve {{value}}% do dano corpo a corpo"

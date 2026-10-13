@@ -240,6 +240,7 @@
             "accuracyFloor": "Accuracy raised to {{value}}%",
             "bonusResistance": "Takes {{value}}% less bonus damage",
             "ignoresArmour": "Attacks ignore armour",
+            "charge": "Gains a charge attack",
             "minRange": "Minimum range down to {{value}}",
             "population": "{{value}} population",
             "damageReflection": "Sends {{value}}% of melee damage back"
