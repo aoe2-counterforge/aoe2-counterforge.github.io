@@ -159,6 +159,37 @@ time, or a rounded version of the gain.
 | Shipwright | "+50%" faster ship building | Ship train time x0.65, +53.8% speed (35% less time) | Chip "+53.8% train speed" |
 | Comitatenses, Huaracas | "+50%" faster training | Train time x0.667, +49.9% | Chip "+49.9%" |
 
+| Caravan | "Trade units move +20% faster" | Speed x1.2 and also work rate x1.2 on the trade units | Chip "+20% speed" only; the work rate is not shown |
+
+Caravan was measured in game on 2026-10-14. With the technology the carts' speed went from 1.25 to
+1.5 and their work rate from 0.2875 to 0.345 (read back from the game), yet the gold per delivery
+was identical (110.501 both times). Over about 1100 game seconds on a route of about 160 tiles with
+8 carts, the deliveries went from 32 to 40, the round trip from 256.4 s to 213.7 s (exactly divided
+by 1.2) and the gold per minute per cart from 25.9 to 31.0 (+20%). So the dat multiplies the trade
+units' work rate too, but it changes nothing measurable; the site leaves it out. Raw data:
+`C:\dev\aoe2-guide-data\session-2026-10-14T02-25-13-967Z`, test runner on branch
+`test/caravan-trade`.
+
+### The work-rate attribute
+
+The dat has one work-rate attribute (attribute 13) that means something different for each kind of
+object, and technologies multiply it on whatever they target. What it changes, as far as this guide
+has checked, and how the site words it:
+
+| Target | What the work rate changes | Site wording |
+|---|---|---|
+| Villagers and their task forms (farmer, lumberjack, miners, forager, hunter, shepherd, fisherman) | Gathering speed for that resource | "Villagers gather gold 15% faster", named by the form's task |
+| Fishing ships | Gathering speed for fish | "Gathering ships collect food 10% faster" |
+| Builders and repairers | Construction and repair speed | Build or repair speed chip |
+| Priests and other healers (e.g. Fereters) | Healing speed | Healing speed chip |
+| A building that trains units (Conscription, Perfusion, Chivalry, Kasbah) | Training speed there | "Units train X% faster where it is researched" (`productionRate`) |
+| Trebuchets (Kataparuto) | Packing and unpacking speed | Pack/unpack speed chip |
+| Trade carts (Caravan) | Nothing measurable: same gold per trip, stop at the market under a second | Not shown |
+
+Still open: the Trade Cog's work rate under Caravan has not been measured (same multiplier, water
+route), nor carts queuing at one market, the Caravanserai or civilization trade bonuses. If any of
+those shows an effect, the trade row above needs revisiting.
+
 Sources for the first four rows:
 
 - Illumination: the forum thread "Saracens, monks and Illumination"
