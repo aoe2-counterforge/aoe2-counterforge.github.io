@@ -98,4 +98,13 @@ describe('technology effects', () => {
         expect(slavsArmour).toEqual([]);
         expect(lithuanianRelics).toBeGreaterThan(30);
     });
+
+    it('does not read how fast a missile flies as how fast its shooter walks', () => {
+        const effects = technologies.find((technology) => technology.key === 'arquebus')?.effects ?? [];
+        const listed = new Set(units.map((unit) => unit.id));
+
+        const speeds = effects.filter((effect) => effect.attribute === 'speed' && listed.has(effect.unit ?? -1));
+
+        expect(speeds).toEqual([]);
+    });
 });

@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next';
 import type { ClassAmount } from '../domain/values/class-amount.ts';
 import type { StatDelta } from '../services/upgrade/tech-effect.ts';
 import type { WorkRate } from '../services/upgrade/upgrade-service.ts';
-import { delta, percentDelta, short } from './format.ts';
+import { delta, percentDelta, preciseDelta, short } from './format.ts';
 
 /** Above this many classes, a shared factor is stated once instead of class by class. */
 const BROAD_ENOUGH = 3;
@@ -67,7 +67,7 @@ export function describeEffect(
     }
     if (change.speed !== undefined) labels.push(t('upgrades.effect.speedFlat', { value: delta(change.speed) }));
     if (change.reloadTime !== undefined) {
-        labels.push(t('upgrades.effect.reload', { value: delta(change.reloadTime) }));
+        labels.push(t('upgrades.effect.reload', { value: preciseDelta(change.reloadTime) }));
     }
     if (change.speedMultiplier && change.speedMultiplier !== 1) {
         labels.push(t('upgrades.effect.speed', { value: percentDelta(change.speedMultiplier) }));

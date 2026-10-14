@@ -1166,6 +1166,8 @@ export class DatasetBuilder {
 
                 const shooters = command.unit >= 0 ? this.shootersByProjectile().get(command.unit) : undefined;
                 if ((shooters !== undefined) !== (pass === 'derived')) continue;
+                // How fast a missile flies is not how fast the one who fires it walks.
+                if (shooters !== undefined && attribute === 'speed') continue;
 
                 const packed = PACKED.has(attribute) ? unpack(command.value, mode) : null;
                 const damageClass = packed === null ? undefined : CLASSES[packed.classId];
