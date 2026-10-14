@@ -138,3 +138,54 @@ them, so they arrive with everyone else.
 
 `tests/feature/extract/game-install.test.ts` re-runs the extraction and compares it against the
 committed dataset. It only runs when `AOE2_GAME_ROOT` is set.
+
+## Where the game's text and its data disagree
+
+A technology page shows two things that are allowed to differ. The description is the game's own
+sentence, copied as written. The chips under "What it changes" are computed from the effect table
+in the data file. Where the designers rounded a number in the text, or wrote the percentage the
+other way round, the chip carries the real value and the description keeps the game's words. The
+site never rounds a chip to make it agree with the text.
+
+A change of reload or train time is stored as a factor on a duration, so "faster" is the reciprocal:
+a reload of 0.85 is a fire rate of 1 / 0.85 = +17.6%, not +15%. The text usually quotes the cut in
+time, or a rounded version of the gain.
+
+| Case | The game's text | The data | How the site shows it |
+| --- | --- | --- | --- |
+| Illumination | "+100%" faster faith (older text: 50%) | Faith recharge rate x1.875, +87.5% (about 62 s to 33 s) | Chip "Regains faith 87.5% faster" |
+| Muisca monks | "+50%" in some versions, 100% on the wiki | Faith recharge rate x2, +100% | Chip "Regains faith 100% faster" |
+| Thumb Ring | "+15%" attack speed | Reload x0.85, +17.6% fire rate | Chip "+17.6% rate of fire" |
+| Shipwright | "+50%" faster ship building | Ship train time x0.65, +53.8% speed (35% less time) | Chip "+53.8% train speed" |
+| Comitatenses, Huaracas | "+50%" faster training | Train time x0.667, +49.9% | Chip "+49.9%" |
+
+Sources for the first four rows:
+
+- Illumination: the forum thread "Saracens, monks and Illumination"
+  (https://forums.ageofempires.com/t/saracens-monks-and-illumination/204118) says "about 88% faster,
+  while advertising 50%"; the Steam guide "The best AoE2 Info Sheet"
+  (https://steamcommunity.com/sharedfiles/filedetails/?id=548698803) gives the monk's recharge as
+  1.6 to 3 faith per second; the AoE2 wiki page for Illumination agrees.
+- Thumb Ring: the forum thread on the matchlock technology for Heavy Cavalry
+  (https://forums.ageofempires.com/t/new-matchlock-technology-for-hc/114429) writes "-15% reload
+  (+18%)".
+- Shipwright: Liquipedia (https://liquipedia.net/ageofempires/Shipwright) and the forum thread
+  (https://forums.ageofempires.com/t/the-shipwright-technology/101756) give 35% less time, about
+  54% faster.
+- Comitatenses and Huaracas: no source found; the difference is a rounding of the text.
+
+### The monk number
+
+The faith recharge has no name of its own in the effect table: it is the reload attribute applied
+to the monk class. The extractor reads a multiplying command on that attribute, aimed at units of
+the monk class, as `faithRate`. The name is an inference from the values (1.875 and 2 match the
+community's figures), not from a published attribute list.
+
+### Still open
+
+- Whether any official patch notes address these differences.
+- Kamayuk and Hulk show "range 1"; it looks like real data and has not been checked further.
+- The number of civilization bonuses listed differs between locales for a few civilizations (Goths,
+  Byzantines, Celts, Malians, Cumans in Spanish, Italian and French), probably a different split of
+  the game's text.
+- The monk attribute above is named by inference.
