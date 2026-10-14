@@ -1,5 +1,19 @@
-const ONE_DECIMAL = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
-const TWO_DECIMALS = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
+import { numberLocale } from '../i18n/number-locale.ts';
+
+const formatters = new Map<string, Intl.NumberFormat>();
+
+/** A formatter for the interface's language, kept so that formatting a column does not rebuild it. */
+function formatter(decimals: number): Intl.NumberFormat {
+    const locale = numberLocale();
+    const id = `${locale ?? ''}|${String(decimals)}`;
+    const known = formatters.get(id);
+    if (known) return known;
+
+    const created = new Intl.NumberFormat(locale, { maximumFractionDigits: decimals });
+    formatters.set(id, created);
+
+    return created;
+}
 
 /**
  * Formats a number with at most one decimal, dropping a trailing zero.
@@ -8,7 +22,7 @@ const TWO_DECIMALS = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2
  * @returns A short, locale-aware string.
  */
 export function short(value: number): string {
-    return ONE_DECIMAL.format(value);
+    return formatter(1).format(value);
 }
 
 /**
@@ -18,7 +32,7 @@ export function short(value: number): string {
  * @returns A precise, locale-aware string.
  */
 export function precise(value: number): string {
-    return TWO_DECIMALS.format(value);
+    return formatter(2).format(value);
 }
 
 /**

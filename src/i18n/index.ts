@@ -1,6 +1,7 @@
 import i18next, { type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DEFAULT_LOCALE, FALLBACK_LOCALE } from '../data/dataset.ts';
+import { setNumberLocale } from './number-locale.ts';
 import de from './locales/de.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
@@ -39,6 +40,11 @@ export function createI18n(locale: SupportedLocale): i18n {
         initAsync: false,
         interpolation: { escapeValue: false },
     });
+
+    setNumberLocale(locale);
+    // A language chosen after the page has loaded changes the numbers along with the words.
+    i18next.off('languageChanged', setNumberLocale);
+    i18next.on('languageChanged', setNumberLocale);
 
     return i18next;
 }
