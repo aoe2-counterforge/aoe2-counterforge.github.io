@@ -370,3 +370,53 @@ describe('UpgradeService work rates', () => {
         expect(rates).toEqual([1, [{ kind: 'gatherRate', resource: 'gold', factor: 1.15 }]]);
     });
 });
+
+describe('UpgradeService applicability', () => {
+    function buildApplicabilityService() {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [
+                unitRecord({ key: 'swordsman', id: 1, classId: INFANTRY, attacks: { 'base-melee': 9 } }),
+                unitRecord({ key: 'archer', id: 2, classId: INFANTRY, attacks: { 'base-pierce': 6 } }),
+            ],
+            technologies: [
+                technologyRecord({
+                    key: 'forging',
+                    age: 2,
+                    building: 'blacksmith',
+                    effects: [
+                        { mode: 'add', unit: null, unitClass: INFANTRY, attribute: 'attack', value: 1, damageClass: 'base-melee' },
+                    ],
+                }),
+                technologyRecord({
+                    key: 'fereters',
+                    age: 3,
+                    building: 'barracks',
+                    effects: [
+                        { mode: 'add', unit: 1, unitClass: null, attribute: 'hp', value: 30 },
+                        { mode: 'add', unit: 1, unitClass: null, attribute: 'hp', value: -30 },
+                    ],
+                }),
+            ],
+            civilizations: [civilizationRecord('franks')],
+        });
+
+        return { catalog, upgrades: new UpgradeService({ catalog }) };
+    }
+
+    it('does not hand an attack bonus to a unit that has no attack of that class', () => {
+        const { catalog, upgrades } = buildApplicabilityService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('forging'));
+
+        expect(changed.map(({ unit }) => unit.key)).toEqual(['swordsman']);
+    });
+
+    it('leaves out a unit whose changes cancel each other out', () => {
+        const { catalog, upgrades } = buildApplicabilityService();
+
+        const changed = upgrades.unitsChangedBy(catalog.technology('fereters'));
+
+        expect(changed).toEqual([]);
+    });
+});

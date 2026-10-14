@@ -112,6 +112,60 @@ const COST_OF: Record<string, string> = {
     costStone: 'stone',
 };
 
+/** The value of each number in a delta that means the unit is not changed. */
+const NO_CHANGE = new Map<string, number>([
+    ['hp', 0],
+    ['range', 0],
+    ['accuracy', 0],
+    ['lineOfSight', 0],
+    ['speed', 0],
+    ['reloadTime', 0],
+    ['blastWidth', 0],
+    ['projectiles', 0],
+    ['regeneration', 0],
+    ['population', 0],
+    ['damageReflection', 0],
+    ['hpMultiplier', 1],
+    ['speedMultiplier', 1],
+    ['reloadTimeMultiplier', 1],
+    ['trainTimeMultiplier', 1],
+    ['populationMultiplier', 1],
+]);
+
+/**
+ * Takes out what two commands of the same technology cancel to.
+ *
+ * Fereters hands a spearman thirty hit points and takes thirty away again; the sum is nothing, and
+ * a chip that says nothing is worse than no chip.
+ *
+ * @param delta - The accumulated change.
+ * @returns The same change without the entries that add up to no change.
+ */
+function withoutNetZero(delta: StatDelta): StatDelta {
+    const kept: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(delta)) {
+        if (Array.isArray(value)) {
+            const neutral = key.endsWith('Multipliers') ? 1 : 0;
+            const left = (value as ClassAmount[]).filter((entry) => entry.amount !== neutral);
+            if (left.length > 0) kept[key] = left;
+
+            continue;
+        }
+        if (key === 'costMultipliers') {
+            const left = Object.entries(delta.costMultipliers ?? {}).filter(([, factor]) => factor !== 1);
+            if (left.length > 0) kept[key] = Object.fromEntries(left);
+
+            continue;
+        }
+        if (typeof value === 'number' && NO_CHANGE.get(key) === value) continue;
+
+        kept[key] = value;
+    }
+
+    return kept;
+}
+
 /** A stat delta written so that two equal deltas produce the same string, whatever their order. */
 function canonical(delta: StatDelta): string {
     const scalars = [
@@ -350,12 +404,40 @@ export class UpgradeService {
         return this.toDelta(this.catalog.civilization(civ).bonuses.filter((effect) => effect.reaches(unit)));
     }
 
+    /**
+     * Whether a command that names the unit has anything to act on.
+     *
+     * The game only moves an attack or an armour value the unit already carries: Forging's melee
+     * bonus reaches every cavalry unit by class, but a war chariot has no melee attack to add to.
+     *
+     * @param unit - The unit the command reaches.
+     * @param effect - The command.
+     * @returns False for an attack or armour change aimed at a damage class the unit does not have.
+     */
+    private appliesTo(unit: Unit, effect: TechEffect): boolean {
+        if (effect.damageClass === undefined) return true;
+
+        const profiles =
+            effect.attribute === 'attack'
+                ? [unit.stats.attack, unit.stats.secondaryAttack]
+                : effect.attribute === 'armour'
+                  ? [unit.stats.armour]
+                  : [];
+        if (profiles.length === 0) return true;
+
+        return profiles.some((profile) => profile.entries().some((entry) => entry.armourClass === effect.damageClass));
+    }
+
     /** The change one technology makes to one unit, or null when it never reaches it. */
     private upgradeFor(unit: Unit, technology: Technology): AppliedUpgrade | null {
-        const reaching = technology.effects.filter((effect) => effect.reaches({ id: unit.id, classId: unit.classId }));
+        const reaching = technology.effects
+            .filter((effect) => effect.reaches({ id: unit.id, classId: unit.classId }))
+            .filter((effect) => this.appliesTo(unit, effect));
         if (reaching.length === 0) return null;
 
         const delta = this.toDelta(reaching);
+        // Commands that cancel each other out leave a unit that is not changed at all.
+        if (reaching.every((effect) => MODELLED.has(effect.attribute)) && Object.keys(delta).length === 0) return null;
         // A technology that only retunes a charge the unit already had says nothing worth listing.
         if (reaching.every((effect) => CHARGE_TUNING.has(effect.attribute)) && Object.keys(delta).length === 0) {
             return null;
@@ -497,7 +579,7 @@ export class UpgradeService {
         if (classed.armour.added.size > 0) delta.armour = list(classed.armour.added);
         if (classed.armour.scaled.size > 0) delta.armourMultipliers = list(classed.armour.scaled);
 
-        return delta;
+        return withoutNetZero(delta);
     }
 
     /**
