@@ -16,7 +16,11 @@ type Values = Record<string, string | number>;
  */
 export function translator(): TFunction {
     const translate = (key: string, values: Values = {}): string => {
-        const template = key.split('.').reduce<unknown>((node, part) => (node as Bundle | undefined)?.[part], english);
+        const find = (path: string): unknown =>
+            path.split('.').reduce<unknown>((node, part) => (node as Bundle | undefined)?.[part], english);
+        // A count picks the singular or plural form the way i18next does for English.
+        const plural = typeof values.count === 'number' ? (values.count === 1 ? '_one' : '_other') : '';
+        const template = find(`${key}${plural}`) ?? find(key);
         if (typeof template !== 'string') return key;
 
         return template.replaceAll(/\{\{(\w+)\}\}/g, (_, name: string) => String(values[name] ?? ''));

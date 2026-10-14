@@ -35,6 +35,12 @@ describe('describeEffect', () => {
         expect(labels).toEqual(['-20% population space']);
     });
 
+    it('puts the projectile count in the plural when there are several', () => {
+        const labels = [describeEffect({ projectiles: 1 }, t), describeEffect({ projectiles: 6 }, t)];
+
+        expect(labels).toEqual([['+1 projectile'], ['+6 projectiles']]);
+    });
+
     it('writes a factor as the percentage it adds', () => {
         const labels = describeEffect({ hpMultiplier: 1.2 }, t);
 

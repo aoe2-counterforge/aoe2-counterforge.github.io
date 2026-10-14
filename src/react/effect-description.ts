@@ -76,7 +76,9 @@ export function describeEffect(
         labels.push(t('upgrades.effect.attackSpeed', { value: percentDelta(1 / change.reloadTimeMultiplier) }));
     }
     if (change.projectiles !== undefined) {
-        labels.push(t('upgrades.effect.projectiles', { value: delta(change.projectiles) }));
+        labels.push(
+            t('upgrades.effect.projectiles', { value: delta(change.projectiles), count: Math.abs(change.projectiles) }),
+        );
     }
     if (change.blastWidth !== undefined) {
         labels.push(t('upgrades.effect.blast', { value: delta(change.blastWidth) }));

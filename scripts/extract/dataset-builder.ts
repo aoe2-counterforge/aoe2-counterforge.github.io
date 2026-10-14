@@ -54,6 +54,9 @@ export interface GeneratedDataset {
 /** Offset between a name string and the help text that describes it. */
 const HELP_OFFSET = 21000;
 
+/** A unit's long name sits this far above its short one, and its description hangs off the short one. */
+const LONG_NAME_OFFSET = 9000;
+
 /** Offset between a civilization name string and its bonus list. */
 const CIVILIZATION_HELP_OFFSET = 109879;
 
@@ -358,7 +361,13 @@ export class DatasetBuilder {
             units.push(this.unitRecord({ id, key, unit, entry, upgrades }));
 
             for (const locale of this.config.strings.keys()) {
-                const help = parseUnitHelp(this.raw(locale, unit.nameStringId + HELP_OFFSET));
+                // The tech tree names a unit that has several forms by one of them; the form the unit
+                // record carries may have no description of its own, so the tree's name is the fallback.
+                const nameId = entry.node['Name String ID'];
+                const helps = [unit.nameStringId, nameId, nameId - LONG_NAME_OFFSET].map((id) =>
+                    parseUnitHelp(this.raw(locale, id + HELP_OFFSET)),
+                );
+                const help = helps.find((candidate) => candidate.role !== '') ?? helps[0];
                 unitStrings.get(locale)?.set(key, {
                     ...help,
                     name: this.text(locale, entry.node['Name String ID']) || englishName,

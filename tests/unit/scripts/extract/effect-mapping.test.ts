@@ -116,4 +116,14 @@ describe('technology effects', () => {
 
         expect(targets).toEqual([villager]);
     });
+
+    it('keeps the description of a unit whose tech tree entry names a different form of it', () => {
+        const strings = JSON.parse(readFileSync('src/data/generated/strings.en.json', 'utf8')) as {
+            units: Record<string, { role: string }>;
+        };
+
+        const roles = [strings.units.ratha?.role, strings.units['elite-ratha']?.role];
+
+        expect(roles.every((role) => role !== undefined && role !== '')).toBe(true);
+    });
 });
