@@ -92,6 +92,7 @@ const MODELLED = new Set([
     'healRate',
     'combatRate',
     'workRate',
+    'carryCapacity',
     'upgradesTo',
     'spawns',
     'trainLocation',
@@ -109,6 +110,9 @@ const MODELLED = new Set([
 
 /** The charge attributes that adjust an existing charge instead of granting one. */
 const CHARGE_TUNING = new Set(['rechargeRate', 'chargeEvent', 'chargeType']);
+
+/** The flag of the ballistics field that makes a shot pass through what it hits. */
+const PASS_THROUGH = 2;
 
 /** The resource each cost attribute scales, with the whole price under its own name. */
 const COST_OF: Record<string, string> = {
@@ -137,6 +141,7 @@ const NO_CHANGE = new Map<string, number>([
     ['reloadTimeMultiplier', 1],
     ['trainTimeMultiplier', 1],
     ['populationMultiplier', 1],
+    ['blastMultiplier', 1],
     ['faithMultiplier', 1],
 ]);
 
@@ -194,6 +199,10 @@ function canonical(delta: StatDelta): string {
         delta.minRangeCeiling,
         delta.ignoresArmour,
         delta.charge,
+        JSON.stringify(delta.carry ?? []),
+        JSON.stringify(delta.costChanges ?? []),
+        delta.blastMultiplier,
+        delta.passThrough,
         JSON.stringify(delta.workRates ?? []),
         delta.upgradesTo?.join(','),
         delta.spawns,
@@ -229,6 +238,8 @@ function scaled(delta: StatDelta): boolean {
         delta.speedMultiplier !== undefined ||
         delta.reloadTimeMultiplier !== undefined ||
         delta.populationMultiplier !== undefined ||
+        delta.blastMultiplier !== undefined ||
+        delta.carry !== undefined ||
         delta.faithMultiplier !== undefined ||
         delta.workRates !== undefined ||
         delta.trainTimeMultiplier !== undefined ||
@@ -302,6 +313,26 @@ export class UpgradeService {
             .map((effect) => effect.value);
 
         return factors.length > 0 ? Math.max(...factors) : 1;
+    }
+
+    /**
+     * What a technology does to the buildings the guide has no page for: towers, walls, castles.
+     *
+     * @param tech - The technology.
+     * @returns One entry per building, with the change it gets.
+     */
+    public buildingsChangedBy(tech: Technology): { building: string; delta: StatDelta }[] {
+        const byBuilding = new Map<string, TechEffect[]>();
+        for (const effect of tech.effects) {
+            if (effect.target === undefined) continue;
+
+            byBuilding.set(effect.target, [...(byBuilding.get(effect.target) ?? []), effect]);
+        }
+
+        return [...byBuilding]
+            .map(([building, effects]) => ({ building, delta: this.toDelta(effects) }))
+            .filter((entry) => Object.keys(entry.delta).length > 0)
+            .sort((left, right) => left.building.localeCompare(right.building));
     }
 
     /**
@@ -517,6 +548,25 @@ export class UpgradeService {
 
             if (this.describeStructure(delta, effect)) continue;
 
+            if (effect.attribute === 'carryCapacity') {
+                delta.carry = [...(delta.carry ?? []), { mode: effect.mode, value: effect.value, resource: effect.resource }];
+
+                continue;
+            }
+            const priced = COST_OF[effect.attribute];
+            if (priced !== undefined && priced !== 'all' && effect.mode !== 'multiply') {
+                // A set to minus one is the table's way of writing no change.
+                if (effect.mode === 'set' && effect.value < 0) continue;
+
+                delta.costChanges = [...(delta.costChanges ?? []), { mode: effect.mode, resource: priced, value: effect.value }];
+
+                continue;
+            }
+            // The ballistics field is a set of flags; the second one makes a shot hit what it passes.
+            if (effect.attribute === 'ballistics' && effect.mode !== 'multiply' && (Math.trunc(effect.value) & PASS_THROUGH) !== 0) {
+                delta.passThrough = true;
+            }
+
             // The other charge attributes only tune a charge; the capacity is what gives the unit one.
             if (effect.attribute === 'maxCharge') {
                 if (effect.mode !== 'multiply' && effect.value > 0) delta.charge = true;
@@ -545,6 +595,7 @@ export class UpgradeService {
                 if (effect.attribute === 'trainTime') {
                     delta.trainTimeMultiplier = (delta.trainTimeMultiplier ?? 1) * effect.value;
                 }
+                if (effect.attribute === 'blastWidth') delta.blastMultiplier = (delta.blastMultiplier ?? 1) * effect.value;
                 if (effect.attribute === 'faithRate') delta.faithMultiplier = (delta.faithMultiplier ?? 1) * effect.value;
                 if (effect.attribute === 'population') {
                     delta.populationMultiplier = (delta.populationMultiplier ?? 1) * effect.value;

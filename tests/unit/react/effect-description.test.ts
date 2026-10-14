@@ -52,6 +52,32 @@ describe('describeEffect', () => {
         expect(labels).toEqual(['Regains faith 87.5% faster']);
     });
 
+    it('names the resource a unit carries more of', () => {
+        const labels = describeEffect({ carry: [{ mode: 'add', value: 1, resource: 'food' }] }, t);
+
+        expect(labels).toEqual(['Carries +1 more food']);
+    });
+
+    it('writes a price change and a price set outright', () => {
+        const labels = describeEffect(
+            {
+                costChanges: [
+                    { mode: 'add', resource: 'gold', value: -20 },
+                    { mode: 'set', resource: 'wood', value: 0 },
+                ],
+            },
+            t,
+        );
+
+        expect(labels).toEqual(['-20 gold cost', 'wood cost set to 0']);
+    });
+
+    it('writes a blast radius factor and a shot that passes through', () => {
+        const labels = describeEffect({ blastMultiplier: 1.2, passThrough: true }, t);
+
+        expect(labels).toEqual(['Shots pass through targets', '+20% blast radius']);
+    });
+
     it('writes a factor as the percentage it adds', () => {
         const labels = describeEffect({ hpMultiplier: 1.2 }, t);
 
@@ -120,9 +146,9 @@ describe('describeRate', () => {
         expect(label).toBe('Villagers gather gold 15% faster.');
     });
 
-    it('words a trade rate as trading, not as training', () => {
+    it('words a trade rate as gold per trip, apart from the speed chip', () => {
         const label = describeRate({ kind: 'tradeRate', resource: undefined, factor: 1.2 }, t);
 
-        expect(label).toBe('Trade units earn 20% faster.');
+        expect(label).toBe('Trade units earn 20% more gold per trip.');
     });
 });

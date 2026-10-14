@@ -134,4 +134,21 @@ describe('technology effects', () => {
 
         expect(attributes).toEqual([['faithRate', 1.875]]);
     });
+
+    it('puts the carry capacity of a villager form on the Villager, with the resource it gathers', () => {
+        const villager = units.find((unit) => unit.key === 'villager')?.id;
+        const effects = technologies.find((technology) => technology.key === 'heavy-plow')?.effects ?? [];
+
+        const carry = effects.find((effect) => effect.attribute === 'carryCapacity');
+
+        expect([carry?.unit, carry?.resource, carry?.value]).toEqual([villager, 'food', 1]);
+    });
+
+    it('keeps what a technology does to towers and walls under the building it is about', () => {
+        const effects = technologies.find((technology) => technology.key === 'masonry')?.effects ?? [];
+
+        const targets = new Set(effects.map((effect) => effect.target));
+
+        expect(targets.has('towers')).toBe(true);
+    });
 });

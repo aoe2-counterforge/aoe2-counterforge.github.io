@@ -77,6 +77,8 @@ export interface TechEffectRecord {
     building?: string;
     /** For a gathering rate, the resource it speeds up, or the kind of ship that gathers it. */
     resource?: string;
+    /** The building the change is about, when the unit it names is one the guide has no page for. */
+    target?: string;
 }
 
 export interface TechnologyRecord {

@@ -17,6 +17,8 @@ export interface TechEffectConfig {
     building?: string;
     /** For a gathering rate, the resource it speeds up, or the kind of ship that gathers it. */
     resource?: string;
+    /** The building the change is about, when the unit it names is one the guide has no page for. */
+    target?: string;
 }
 
 /** One change a technology makes, taken from the game's own effect table. */
@@ -42,6 +44,11 @@ export class TechEffect {
     /** Age the change arrives in, or null when the game states it without one. */
     public get age(): number | null {
         return this.config.age ?? null;
+    }
+
+    /** The building a change is about, when it is a building and not a unit. */
+    public get target(): string | undefined {
+        return this.config.target;
     }
 
     /** The resource a gathering-rate change is about, when it is one. */

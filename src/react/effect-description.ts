@@ -89,6 +89,26 @@ export function describeEffect(
     if (change.ballistics) labels.push(t('upgrades.effect.ballistics'));
     if (change.ignoresArmour) labels.push(t('upgrades.effect.ignoresArmour'));
     if (change.charge) labels.push(t('upgrades.effect.charge'));
+    if (change.passThrough) labels.push(t('upgrades.effect.passThrough'));
+    if (change.blastMultiplier !== undefined && change.blastMultiplier !== 1) {
+        labels.push(t('upgrades.effect.blastPercent', { value: percentDelta(change.blastMultiplier) }));
+    }
+    for (const carry of change.carry ?? []) {
+        const resource = carry.resource === undefined ? '' : t(`resources.${carry.resource}`).toLocaleLowerCase();
+        if (carry.mode === 'set') continue;
+
+        const value = carry.mode === 'add' ? delta(carry.value) : percentDelta(carry.value);
+        const kind = carry.mode === 'add' ? 'carryFlat' : 'carryPercent';
+        labels.push(t(`upgrades.effect.${kind}${carry.resource === undefined ? '' : 'Resource'}`, { value, resource }));
+    }
+    for (const price of change.costChanges ?? []) {
+        const resource = t(`resources.${price.resource}`).toLocaleLowerCase();
+        labels.push(
+            price.mode === 'add'
+                ? t('upgrades.effect.costAdd', { value: delta(price.value), resource })
+                : t('upgrades.effect.costSet', { value: short(price.value), resource }),
+        );
+    }
     for (const rate of change.workRates ?? []) labels.push(describeRate(rate, t));
     for (const key of change.upgradesTo ?? []) {
         labels.push(t('upgrades.effect.upgradesTo', { unit: unitName(key) }));

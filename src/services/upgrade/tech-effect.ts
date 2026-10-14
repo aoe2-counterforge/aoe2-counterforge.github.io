@@ -48,6 +48,14 @@ export interface StatDelta {
     charge?: boolean;
     /** Work the technology speeds up for this unit: what kind, which resource, and by what factor. */
     workRates?: readonly { kind: string; resource?: string; factor: number }[];
+    /** What a technology does to how much the unit carries, with the resource when the task says it. */
+    carry?: readonly { mode: 'add' | 'multiply' | 'set'; value: number; resource?: string }[];
+    /** Prices a technology adds to or sets outright, one resource at a time. */
+    costChanges?: readonly { mode: 'add' | 'set'; resource: string; value: number }[];
+    /** The factor the unit's blast radius is scaled by. */
+    blastMultiplier?: number;
+    /** True once the unit's shots hit everything along their path. */
+    passThrough?: boolean;
     /** Slugs of the units this one turns into once the technology is researched. */
     upgradesTo?: readonly string[];
     /** How many of this unit the technology hands over for free. */

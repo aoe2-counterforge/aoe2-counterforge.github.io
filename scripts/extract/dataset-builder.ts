@@ -215,6 +215,13 @@ const GATHERED: Record<number, string> = { 0: 'food', 1: 'wood', 2: 'stone', 3: 
 /** Attributes whose value names a unit or a building rather than measuring something. */
 const REFERENCES = new Set(['projectileUnit', 'trainLocation', 'chargeProjectile', 'onHitEffect']);
 
+/**
+ * The classes of the file that hold nothing but buildings, and what the guide calls them.
+ *
+ * A technology like Masonry names the class, not each tower and wall in it.
+ */
+const BUILDING_CLASSES: Record<number, string> = { 3: 'buildings', 27: 'walls', 39: 'gates', 52: 'towers' };
+
 /** Commands that change a number; the rest enable units, swap graphics or rename things. */
 /**
  * Commands that change a number, and the same three again for a change the whole team receives.
@@ -1030,6 +1037,30 @@ export class DatasetBuilder {
     }
 
     /**
+     * The guide's name for a building a command names, or undefined when it names anything else.
+     *
+     * A watch tower exists once per age and per kind of civilization, and a technology names the
+     * copies it means; what they share is the name of the building the guide knows.
+     *
+     * @param id - Unit id as the command states it.
+     * @returns The building's slug, such as 'guard-tower'.
+     */
+    private buildingSlug(id: number): string | undefined {
+        if (this.treeUnits.has(id)) return undefined;
+
+        const units = this.referenceUnits();
+        const unit = units.get(id);
+        if (unit?.type !== UNIT_TYPE.building) return undefined;
+
+        const known = BUILDINGS[id];
+        if (known) return known;
+
+        const match = Object.entries(BUILDINGS).find(([buildingId]) => units.get(Number(buildingId))?.nameStringId === unit.nameStringId);
+
+        return match?.[1];
+    }
+
+    /**
      * Whether a technology costs real resources.
      *
      * The Lithuanian relic bonuses cost a relic and the Winged Hussar bonus costs a single food:
@@ -1043,19 +1074,18 @@ export class DatasetBuilder {
     }
 
     /**
-     * The unit a work-rate change is shown on.
+     * The unit a change is shown on.
      *
      * A villager exists once per job and per sex in the file — the gold miner, the lumberjack, the
-     * builder — while the guide has the one Villager page. A gathering technology names those, so it
-     * is shown on the villager they are all states of.
+     * builder — while the guide has the one Villager page. A technology that names those forms is
+     * shown on the villager they are all states of.
      *
      * @param id - Unit id as the command states it, or negative for a class.
-     * @param attribute - What the command changes.
      * @returns The unit to show it on, or null for a class.
      */
-    private listedWorker(id: number, attribute: string | undefined): number | null {
+    private listedWorker(id: number): number | null {
         if (id < 0) return null;
-        if (!attribute?.endsWith('Rate') || this.treeUnits.has(id)) return id;
+        if (this.treeUnits.has(id)) return id;
         if (this.referenceUnits().get(id)?.classId !== CIVILIAN_CLASS) return id;
 
         const villager = [...this.treeUnits]
@@ -1080,12 +1110,25 @@ export class DatasetBuilder {
         resource?: string;
     } {
         const name = ATTRIBUTES[command.attribute];
-        if (name !== 'workRate' && name !== 'reloadTime') return { name };
+        if (name !== 'workRate' && name !== 'reloadTime' && name !== 'carryCapacity') return { name };
 
         const units = this.referenceUnits();
         const targets = command.unit >= 0 ? [units.get(command.unit)] : [...units.values()].filter(
             (unit) => unit.classId === command.unitClass,
         );
+        // What a unit carries is whatever its gathering task collects, when there is only one.
+        if (name === 'carryCapacity') {
+            const resources = new Set(
+                targets.map((unit) => {
+                    const task = unit?.tasks.find((candidate) => GATHER_ACTIONS.has(candidate.actionType) && GATHERED[candidate.resourceIn]);
+
+                    return task ? GATHERED[task.resourceIn] : undefined;
+                }),
+            );
+            const [only] = [...resources];
+
+            return resources.size === 1 && only !== undefined ? { name, resource: only } : { name };
+        }
         // A monk has no shots to reload: the number the game scales on one is how fast it regains faith.
         if (name === 'reloadTime') {
             const monks = targets.length > 0 && targets.every((unit) => unit?.classId === MONK_CLASS);
@@ -1159,7 +1202,7 @@ export class DatasetBuilder {
         // unit that fires several missiles is reached once per missile. Both would hand it the same
         // change twice, so a change that arrives by way of a projectile is only kept if it is new.
         const emitted = new Set<string>();
-        const add = (record: TechEffectRecord, derived: boolean): void => {
+        const add = (record: TechEffectRecord, derived: boolean, byValue = false): void => {
             const key = [
                 record.unit,
                 record.unitClass,
@@ -1168,11 +1211,12 @@ export class DatasetBuilder {
                 record.mode,
                 record.resource,
             ].join('|');
-            if (derived && emitted.has(key)) return;
+            if (derived && !byValue && emitted.has(key)) return;
 
-            // Setting a number to the value it was just set to says nothing new.
+            // Setting a number to the value it was just set to says nothing new, and neither does
+            // the same change arriving once for each form of a villager.
             const exact = `${key}|${record.value}|${record.building ?? ''}`;
-            if (record.mode === 'set' && emitted.has(exact)) return;
+            if ((record.mode === 'set' || byValue) && emitted.has(exact)) return;
 
             emitted.add(key);
             emitted.add(exact);
@@ -1234,7 +1278,15 @@ export class DatasetBuilder {
                 const shared = attribute === 'population' && mode === 'set' && command.value < 0;
                 if (shared && command.value <= -1) continue;
 
-                for (const target of shooters ?? [this.listedWorker(command.unit, attribute)]) {
+                for (const target of shooters ?? [this.listedWorker(command.unit)]) {
+                    const place =
+                        shooters !== undefined
+                            ? undefined
+                            : command.unit < 0
+                              ? BUILDING_CLASSES[command.unitClass]
+                              : target === command.unit
+                                ? this.buildingSlug(command.unit)
+                                : undefined;
                     add(
                         {
                             mode: shared ? 'multiply' : mode,
@@ -1245,8 +1297,10 @@ export class DatasetBuilder {
                             ...(damageClass ? { damageClass } : {}),
                             ...(building ? { building } : {}),
                             ...(resource ? { resource } : {}),
+                            ...(place ? { target: place } : {}),
                         },
-                        pass === 'derived' || attribute?.endsWith('Rate') === true,
+                        pass === 'derived',
+                        shooters === undefined && (target !== command.unit || place !== undefined),
                     );
                 }
             }
