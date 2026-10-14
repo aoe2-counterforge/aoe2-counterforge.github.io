@@ -1,8 +1,5 @@
 import { numberLocale } from '../i18n/number-locale.ts';
 
-/** How close to a whole percentage a computed one has to be to be written as that whole number. */
-const SNAP = 0.15;
-
 const formatters = new Map<string, Intl.NumberFormat>();
 
 /** A formatter for the interface's language, kept so that formatting a column does not rebuild it. */
@@ -69,11 +66,7 @@ export function preciseDelta(value: number): string {
  * @returns The signed percentage string.
  */
 export function percentDelta(multiplier: number): string {
-    const percent = (multiplier - 1) * 100;
-    // A time cut to two thirds is a speed-up of 49.9% once inverted; the game means fifty.
-    const nearest = Math.round(percent);
-
-    return delta(Math.abs(percent - nearest) < SNAP ? nearest : percent);
+    return delta((multiplier - 1) * 100);
 }
 
 /**

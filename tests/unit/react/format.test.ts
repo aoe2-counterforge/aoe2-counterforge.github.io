@@ -35,13 +35,13 @@ beforeEach(() => {
 });
 
 describe('percentDelta', () => {
-    it('writes a speed-up that is fifty percent to a rounding error as fifty', () => {
+    it('shows the exact figure of a speed-up the game text rounds to fifty', () => {
         const written = percentDelta(1 / 0.667);
 
-        expect(written).toBe('+50');
+        expect(written).toBe('+49.9');
     });
 
-    it('keeps a figure that is not near a whole percentage', () => {
+    it('keeps the exact figure of a time cut to 65%', () => {
         const written = percentDelta(1 / 0.65);
 
         expect(written).toBe('+53.8');
