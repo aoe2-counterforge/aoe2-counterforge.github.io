@@ -1125,6 +1125,8 @@ export class DatasetBuilder {
                     return task ? GATHERED[task.resourceIn] : undefined;
                 }),
             );
+            // A class can hold units that gather nothing, such as a transport; they do not vote.
+            resources.delete(undefined);
             const [only] = [...resources];
 
             return resources.size === 1 && only !== undefined ? { name, resource: only } : { name };

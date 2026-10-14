@@ -55,7 +55,7 @@ describe('describeEffect', () => {
     it('names the resource a unit carries more of', () => {
         const labels = describeEffect({ carry: [{ mode: 'add', value: 1, resource: 'food' }] }, t);
 
-        expect(labels).toEqual(['Carries +1 more food']);
+        expect(labels).toEqual(['Carries +1 food']);
     });
 
     it('writes a price change and a price set outright', () => {
