@@ -3,11 +3,14 @@
  */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import type { TechnologyRecord, UnitRecord } from '../../../../src/data/records.ts';
+import type { CivilizationRecord, TechnologyRecord, UnitRecord } from '../../../../src/data/records.ts';
 
 const technologies = JSON.parse(
     readFileSync('src/data/generated/technologies.json', 'utf8'),
 ) as TechnologyRecord[];
+const civilizations = JSON.parse(
+    readFileSync('src/data/generated/civilizations.json', 'utf8'),
+) as CivilizationRecord[];
 const units = JSON.parse(readFileSync('src/data/generated/units.json', 'utf8')) as UnitRecord[];
 
 describe('technology effects', () => {
@@ -84,5 +87,15 @@ describe('technology effects', () => {
         const shares = effects.filter((effect) => effect.attribute === 'population').map((effect) => [effect.mode, effect.value]);
 
         expect(new Set(shares.map((share) => share.join(':')))).toEqual(new Set(['multiply:0.8']));
+    });
+
+    it('gives a civilization only the bonuses it is handed free, not a retired technology it still carries', () => {
+        const bonuses = (key: string) => civilizations.find((civ) => civ.key === key)?.bonusEffects ?? [];
+
+        const slavsArmour = bonuses('slavs').filter((effect) => effect.attribute === 'armour');
+        const lithuanianRelics = bonuses('lithuanians').length;
+
+        expect(slavsArmour).toEqual([]);
+        expect(lithuanianRelics).toBeGreaterThan(30);
     });
 });

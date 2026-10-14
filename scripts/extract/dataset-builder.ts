@@ -57,6 +57,9 @@ const HELP_OFFSET = 21000;
 /** Offset between a civilization name string and its bonus list. */
 const CIVILIZATION_HELP_OFFSET = 109879;
 
+/** A price of one is the game's way of counting a trigger, not of charging for it. */
+const TRIGGER_PRICE = 1;
+
 const RESOURCE_BY_TYPE: Record<number, keyof CostRecord> = { 0: 'food', 1: 'wood', 2: 'stone', 3: 'gold' };
 
 const BUILDINGS: Record<number, string> = {
@@ -904,6 +907,9 @@ export class DatasetBuilder {
 
         return this.config.game.technologies.flatMap((tech, id) => {
             if (tech.civ !== index || tech.effectId === teamBonus || researchable.has(id)) return [];
+            // A bonus is handed over free. A technology with a price is one the game still carries but
+            // no tech tree sells any more, such as the Slavs' Orthodoxy, and nobody gets its effects.
+            if (this.hasPrice(tech)) return [];
 
             const age = this.ageOf(id);
 
@@ -1010,6 +1016,19 @@ export class DatasetBuilder {
         const sibling = [...this.treeUnits].sort((left, right) => left - right).find((listed) => nameOf(listed) === name);
 
         return sibling ?? null;
+    }
+
+    /**
+     * Whether a technology costs real resources.
+     *
+     * The Lithuanian relic bonuses cost a relic and the Winged Hussar bonus costs a single food:
+     * those are counters the game uses to fire the bonus, not prices.
+     *
+     * @param tech - The technology as the file describes it.
+     * @returns True when someone would have to pay to research it.
+     */
+    private hasPrice(tech: { costs: readonly { type: number; amount: number }[] }): boolean {
+        return tech.costs.some((cost) => RESOURCE_BY_TYPE[cost.type] !== undefined && cost.amount > TRIGGER_PRICE);
     }
 
     /**
