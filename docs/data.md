@@ -189,3 +189,32 @@ community's figures), not from a published attribute list.
   Byzantines, Celts, Malians, Cumans in Spanish, Italian and French), probably a different split of
   the game's text.
 - The monk attribute above is named by inference.
+
+## Backlog: buildings
+
+Buildings have no pages yet, so a technology that only changes buildings still says it changes no
+unit's numbers: Masonry, Architecture, Hoardings, Murder Holes, the tower and wall technologies,
+Fortified Wall, the castle technologies that touch fortifications, and the farm technologies (Horse
+Collar, Heavy Plow, Crop Rotation, which add food to a new farm). A first attempt rendered them as
+rows on the technology page and was taken out on purpose: it needs a proper home first.
+
+What to build:
+
+- A building page per building (Castle, Town Center, Guard Tower, Keep, Farm, walls, gates, docks),
+  with its own stats, cost and the technologies that change it.
+- A buildings menu and listing next to the units one, with the same filters.
+- Building rows on the technology pages again, once the pages exist to link to.
+
+What the data already provides, so none of this needs a new extraction:
+
+- Effect records aimed at a building carry `target`, the building's slug (`castle`, `guard-tower`,
+  `keep`, `town-center`, `dock`, ...) or the slug of a class of buildings (`buildings`, `towers`,
+  `walls`, `gates`). Copies of one building that the file keeps per age and per civilization are
+  folded into one slug by their shared name, and identical records are collapsed.
+- `UpgradeService.buildingsChangedBy(technology)` returns the change per building as the same
+  `StatDelta` the unit chips are written from, so `describeEffect` words it unchanged.
+- The `buildings.*` strings already name the buildings and the four classes in all six locales.
+- The farm food a technology adds is in `economy.json` as `farmUpgrades`, and the string
+  `tech.farmFood` ("Farms hold +75 food.") is still in the locale files.
+- Buildings are not in `units.json`; a building page would need its stats and costs extracted the
+  way the units' are.
