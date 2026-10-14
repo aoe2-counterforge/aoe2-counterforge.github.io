@@ -476,7 +476,7 @@
             "combatRate": "Suas unidades atacam e se preparam {{value}}% mais rápido.",
             "workRate": "Suas unidades trabalham {{value}}% mais rápido."
         },
-        "changesNoUnit": "Esta tecnologia não muda o número de nenhuma unidade. O que ela faz — uma taxa de mercado, um tributo, o trabalho de um monge, a melhoria para outra unidade — está na descrição acima.",
+        "changesNoUnit": "Esta tecnologia não altera os números de nenhuma unidade. O que ela faz está na descrição acima.",
         "linesHint": "Os passos apagados são unidades que {{tech}} não altera.",
         "notChanged": "{{tech}} não altera esta unidade"
     },

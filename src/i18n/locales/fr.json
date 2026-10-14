@@ -476,7 +476,7 @@
             "combatRate": "Ses unités attaquent et se déploient {{value}}% plus vite.",
             "workRate": "Ses unités travaillent {{value}}% plus vite."
         },
-        "changesNoUnit": "Cette technologie ne change les chiffres d'aucune unité. Ce qu'elle fait — une taxe de marché, un tribut, la façon dont un moine travaille, une amélioration d'une autre unité — figure dans sa description ci-dessus.",
+        "changesNoUnit": "Cette technologie ne modifie les chiffres d'aucune unité. Ce qu'elle fait est dans sa description ci-dessus.",
         "linesHint": "Les étapes estompées sont des unités que {{tech}} ne change pas.",
         "notChanged": "{{tech}} ne change pas cette unité"
     },

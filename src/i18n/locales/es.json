@@ -476,7 +476,7 @@
             "combatRate": "Sus unidades atacan y se preparan un {{value}}% más rápido.",
             "workRate": "Sus unidades trabajan un {{value}}% más rápido."
         },
-        "changesNoUnit": "Esta tecnología no cambia los números de ninguna unidad. Lo que hace — una tasa de mercado, un tributo, cómo trabaja un monje, una mejora a otra unidad — está en su descripción, arriba.",
+        "changesNoUnit": "Esta tecnología no cambia las cifras de ninguna unidad. Lo que hace está en su descripción de arriba.",
         "linesHint": "Los pasos atenuados son unidades que {{tech}} no cambia.",
         "notChanged": "{{tech}} no cambia esta unidad"
     },

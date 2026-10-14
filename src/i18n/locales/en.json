@@ -476,7 +476,7 @@
             "combatRate": "Its units attack and pack up {{value}}% faster.",
             "workRate": "Its units work {{value}}% faster."
         },
-        "changesNoUnit": "This technology changes no unit’s numbers. What it does — a market fee, a tribute, how a monk works, an upgrade to another unit — is in its description above.",
+        "changesNoUnit": "This technology changes no unit’s numbers. What it does is in its description above.",
         "linesHint": "Faded steps are units {{tech}} does not change.",
         "notChanged": "{{tech}} does not change this unit"
     },

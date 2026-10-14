@@ -476,7 +476,7 @@
             "combatRate": "Le sue unità attaccano e si preparano il {{value}}% più velocemente.",
             "workRate": "Le sue unità lavorano il {{value}}% più velocemente."
         },
-        "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa — una tassa di mercato, un tributo, il lavoro di un monaco, un potenziamento a un'altra unità — è nella descrizione qui sopra.",
+        "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa è nella descrizione qui sopra.",
         "linesHint": "I passi sbiaditi sono unità che {{tech}} non modifica.",
         "notChanged": "{{tech}} non modifica questa unità"
     },

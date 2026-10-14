@@ -476,7 +476,7 @@
             "combatRate": "Seine Einheiten greifen an und bauen ab {{value}}% schneller.",
             "workRate": "Seine Einheiten arbeiten {{value}}% schneller."
         },
-        "changesNoUnit": "Diese Technologie ändert die Werte keiner Einheit. Was sie tut — eine Marktgebühr, ein Tribut, wie ein Mönch arbeitet, eine Verbesserung einer anderen Einheit — steht oben in ihrer Beschreibung.",
+        "changesNoUnit": "Diese Technologie verändert keine Werte einer Einheit. Was sie bewirkt, steht in der Beschreibung oben.",
         "linesHint": "Ausgegraute Schritte sind Einheiten, die {{tech}} nicht ändert.",
         "notChanged": "{{tech}} ändert diese Einheit nicht"
     },
