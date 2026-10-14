@@ -490,7 +490,6 @@
             "gatherRate": "I villici raccolgono {{resource}} il {{value}}% più velocemente.",
             "gatherShip": "Le navi raccoglitrici ottengono {{resource}} il {{value}}% più velocemente.",
             "buildRate": "I villici costruiscono il {{value}}% più velocemente.",
-            "tradeRate": "Le unità commerciali guadagnano il {{value}}% di oro in più per viaggio.",
             "healRate": "I guaritori curano il {{value}}% più velocemente.",
             "combatRate": "Le sue unità attaccano e si preparano il {{value}}% più velocemente.",
             "workRate": "Le sue unità lavorano il {{value}}% più velocemente."

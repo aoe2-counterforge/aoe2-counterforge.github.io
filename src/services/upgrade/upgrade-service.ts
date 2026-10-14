@@ -14,7 +14,8 @@ export interface WorkRate {
 }
 
 /** The work-rate attributes the extractor tells apart, other than the one that trains units. */
-const RATE_KINDS = new Set(['gatherRate', 'buildRate', 'tradeRate', 'healRate', 'combatRate', 'workRate']);
+// The trade rate is left out on purpose: measured in game, a cart's work rate changes nothing.
+const RATE_KINDS = new Set(['gatherRate', 'buildRate', 'healRate', 'combatRate', 'workRate']);
 
 export interface UpgradeServiceConfig {
     catalog: GameCatalogService;

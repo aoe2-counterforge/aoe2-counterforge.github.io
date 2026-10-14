@@ -145,10 +145,4 @@ describe('describeRate', () => {
 
         expect(label).toBe('Villagers gather gold 15% faster.');
     });
-
-    it('words a trade rate as gold per trip, apart from the speed chip', () => {
-        const label = describeRate({ kind: 'tradeRate', resource: undefined, factor: 1.2 }, t);
-
-        expect(label).toBe('Trade units earn 20% more gold per trip.');
-    });
 });

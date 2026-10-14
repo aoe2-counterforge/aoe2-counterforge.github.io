@@ -420,3 +420,26 @@ describe('UpgradeService applicability', () => {
         expect(changed).toEqual([]);
     });
 });
+
+describe('UpgradeService trade rate', () => {
+    it('does not report a trade unit work rate, which does nothing in the game', () => {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [unitRecord({ key: 'trade-cart', id: 5, classId: 19, category: 'civilian' })],
+            technologies: [
+                technologyRecord({
+                    key: 'caravan',
+                    age: 3,
+                    building: 'market',
+                    effects: [{ mode: 'multiply', unit: 5, unitClass: null, attribute: 'tradeRate', value: 1.2 }],
+                }),
+            ],
+            civilizations: [civilizationRecord('franks')],
+        });
+        const upgrades = new UpgradeService({ catalog });
+
+        const rates = upgrades.workRates('caravan');
+
+        expect(rates).toEqual([]);
+    });
+});

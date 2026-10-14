@@ -490,7 +490,6 @@
             "gatherRate": "Les villageois récoltent {{resource}} {{value}}% plus vite.",
             "gatherShip": "Les navires collecteurs récoltent {{resource}} {{value}}% plus vite.",
             "buildRate": "Les villageois construisent {{value}}% plus vite.",
-            "tradeRate": "Les unités commerciales gagnent {{value}}% d'or en plus par trajet.",
             "healRate": "Les soigneurs soignent {{value}}% plus vite.",
             "combatRate": "Ses unités attaquent et se déploient {{value}}% plus vite.",
             "workRate": "Ses unités travaillent {{value}}% plus vite."

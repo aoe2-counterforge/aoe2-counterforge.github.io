@@ -490,7 +490,6 @@
             "gatherRate": "Los aldeanos recolectan {{resource}} un {{value}}% más rápido.",
             "gatherShip": "Los barcos recolectores obtienen {{resource}} un {{value}}% más rápido.",
             "buildRate": "Los aldeanos construyen un {{value}}% más rápido.",
-            "tradeRate": "Las unidades comerciales ganan un {{value}}% más de oro por viaje.",
             "healRate": "Los curanderos curan un {{value}}% más rápido.",
             "combatRate": "Sus unidades atacan y se preparan un {{value}}% más rápido.",
             "workRate": "Sus unidades trabajan un {{value}}% más rápido."

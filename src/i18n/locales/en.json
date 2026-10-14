@@ -490,7 +490,6 @@
             "gatherRate": "Villagers gather {{resource}} {{value}}% faster.",
             "gatherShip": "Gathering ships collect {{resource}} {{value}}% faster.",
             "buildRate": "Villagers construct buildings {{value}}% faster.",
-            "tradeRate": "Trade units earn {{value}}% more gold per trip.",
             "healRate": "Healers heal {{value}}% faster.",
             "combatRate": "Its units attack and pack up {{value}}% faster.",
             "workRate": "Its units work {{value}}% faster."

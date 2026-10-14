@@ -490,7 +490,6 @@
             "gatherRate": "Aldeões coletam {{resource}} {{value}}% mais rápido.",
             "gatherShip": "Navios coletores obtêm {{resource}} {{value}}% mais rápido.",
             "buildRate": "Aldeões constroem {{value}}% mais rápido.",
-            "tradeRate": "Unidades de comércio rendem {{value}}% mais ouro por viagem.",
             "healRate": "Curandeiros curam {{value}}% mais rápido.",
             "combatRate": "Suas unidades atacam e se preparam {{value}}% mais rápido.",
             "workRate": "Suas unidades trabalham {{value}}% mais rápido."

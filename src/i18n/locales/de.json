@@ -490,7 +490,6 @@
             "gatherRate": "Dorfbewohner sammeln {{resource}} {{value}}% schneller.",
             "gatherShip": "Sammelschiffe gewinnen {{resource}} {{value}}% schneller.",
             "buildRate": "Dorfbewohner bauen {{value}}% schneller.",
-            "tradeRate": "Handelseinheiten verdienen {{value}}% mehr Gold pro Fahrt.",
             "healRate": "Heiler heilen {{value}}% schneller.",
             "combatRate": "Seine Einheiten greifen an und bauen ab {{value}}% schneller.",
             "workRate": "Seine Einheiten arbeiten {{value}}% schneller."
