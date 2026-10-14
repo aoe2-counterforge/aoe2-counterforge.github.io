@@ -228,7 +228,7 @@ export function TechnologyPage() {
 
                     {changed.length === 0 && faster === 1 && rates.length === 0 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
 
-                    {rates.map((rate) => (
+                    {(changed.length > 0 ? [] : rates).map((rate) => (
                         <p className="card__hint" key={`${rate.kind}|${rate.resource ?? ''}`}>
                             {describeRate(rate, t)}
                         </p>

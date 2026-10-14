@@ -70,7 +70,7 @@ function buildService() {
                 key: 'conscription',
                 age: 4,
                 building: 'castle',
-                effects: [{ mode: 'multiply', unit: 1, unitClass: null, attribute: 'workRate', value: 1.33 }],
+                effects: [{ mode: 'multiply', unit: 1, unitClass: null, attribute: 'productionRate', value: 1.33 }],
             }),
         ],
         civilizations: [

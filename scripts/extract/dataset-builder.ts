@@ -1032,6 +1032,29 @@ export class DatasetBuilder {
     }
 
     /**
+     * The unit a work-rate change is shown on.
+     *
+     * A villager exists once per job and per sex in the file — the gold miner, the lumberjack, the
+     * builder — while the guide has the one Villager page. A gathering technology names those, so it
+     * is shown on the villager they are all states of.
+     *
+     * @param id - Unit id as the command states it, or negative for a class.
+     * @param attribute - What the command changes.
+     * @returns The unit to show it on, or null for a class.
+     */
+    private listedWorker(id: number, attribute: string | undefined): number | null {
+        if (id < 0) return null;
+        if (!attribute?.endsWith('Rate') || this.treeUnits.has(id)) return id;
+        if (this.referenceUnits().get(id)?.classId !== CIVILIAN_CLASS) return id;
+
+        const villager = [...this.treeUnits]
+            .sort((left, right) => left - right)
+            .find((listed) => this.referenceUnits().get(listed)?.classId === CIVILIAN_CLASS);
+
+        return villager ?? id;
+    }
+
+    /**
      * The guide's name for what a command changes, and the resource when it is a gathering one.
      *
      * The game has one work rate for everything: a villager's gathering, a trade cart's trips and
@@ -1120,7 +1143,14 @@ export class DatasetBuilder {
         // change twice, so a change that arrives by way of a projectile is only kept if it is new.
         const emitted = new Set<string>();
         const add = (record: TechEffectRecord, derived: boolean): void => {
-            const key = [record.unit, record.unitClass, record.attribute, record.damageClass, record.mode].join('|');
+            const key = [
+                record.unit,
+                record.unitClass,
+                record.attribute,
+                record.damageClass,
+                record.mode,
+                record.resource,
+            ].join('|');
             if (derived && emitted.has(key)) return;
 
             // Setting a number to the value it was just set to says nothing new.
@@ -1187,7 +1217,7 @@ export class DatasetBuilder {
                 const shared = attribute === 'population' && mode === 'set' && command.value < 0;
                 if (shared && command.value <= -1) continue;
 
-                for (const target of shooters ?? [command.unit >= 0 ? command.unit : null]) {
+                for (const target of shooters ?? [this.listedWorker(command.unit, attribute)]) {
                     add(
                         {
                             mode: shared ? 'multiply' : mode,
@@ -1199,7 +1229,7 @@ export class DatasetBuilder {
                             ...(building ? { building } : {}),
                             ...(resource ? { resource } : {}),
                         },
-                        pass === 'derived',
+                        pass === 'derived' || attribute?.endsWith('Rate') === true,
                     );
                 }
             }

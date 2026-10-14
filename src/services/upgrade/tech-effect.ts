@@ -44,6 +44,8 @@ export interface StatDelta {
     minRangeCeiling?: number;
     /** True once a technology has given the unit a charge it can spend, such as the fire ship's explosive one. */
     charge?: boolean;
+    /** Work the technology speeds up for this unit: what kind, which resource, and by what factor. */
+    workRates?: readonly { kind: string; resource?: string; factor: number }[];
     /** Slugs of the units this one turns into once the technology is researched. */
     upgradesTo?: readonly string[];
     /** How many of this unit the technology hands over for free. */

@@ -9,7 +9,7 @@ import type { StatDelta } from './tech-effect.ts';
 /** One kind of work a technology speeds up, with the resource when it is a gathering one. */
 export interface WorkRate {
     kind: string;
-    resource: string | undefined;
+    resource?: string | undefined;
     factor: number;
 }
 
@@ -85,6 +85,12 @@ const MODELLED = new Set([
     'rechargeRate',
     'chargeEvent',
     'chargeType',
+    'gatherRate',
+    'buildRate',
+    'tradeRate',
+    'healRate',
+    'combatRate',
+    'workRate',
     'upgradesTo',
     'spawns',
     'trainLocation',
@@ -186,6 +192,7 @@ function canonical(delta: StatDelta): string {
         delta.minRangeCeiling,
         delta.ignoresArmour,
         delta.charge,
+        JSON.stringify(delta.workRates ?? []),
         delta.upgradesTo?.join(','),
         delta.spawns,
         delta.trainableAt?.join(','),
@@ -219,6 +226,7 @@ function scaled(delta: StatDelta): boolean {
         delta.speedMultiplier !== undefined ||
         delta.reloadTimeMultiplier !== undefined ||
         delta.populationMultiplier !== undefined ||
+        delta.workRates !== undefined ||
         delta.trainTimeMultiplier !== undefined ||
         delta.attackMultipliers !== undefined ||
         delta.armourMultipliers !== undefined ||
@@ -305,7 +313,7 @@ export class UpgradeService {
         const rates = new Map<string, WorkRate>();
 
         for (const effect of this.catalog.technology(key).effects) {
-            if (effect.mode !== 'multiply' || !RATE_KINDS.has(effect.attribute)) continue;
+            if (effect.mode !== 'multiply' || !RATE_KINDS.has(effect.attribute) || effect.value === 1) continue;
 
             const id = `${effect.attribute}|${effect.resource ?? ''}`;
             const known = rates.get(id);
@@ -508,6 +516,18 @@ export class UpgradeService {
             // The other charge attributes only tune a charge; the capacity is what gives the unit one.
             if (effect.attribute === 'maxCharge') {
                 if (effect.mode !== 'multiply' && effect.value > 0) delta.charge = true;
+
+                continue;
+            }
+
+            if (effect.mode === 'multiply' && RATE_KINDS.has(effect.attribute)) {
+                // A factor of one is the table writing a rate it leaves where it was.
+                if (effect.value === 1) continue;
+
+                delta.workRates = [
+                    ...(delta.workRates ?? []),
+                    { kind: effect.attribute, resource: effect.resource, factor: effect.value },
+                ];
 
                 continue;
             }

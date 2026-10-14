@@ -107,4 +107,13 @@ describe('technology effects', () => {
 
         expect(speeds).toEqual([]);
     });
+
+    it('shows a gathering technology on the villager the job units are states of', () => {
+        const villager = units.find((unit) => unit.key === 'villager')?.id;
+        const effects = technologies.find((technology) => technology.key === 'double-bit-axe')?.effects ?? [];
+
+        const targets = [...new Set(effects.map((effect) => effect.unit))];
+
+        expect(targets).toEqual([villager]);
+    });
 });

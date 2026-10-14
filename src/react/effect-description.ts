@@ -87,6 +87,7 @@ export function describeEffect(
     if (change.ballistics) labels.push(t('upgrades.effect.ballistics'));
     if (change.ignoresArmour) labels.push(t('upgrades.effect.ignoresArmour'));
     if (change.charge) labels.push(t('upgrades.effect.charge'));
+    for (const rate of change.workRates ?? []) labels.push(describeRate(rate, t));
     for (const key of change.upgradesTo ?? []) {
         labels.push(t('upgrades.effect.upgradesTo', { unit: unitName(key) }));
     }
