@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.7.2](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.1...v0.7.2) (2026-10-14)
+
+
+### Bug Fixes
+
+* drop missile speed from shooter stats and round near-whole speed-up percentages ([2275eca](https://github.com/giovani-freitag/aoe2-counterforge/commit/2275ecabb4fbfb6a8cf98bf78770604b8c525f46))
+* format numbers in the interface language instead of the machine's ([121398d](https://github.com/giovani-freitag/aoe2-counterforge/commit/121398d66f8eb2f71192ab423d83d51d0896afe1))
+* hide fighting stats on units that cannot attack and zero reload times ([66a615a](https://github.com/giovani-freitag/aoe2-counterforge/commit/66a615a48d29bb340fe44ba01c73c2075873e43d))
+* list gathering and building technologies on the villager page ([49c461f](https://github.com/giovani-freitag/aoe2-counterforge/commit/49c461f8c6b1975c1de5dcdd65827bc3fc7072f1))
+* name the mounted units armour class and hide the unused armour placeholders ([36eed14](https://github.com/giovani-freitag/aoe2-counterforge/commit/36eed14372208db6ba4eada8ec59042843596ea0))
+* pluralise projectile chips and keep the description of units the tech tree names by another form ([b312e00](https://github.com/giovani-freitag/aoe2-counterforge/commit/b312e00de0f6b519f4e99adeb069b938b9920cd9))
+* read a negative population set as the share of population space kept ([988607b](https://github.com/giovani-freitag/aoe2-counterforge/commit/988607bad6bd33eb0066e5e3e83f01bca74c4922))
+* show the exact data value in effect chips instead of a rounded one ([6ae3ec0](https://github.com/giovani-freitag/aoe2-counterforge/commit/6ae3ec0d08be306cafcc52c8e149ca022b7a15ee))
+* simplify the text for technologies that change no unit numbers ([8e8a0a6](https://github.com/giovani-freitag/aoe2-counterforge/commit/8e8a0a672ff5a49fb686c33e7d0d4b336e42b3eb))
+* skip attack and armour bonuses a unit has no class for and drop changes that cancel out ([3e6a670](https://github.com/giovani-freitag/aoe2-counterforge/commit/3e6a670fec2641c5d9fc6e4bdd90eca3a0bfd7ca))
+* stop crediting civilizations with the effects of retired priced technologies ([23bcab5](https://github.com/giovani-freitag/aoe2-counterforge/commit/23bcab525f3cf1e58ad787f84eecb5305af3a108))
+* stop crediting the age advances with the civilization bonuses they carry ([30b35b2](https://github.com/giovani-freitag/aoe2-counterforge/commit/30b35b256c03f1691a1968abedb7252966ee0ec6))
+* stop saying a trebuchet spends itself in one blow on its counters tab ([4d7b103](https://github.com/giovani-freitag/aoe2-counterforge/commit/4d7b1032ff1ba43edbc6b62b9ba588d271074611))
+* word a work-rate bonus as faster work instead of faster training ([ac02acb](https://github.com/giovani-freitag/aoe2-counterforge/commit/ac02acb5b66d080456f5ca7426abbd3400109109))
+* word each work-rate bonus by what the unit does, naming the resource it gathers ([b809152](https://github.com/giovani-freitag/aoe2-counterforge/commit/b809152fea0b1ee7bb3029cbb83097207d0f925f))
+* word the monk reload multiplier as regaining faith faster ([5d789d1](https://github.com/giovani-freitag/aoe2-counterforge/commit/5d789d1580a8ce46288f83e5d7a83ee00d5b84f1))
+
 ## [0.7.1](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.0...v0.7.1) (2026-10-13)
 
 
