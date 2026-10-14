@@ -189,6 +189,7 @@
         "filterPlaceholder": "Gegner filtern",
         "filterHint": "z. B. Pikenier",
         "demolition": "{{unit}} bleibt außen vor: Die Einheit verbraucht sich mit einem Schlag oder wirkt nur gegen Gebäude, es gibt also keinen anhaltenden Schaden zu vergleichen.",
+        "slowSiege": "{{unit}} bleibt außen vor: Die langsamen Fernschüsse sind für Gebäude gedacht, ein Zweikampf sagt daher wenig über die Einheit aus.",
         "openUnit": "{{unit}} öffnen",
         "side": "Welche Duelle anzeigen",
         "sides": {

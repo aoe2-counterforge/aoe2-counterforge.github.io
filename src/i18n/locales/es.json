@@ -189,6 +189,7 @@
         "filterPlaceholder": "Filtrar oponente",
         "filterHint": "p. ej. piquero",
         "demolition": "{{unit}} queda fuera de la simulación: se gasta en un solo golpe o solo sirve contra edificios, así que no hay daño sostenido que comparar.",
+        "slowSiege": "{{unit}} queda fuera de la simulación: sus disparos lentos y de largo alcance están pensados para edificios, así que un duelo directo dice poco de ella.",
         "openUnit": "Abrir {{unit}}",
         "side": "Qué enfrentamientos mostrar",
         "sides": {

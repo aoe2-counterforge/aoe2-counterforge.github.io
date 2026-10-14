@@ -189,6 +189,7 @@
         "filterPlaceholder": "Filtra avversario",
         "filterHint": "es. picchiere",
         "demolition": "{{unit}} resta fuori dalla simulazione: si consuma in un colpo solo o funziona solo contro gli edifici, quindi non c'è un danno continuo da confrontare.",
+        "slowSiege": "{{unit}} resta fuori dalla simulazione: i suoi colpi lenti e a lunga gittata sono pensati per gli edifici, quindi un duello dice poco su di essa.",
         "openUnit": "Apri {{unit}}",
         "side": "Quali scontri mostrare",
         "sides": {

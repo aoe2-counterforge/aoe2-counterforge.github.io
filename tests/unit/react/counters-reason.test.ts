@@ -20,11 +20,19 @@ describe('countersReason', () => {
     });
 
     it('explains a demolition unit by its own wording', () => {
-        const ram = makeUnit({ category: 'siege', tags: ['demolition'] });
+        const ram = makeUnit({ category: 'siege', tags: ['demolition'], reloadTime: 0 });
 
         const reason = countersReason(ram);
 
         expect(reason).toBe('counters.demolition');
+    });
+
+    it('does not call a siege weapon that reloads a unit that spends itself', () => {
+        const trebuchet = makeUnit({ category: 'siege', tags: ['demolition'], reloadTime: 10 });
+
+        const reason = countersReason(trebuchet);
+
+        expect(reason).toBe('counters.slowSiege');
     });
 
     it('has no reason for a unit that fights', () => {

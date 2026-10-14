@@ -189,6 +189,7 @@
         "filterPlaceholder": "Filtrar adversário",
         "filterHint": "Ex.: piqueiro",
         "demolition": "{{unit}} não entra na simulação: ela se gasta em um único golpe ou só serve contra construções, então não tem dano sustentado para comparar.",
+        "slowSiege": "{{unit}} não entra na simulação: seus tiros lentos e de longo alcance servem para construções, então um duelo direto diz pouco sobre ela.",
         "openUnit": "Abrir {{unit}}",
         "side": "Quais confrontos mostrar",
         "sides": {

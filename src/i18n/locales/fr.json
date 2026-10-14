@@ -189,6 +189,7 @@
         "filterPlaceholder": "Filtrer l'adversaire",
         "filterHint": "ex. piquier",
         "demolition": "{{unit}} est exclue de la simulation : l'unité se consume en un coup ou n'agit que contre les bâtiments, il n'y a donc pas de dégâts soutenus à comparer.",
+        "slowSiege": "{{unit}} est exclue de la simulation : ses tirs lents et à longue portée visent les bâtiments, un duel ne dit donc pas grand-chose d'elle.",
         "openUnit": "Ouvrir {{unit}}",
         "side": "Quels affrontements afficher",
         "sides": {
