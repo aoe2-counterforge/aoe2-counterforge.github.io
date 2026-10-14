@@ -251,6 +251,7 @@
             "minRange": "Gittata minima ridotta a {{value}}",
             "population": "{{value}} popolazione",
             "populationPercent": "{{value}}% di spazio popolazione",
+            "faith": "Recupera la fede il {{value}}% più velocemente",
             "damageReflection": "Restituisce il {{value}}% dei danni da mischia"
         },
         "uniqueHint": "Bonus che una civiltà riceve fin dall'inizio, e le tecnologie del castello che raggiungono questa unità.",

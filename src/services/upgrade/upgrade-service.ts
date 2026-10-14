@@ -73,6 +73,7 @@ const MODELLED = new Set([
     'lineOfSight',
     'speed',
     'reloadTime',
+    'faithRate',
     'blastWidth',
     'trainTime',
     'projectiles',
@@ -136,6 +137,7 @@ const NO_CHANGE = new Map<string, number>([
     ['reloadTimeMultiplier', 1],
     ['trainTimeMultiplier', 1],
     ['populationMultiplier', 1],
+    ['faithMultiplier', 1],
 ]);
 
 /**
@@ -201,6 +203,7 @@ function canonical(delta: StatDelta): string {
         delta.aftereffect,
         delta.population,
         delta.populationMultiplier,
+        delta.faithMultiplier,
         delta.damageReflection,
     ].map((value) => String(value ?? ''));
 
@@ -226,6 +229,7 @@ function scaled(delta: StatDelta): boolean {
         delta.speedMultiplier !== undefined ||
         delta.reloadTimeMultiplier !== undefined ||
         delta.populationMultiplier !== undefined ||
+        delta.faithMultiplier !== undefined ||
         delta.workRates !== undefined ||
         delta.trainTimeMultiplier !== undefined ||
         delta.attackMultipliers !== undefined ||
@@ -541,6 +545,7 @@ export class UpgradeService {
                 if (effect.attribute === 'trainTime') {
                     delta.trainTimeMultiplier = (delta.trainTimeMultiplier ?? 1) * effect.value;
                 }
+                if (effect.attribute === 'faithRate') delta.faithMultiplier = (delta.faithMultiplier ?? 1) * effect.value;
                 if (effect.attribute === 'population') {
                     delta.populationMultiplier = (delta.populationMultiplier ?? 1) * effect.value;
                 }

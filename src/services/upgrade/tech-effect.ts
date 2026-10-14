@@ -36,6 +36,8 @@ export interface StatDelta {
     ballistics?: boolean;
     /** Population the unit takes up, which a technology can lower to nothing. */
     population?: number;
+    /** How many times faster a monk regains its faith after a conversion. */
+    faithMultiplier?: number;
     /** The share of its population space the unit keeps, when a technology scales it. */
     populationMultiplier?: number;
     /** Fraction of a melee hit the unit sends back to whoever landed it. */

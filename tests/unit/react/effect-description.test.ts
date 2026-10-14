@@ -1,8 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { setNumberLocale } from '../../../src/i18n/number-locale.ts';
 import { describeEffect, describeRate } from '../../../src/react/effect-description.ts';
 import { translator } from '../../fixtures/translator.ts';
 
 const t = translator();
+
+beforeEach(() => {
+    setNumberLocale('en');
+});
 
 describe('describeEffect', () => {
     it('writes an added value with its sign', () => {
@@ -39,6 +44,12 @@ describe('describeEffect', () => {
         const labels = [describeEffect({ projectiles: 1 }, t), describeEffect({ projectiles: 6 }, t)];
 
         expect(labels).toEqual([['+1 projectile'], ['+6 projectiles']]);
+    });
+
+    it('words a scaled monk faith recharge as regaining faith faster, never as rate of fire', () => {
+        const labels = describeEffect({ faithMultiplier: 1.875 }, t);
+
+        expect(labels).toEqual(['Regains faith 87.5% faster']);
     });
 
     it('writes a factor as the percentage it adds', () => {

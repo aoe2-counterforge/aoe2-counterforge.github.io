@@ -103,6 +103,9 @@ export function describeEffect(
     if (change.population !== undefined) {
         labels.push(t('upgrades.effect.population', { value: delta(change.population) }));
     }
+    if (change.faithMultiplier !== undefined && change.faithMultiplier !== 1) {
+        labels.push(t('upgrades.effect.faith', { value: short((change.faithMultiplier - 1) * 100) }));
+    }
     if (change.populationMultiplier !== undefined && change.populationMultiplier !== 1) {
         labels.push(t('upgrades.effect.populationPercent', { value: percentDelta(change.populationMultiplier) }));
     }

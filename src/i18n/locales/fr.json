@@ -251,6 +251,7 @@
             "minRange": "Portée minimale réduite à {{value}}",
             "population": "{{value}} de population",
             "populationPercent": "{{value}}% de place de population",
+            "faith": "Regagne sa foi {{value}}% plus vite",
             "damageReflection": "Renvoie {{value}}% des dégâts de mêlée"
         },
         "uniqueHint": "Les bonus qu'une civilisation reçoit, et les technologies de château qui touchent cette unité.",

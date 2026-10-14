@@ -251,6 +251,7 @@
             "minRange": "Alcance mínimo cai para {{value}}",
             "population": "{{value}} de população",
             "populationPercent": "{{value}}% de espaço de população",
+            "faith": "Recupera a fé {{value}}% mais rápido",
             "damageReflection": "Devolve {{value}}% do dano corpo a corpo"
         },
         "uniqueHint": "Bônus que a civilização já ganha, e as tecnologias de castelo que alcançam a unidade.",

@@ -251,6 +251,7 @@
             "minRange": "Alcance mínimo reducido a {{value}}",
             "population": "{{value}} de población",
             "populationPercent": "{{value}}% de espacio de población",
+            "faith": "Recupera la fe un {{value}}% más rápido",
             "damageReflection": "Devuelve el {{value}}% del daño cuerpo a cuerpo"
         },
         "uniqueHint": "Bonificaciones que la civilización recibe de entrada, y las tecnologías de castillo que alcanzan a esta unidad.",

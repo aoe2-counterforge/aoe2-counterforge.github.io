@@ -126,4 +126,12 @@ describe('technology effects', () => {
 
         expect(roles.every((role) => role !== undefined && role !== '')).toBe(true);
     });
+
+    it('reads the reload a technology scales on monks as their faith recharge', () => {
+        const effects = technologies.find((technology) => technology.key === 'illumination')?.effects ?? [];
+
+        const attributes = effects.map((effect) => [effect.attribute, effect.value]);
+
+        expect(attributes).toEqual([['faithRate', 1.875]]);
+    });
 });

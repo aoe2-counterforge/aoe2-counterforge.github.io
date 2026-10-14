@@ -202,6 +202,8 @@ const SPAWN_COMMAND = 7;
  * those tasks, read off the villager, the builder, the trade cart, the monk and the soldier.
  */
 const GATHER_ACTIONS = new Set([5, 110]);
+/** The unit class of monks and missionaries; a warrior priest heals too, but it is infantry. */
+const MONK_CLASS = 18;
 const BUILD_ACTION = 101;
 const TRADE_ACTION = 111;
 const HEAL_ACTION = 105;
@@ -1073,17 +1075,23 @@ export class DatasetBuilder {
      * @param command - The command being read.
      * @returns The attribute's name, or undefined when the guide has none for it.
      */
-    private attributeOf(command: { unit: number; unitClass: number; attribute: number }): {
+    private attributeOf(command: { type: number; unit: number; unitClass: number; attribute: number }): {
         name: string | undefined;
         resource?: string;
     } {
         const name = ATTRIBUTES[command.attribute];
-        if (name !== 'workRate') return { name };
+        if (name !== 'workRate' && name !== 'reloadTime') return { name };
 
         const units = this.referenceUnits();
         const targets = command.unit >= 0 ? [units.get(command.unit)] : [...units.values()].filter(
             (unit) => unit.classId === command.unitClass,
         );
+        // A monk has no shots to reload: the number the game scales on one is how fast it regains faith.
+        if (name === 'reloadTime') {
+            const monks = targets.length > 0 && targets.every((unit) => unit?.classId === MONK_CLASS);
+
+            return { name: monks && MODES[command.type] === 'multiply' ? 'faithRate' : name };
+        }
         for (const target of targets) {
             if (target) {
                 const kind = this.workKindOf(target);
