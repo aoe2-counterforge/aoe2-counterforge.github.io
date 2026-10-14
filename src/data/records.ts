@@ -75,6 +75,8 @@ export interface TechEffectRecord {
     age?: number;
     /** For a training place, the building the unit becomes trainable at. */
     building?: string;
+    /** For a gathering rate, the resource it speeds up, or the kind of ship that gathers it. */
+    resource?: string;
 }
 
 export interface TechnologyRecord {

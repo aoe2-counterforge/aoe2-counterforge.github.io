@@ -6,6 +6,16 @@ import type { UnitStats, UnitStatsPatch } from '../../domain/values/unit-stats.t
 import type { GameCatalogService } from '../game-catalog/game-catalog-service.ts';
 import type { StatDelta } from './tech-effect.ts';
 
+/** One kind of work a technology speeds up, with the resource when it is a gathering one. */
+export interface WorkRate {
+    kind: string;
+    resource: string | undefined;
+    factor: number;
+}
+
+/** The work-rate attributes the extractor tells apart, other than the one that trains units. */
+const RATE_KINDS = new Set(['gatherRate', 'buildRate', 'tradeRate', 'healRate', 'combatRate', 'workRate']);
+
 export interface UpgradeServiceConfig {
     catalog: GameCatalogService;
 }
@@ -227,20 +237,27 @@ export class UpgradeService {
     }
 
     /**
-     * How much faster the units a technology reaches do their job, other than training units.
+     * What else a technology speeds up besides training: gathering, building, trading, healing.
      *
-     * Gathering, building, trading and healing all run on the same work rate in the game's table.
+     * The game's table has a single work rate for all of them; the extractor has already told
+     * them apart by what the target does, so each kind is reported with its own factor.
      *
      * @param key - Technology slug.
-     * @returns The factor the work is sped up by, or one when the technology does not touch it.
+     * @returns One entry per kind of work and resource, with the factor the work is sped up by.
      */
-    public workSpeed(key: string): number {
-        const factors = this.catalog
-            .technology(key)
-            .effects.filter((effect) => effect.attribute === 'workRate' && effect.mode === 'multiply')
-            .map((effect) => effect.value);
+    public workRates(key: string): WorkRate[] {
+        const rates = new Map<string, WorkRate>();
 
-        return factors.length > 0 ? Math.max(...factors) : 1;
+        for (const effect of this.catalog.technology(key).effects) {
+            if (effect.mode !== 'multiply' || !RATE_KINDS.has(effect.attribute)) continue;
+
+            const id = `${effect.attribute}|${effect.resource ?? ''}`;
+            const known = rates.get(id);
+            const rate = { kind: effect.attribute, resource: effect.resource, factor: effect.value };
+            if (!known || known.factor < rate.factor) rates.set(id, rate);
+        }
+
+        return [...rates.values()];
     }
 
     /**

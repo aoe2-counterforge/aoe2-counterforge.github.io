@@ -345,7 +345,7 @@ describe('UpgradeService work rates', () => {
                     key: 'gold-mining',
                     age: 2,
                     building: 'mining-camp',
-                    effects: [{ mode: 'multiply', unit: 3, unitClass: null, attribute: 'workRate', value: 1.15 }],
+                    effects: [{ mode: 'multiply', unit: 3, unitClass: null, attribute: 'gatherRate', value: 1.15, resource: 'gold' }],
                 }),
             ],
             civilizations: [civilizationRecord('franks')],
@@ -357,16 +357,16 @@ describe('UpgradeService work rates', () => {
     it('counts a training place that works faster as units trained faster, and nothing else', () => {
         const upgrades = buildRateService();
 
-        const rates = [upgrades.productionSpeed('conscription'), upgrades.workSpeed('conscription')];
+        const rates = [upgrades.productionSpeed('conscription'), upgrades.workRates('conscription')];
 
-        expect(rates).toEqual([1.33, 1]);
+        expect(rates).toEqual([1.33, []]);
     });
 
     it('counts a gatherer that works faster as work, never as training', () => {
         const upgrades = buildRateService();
 
-        const rates = [upgrades.productionSpeed('gold-mining'), upgrades.workSpeed('gold-mining')];
+        const rates = [upgrades.productionSpeed('gold-mining'), upgrades.workRates('gold-mining')];
 
-        expect(rates).toEqual([1, 1.15]);
+        expect(rates).toEqual([1, [{ kind: 'gatherRate', resource: 'gold', factor: 1.15 }]]);
     });
 });

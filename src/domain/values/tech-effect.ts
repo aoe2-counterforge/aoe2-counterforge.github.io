@@ -15,6 +15,8 @@ export interface TechEffectConfig {
     age?: number;
     /** For a training place, the building the unit becomes trainable at. */
     building?: string;
+    /** For a gathering rate, the resource it speeds up, or the kind of ship that gathers it. */
+    resource?: string;
 }
 
 /** One change a technology makes, taken from the game's own effect table. */
@@ -40,6 +42,11 @@ export class TechEffect {
     /** Age the change arrives in, or null when the game states it without one. */
     public get age(): number | null {
         return this.config.age ?? null;
+    }
+
+    /** The resource a gathering-rate change is about, when it is one. */
+    public get resource(): string | undefined {
+        return this.config.resource;
     }
 
     /** Building a training-place change points at, when it is one. */

@@ -1,10 +1,29 @@
 import type { TFunction } from 'i18next';
 import type { ClassAmount } from '../domain/values/class-amount.ts';
 import type { StatDelta } from '../services/upgrade/tech-effect.ts';
+import type { WorkRate } from '../services/upgrade/upgrade-service.ts';
 import { delta, percentDelta, short } from './format.ts';
 
 /** Above this many classes, a shared factor is stated once instead of class by class. */
 const BROAD_ENOUGH = 3;
+
+/**
+ * Words one kind of work a technology speeds up.
+ *
+ * @param rate - The kind of work, the resource when it is gathering, and the factor.
+ * @param t - Translator bound to the active interface language.
+ * @returns A sentence saying what gets faster and by how much.
+ */
+export function describeRate(rate: WorkRate, t: TFunction): string {
+    const value = short((rate.factor - 1) * 100);
+    if (rate.kind !== 'gatherRate') return t(`tech.rate.${rate.kind}`, { value });
+
+    const resource = rate.resource ?? '';
+    const ship = resource.startsWith('ship-');
+    const name = t(`resources.${resource.replace('ship-', '')}`).toLocaleLowerCase();
+
+    return t(ship ? 'tech.rate.gatherShip' : 'tech.rate.gatherRate', { resource: name, value });
+}
 
 /**
  * Turns a technology's stat delta into short human-readable chips.

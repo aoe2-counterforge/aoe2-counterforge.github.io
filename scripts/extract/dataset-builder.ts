@@ -188,6 +188,22 @@ const ATTRIBUTES: Record<number, string> = {
 const UPGRADE_COMMAND = 3;
 const SPAWN_COMMAND = 7;
 
+/**
+ * What a unit's tasks say its work rate is spent on.
+ *
+ * The game has one work rate for everything; the unit's own task list is what says whether it
+ * gathers, builds, trades, heals or fights. The numbers are the action types the file gives
+ * those tasks, read off the villager, the builder, the trade cart, the monk and the soldier.
+ */
+const GATHER_ACTIONS = new Set([5, 110]);
+const BUILD_ACTION = 101;
+const TRADE_ACTION = 111;
+const HEAL_ACTION = 105;
+const ATTACK_ACTION = 7;
+
+/** What a gather task's resource slot stands for; the farm and the fish are both food. */
+const GATHERED: Record<number, string> = { 0: 'food', 1: 'wood', 2: 'stone', 3: 'gold', 16: 'food', 17: 'food' };
+
 /** Attributes whose value names a unit or a building rather than measuring something. */
 const REFERENCES = new Set(['projectileUnit', 'trainLocation', 'chargeProjectile', 'onHitEffect']);
 
@@ -997,21 +1013,53 @@ export class DatasetBuilder {
     }
 
     /**
-     * The guide's name for what a command changes.
+     * The guide's name for what a command changes, and the resource when it is a gathering one.
      *
      * The game has one work rate for everything: a villager's gathering, a trade cart's trips and
-     * a barracks turning out soldiers are all the same number. Only a building that is the place
-     * some unit is trained at makes units faster; everything else with a work rate simply works
-     * faster, and saying it trains units is wrong.
+     * a barracks turning out soldiers are all the same number. Which one it is depends on what the
+     * unit does, so the name is read from the unit's tasks instead of being one word for all.
      *
      * @param command - The command being read.
      * @returns The attribute's name, or undefined when the guide has none for it.
      */
-    private attributeOf(command: { unit: number; attribute: number }): string | undefined {
+    private attributeOf(command: { unit: number; unitClass: number; attribute: number }): {
+        name: string | undefined;
+        resource?: string;
+    } {
         const name = ATTRIBUTES[command.attribute];
-        if (name !== 'workRate') return name;
+        if (name !== 'workRate') return { name };
 
-        return this.trainingPlaces().has(command.unit) ? 'productionRate' : name;
+        const units = this.referenceUnits();
+        const targets = command.unit >= 0 ? [units.get(command.unit)] : [...units.values()].filter(
+            (unit) => unit.classId === command.unitClass,
+        );
+        for (const target of targets) {
+            if (target) {
+                const kind = this.workKindOf(target);
+                if (kind) return { name: kind.name, ...(kind.resource ? { resource: kind.resource } : {}) };
+            }
+        }
+
+        return { name };
+    }
+
+    /** What one unit spends its work rate on, or null when nothing in its tasks says. */
+    private workKindOf(unit: GenieUnit): { name: string; resource?: string } | null {
+        if (unit.type === UNIT_TYPE.building && this.trainingPlaces().has(unit.id)) return { name: 'productionRate' };
+
+        const actions = new Set(unit.tasks.map((task) => task.actionType));
+        const gather = unit.tasks.find((task) => GATHER_ACTIONS.has(task.actionType) && GATHERED[task.resourceIn]);
+        if (gather) {
+            const resource = GATHERED[gather.resourceIn];
+            // A fishing ship is the one gatherer that is not a villager.
+            return { name: 'gatherRate', resource: unit.classId === CIVILIAN_CLASS ? resource : `ship-${resource}` };
+        }
+        if (actions.has(BUILD_ACTION)) return { name: 'buildRate' };
+        if (actions.has(TRADE_ACTION)) return { name: 'tradeRate' };
+        if (actions.has(HEAL_ACTION)) return { name: 'healRate' };
+        if (actions.has(ATTACK_ACTION)) return { name: 'combatRate' };
+
+        return null;
     }
 
     /**
@@ -1068,7 +1116,11 @@ export class DatasetBuilder {
         const commands = effect.commands.map((command) => ({
             command,
             mode: MODES[command.type],
-            attribute: this.attributeOf(command),
+            ...(() => {
+                const { name, resource } = this.attributeOf(command);
+
+                return { attribute: name, resource };
+            })(),
         }));
 
         // Swaps, spawns and the like are what a technology does; a civilization's bonus text already says its own.
@@ -1090,7 +1142,7 @@ export class DatasetBuilder {
         }
 
         for (const pass of ['direct', 'derived'] as const) {
-            for (const { command, mode, attribute } of commands) {
+            for (const { command, mode, attribute, resource } of commands) {
                 if (!mode || !attribute) continue;
 
                 const shooters = command.unit >= 0 ? this.shootersByProjectile().get(command.unit) : undefined;
@@ -1119,6 +1171,7 @@ export class DatasetBuilder {
                             value: packed === null ? this.round(command.value) : packed.value,
                             ...(damageClass ? { damageClass } : {}),
                             ...(building ? { building } : {}),
+                            ...(resource ? { resource } : {}),
                         },
                         pass === 'derived',
                     );

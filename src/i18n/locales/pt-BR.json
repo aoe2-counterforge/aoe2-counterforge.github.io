@@ -465,7 +465,15 @@
         "civCount_other": "{{count}} civilizações",
         "uniqueTo": "Exclusiva de {{civ}}",
         "trainsFaster": "As unidades treinam {{value}}% mais rápido onde ela é pesquisada.",
-        "worksFaster": "Suas unidades trabalham {{value}}% mais rápido onde ela é pesquisada.",
+        "rate": {
+            "gatherRate": "Aldeões coletam {{resource}} {{value}}% mais rápido.",
+            "gatherShip": "Navios coletores obtêm {{resource}} {{value}}% mais rápido.",
+            "buildRate": "Aldeões constroem {{value}}% mais rápido.",
+            "tradeRate": "Unidades de comércio rendem {{value}}% mais rápido.",
+            "healRate": "Curandeiros curam {{value}}% mais rápido.",
+            "combatRate": "Suas unidades atacam e se preparam {{value}}% mais rápido.",
+            "workRate": "Suas unidades trabalham {{value}}% mais rápido."
+        },
         "changesNoUnit": "Esta tecnologia não muda o número de nenhuma unidade. O que ela faz — uma taxa de mercado, um tributo, o trabalho de um monge, a melhoria para outra unidade — está na descrição acima.",
         "linesHint": "Os passos apagados são unidades que {{tech}} não altera.",
         "notChanged": "{{tech}} não altera esta unidade"

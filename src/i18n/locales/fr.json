@@ -465,7 +465,15 @@
         "civCount_other": "{{count}} civilisations",
         "uniqueTo": "Unique aux {{civ}}",
         "trainsFaster": "Les unités se forment {{value}}% plus vite là où elle est développée.",
-        "worksFaster": "Ses unités travaillent {{value}}% plus vite là où elle est recherchée.",
+        "rate": {
+            "gatherRate": "Les villageois récoltent {{resource}} {{value}}% plus vite.",
+            "gatherShip": "Les navires collecteurs récoltent {{resource}} {{value}}% plus vite.",
+            "buildRate": "Les villageois construisent {{value}}% plus vite.",
+            "tradeRate": "Les unités commerciales gagnent {{value}}% plus vite.",
+            "healRate": "Les soigneurs soignent {{value}}% plus vite.",
+            "combatRate": "Ses unités attaquent et se déploient {{value}}% plus vite.",
+            "workRate": "Ses unités travaillent {{value}}% plus vite."
+        },
         "changesNoUnit": "Cette technologie ne change les chiffres d'aucune unité. Ce qu'elle fait — une taxe de marché, un tribut, la façon dont un moine travaille, une amélioration d'une autre unité — figure dans sa description ci-dessus.",
         "linesHint": "Les étapes estompées sont des unités que {{tech}} ne change pas.",
         "notChanged": "{{tech}} ne change pas cette unité"

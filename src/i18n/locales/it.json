@@ -465,7 +465,15 @@
         "civCount_other": "{{count}} civiltà",
         "uniqueTo": "Esclusiva di {{civ}}",
         "trainsFaster": "Le unità si addestrano il {{value}}% più in fretta dove viene ricercata.",
-        "worksFaster": "Le sue unità lavorano il {{value}}% più velocemente dove viene ricercata.",
+        "rate": {
+            "gatherRate": "I villici raccolgono {{resource}} il {{value}}% più velocemente.",
+            "gatherShip": "Le navi raccoglitrici ottengono {{resource}} il {{value}}% più velocemente.",
+            "buildRate": "I villici costruiscono il {{value}}% più velocemente.",
+            "tradeRate": "Le unità commerciali guadagnano il {{value}}% più velocemente.",
+            "healRate": "I guaritori curano il {{value}}% più velocemente.",
+            "combatRate": "Le sue unità attaccano e si preparano il {{value}}% più velocemente.",
+            "workRate": "Le sue unità lavorano il {{value}}% più velocemente."
+        },
         "changesNoUnit": "Questa tecnologia non cambia i numeri di nessuna unità. Ciò che fa — una tassa di mercato, un tributo, il lavoro di un monaco, un potenziamento a un'altra unità — è nella descrizione qui sopra.",
         "linesHint": "I passi sbiaditi sono unità che {{tech}} non modifica.",
         "notChanged": "{{tech}} non modifica questa unità"

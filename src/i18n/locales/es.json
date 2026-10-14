@@ -465,7 +465,15 @@
         "civCount_other": "{{count}} civilizaciones",
         "uniqueTo": "Exclusiva de {{civ}}",
         "trainsFaster": "Las unidades se entrenan un {{value}}% más rápido donde se investiga.",
-        "worksFaster": "Sus unidades trabajan un {{value}}% más rápido donde se investiga.",
+        "rate": {
+            "gatherRate": "Los aldeanos recolectan {{resource}} un {{value}}% más rápido.",
+            "gatherShip": "Los barcos recolectores obtienen {{resource}} un {{value}}% más rápido.",
+            "buildRate": "Los aldeanos construyen un {{value}}% más rápido.",
+            "tradeRate": "Las unidades comerciales ganan un {{value}}% más rápido.",
+            "healRate": "Los curanderos curan un {{value}}% más rápido.",
+            "combatRate": "Sus unidades atacan y se preparan un {{value}}% más rápido.",
+            "workRate": "Sus unidades trabajan un {{value}}% más rápido."
+        },
         "changesNoUnit": "Esta tecnología no cambia los números de ninguna unidad. Lo que hace — una tasa de mercado, un tributo, cómo trabaja un monje, una mejora a otra unidad — está en su descripción, arriba.",
         "linesHint": "Los pasos atenuados son unidades que {{tech}} no cambia.",
         "notChanged": "{{tech}} no cambia esta unidad"

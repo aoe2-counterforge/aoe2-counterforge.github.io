@@ -50,17 +50,24 @@ describe('technology effects', () => {
     });
 
     it('words a work rate by what the target does rather than as training', () => {
-        const attributesOf = (key: string) => [
+        const kindsOf = (key: string) => [
             ...new Set(
                 (technologies.find((technology) => technology.key === key)?.effects ?? [])
-                    .filter((effect) => effect.attribute.endsWith('Rate'))
-                    .map((effect) => effect.attribute),
+                    .filter((effect) => effect.attribute.endsWith('Rate') && effect.attribute !== 'rechargeRate')
+                    .map((effect) => `${effect.attribute}/${effect.resource ?? ''}`),
             ),
         ];
 
-        const rates = [attributesOf('conscription'), attributesOf('gold-mining'), attributesOf('double-bit-axe')];
+        const kinds = ['conscription', 'gold-mining', 'double-bit-axe', 'treadmill-crane', 'caravan', 'fereters'].map(kindsOf);
 
-        expect(rates).toEqual([['productionRate'], ['workRate'], ['workRate']]);
+        expect(kinds).toEqual([
+            ['productionRate/'],
+            ['gatherRate/gold'],
+            ['gatherRate/wood'],
+            ['buildRate/'],
+            ['tradeRate/'],
+            ['healRate/'],
+        ]);
     });
 
     it('leaves the civilization bonuses an age advance carries off the advance itself', () => {

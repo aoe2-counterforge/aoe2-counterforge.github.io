@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeEffect } from '../../../src/react/effect-description.ts';
+import { describeEffect, describeRate } from '../../../src/react/effect-description.ts';
 import { translator } from '../../fixtures/translator.ts';
 
 const t = translator();
@@ -87,5 +87,19 @@ describe('describeEffect', () => {
         const labels = describeEffect({}, t);
 
         expect(labels).toEqual([]);
+    });
+});
+
+describe('describeRate', () => {
+    it('names the villagers and the resource for a gathering rate', () => {
+        const label = describeRate({ kind: 'gatherRate', resource: 'gold', factor: 1.15 }, t);
+
+        expect(label).toBe('Villagers gather gold 15% faster.');
+    });
+
+    it('words a trade rate as trading, not as training', () => {
+        const label = describeRate({ kind: 'tradeRate', resource: undefined, factor: 1.2 }, t);
+
+        expect(label).toBe('Trade units earn 20% faster.');
     });
 });

@@ -465,7 +465,15 @@
         "civCount_other": "{{count}} Völker",
         "uniqueTo": "Spezialtechnologie der {{civ}}",
         "trainsFaster": "Einheiten werden dort, wo sie entwickelt ist, {{value}}% schneller ausgebildet.",
-        "worksFaster": "Seine Einheiten arbeiten {{value}}% schneller, wo es erforscht ist.",
+        "rate": {
+            "gatherRate": "Dorfbewohner sammeln {{resource}} {{value}}% schneller.",
+            "gatherShip": "Sammelschiffe gewinnen {{resource}} {{value}}% schneller.",
+            "buildRate": "Dorfbewohner bauen {{value}}% schneller.",
+            "tradeRate": "Handelseinheiten verdienen {{value}}% schneller.",
+            "healRate": "Heiler heilen {{value}}% schneller.",
+            "combatRate": "Seine Einheiten greifen an und bauen ab {{value}}% schneller.",
+            "workRate": "Seine Einheiten arbeiten {{value}}% schneller."
+        },
         "changesNoUnit": "Diese Technologie ändert die Werte keiner Einheit. Was sie tut — eine Marktgebühr, ein Tribut, wie ein Mönch arbeitet, eine Verbesserung einer anderen Einheit — steht oben in ihrer Beschreibung.",
         "linesHint": "Ausgegraute Schritte sind Einheiten, die {{tech}} nicht ändert.",
         "notChanged": "{{tech}} ändert diese Einheit nicht"

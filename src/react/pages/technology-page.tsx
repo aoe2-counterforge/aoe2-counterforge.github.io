@@ -17,7 +17,7 @@ import { ResourceCostRow } from '../components/resource-cost-row.tsx';
 import { RosterLines } from '../components/roster-lines.tsx';
 import { SegmentedControl } from '../components/segmented-control.tsx';
 import { Tabs } from '../components/tabs.tsx';
-import { describeEffect } from '../effect-description.ts';
+import { describeEffect, describeRate } from '../effect-description.ts';
 import { iconUrl, short, techIconPath, unitIconPath } from '../format.ts';
 import { groupBy } from '../group-by.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
@@ -151,7 +151,7 @@ export function TechnologyPage() {
     }, [catalog, touched]);
 
     const faster = technology ? upgrades.productionSpeed(technology.key) : 1;
-    const quicker = technology ? upgrades.workSpeed(technology.key) : 1;
+    const rates = technology ? upgrades.workRates(technology.key) : [];
 
     const civilizations = useMemo(
         () =>
@@ -202,7 +202,8 @@ export function TechnologyPage() {
             <Tabs
                 value={tab}
                 options={[
-                    { value: 'units', label: t('tech.changes'), count: changed.length },
+                    // A technology that only speeds up work has no unit to count.
+                    { value: 'units', label: t('tech.changes'), count: changed.length > 0 ? changed.length : undefined },
                     { value: 'civs', label: t('tech.researchedBy'), count: civilizations.length },
                 ]}
                 onChange={setTab}
@@ -225,11 +226,13 @@ export function TechnologyPage() {
                         )}
                     </div>
 
-                    {changed.length === 0 && faster === 1 && quicker === 1 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
+                    {changed.length === 0 && faster === 1 && rates.length === 0 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
 
-                    {quicker === 1 ? null : (
-                        <p className="card__hint">{t('tech.worksFaster', { value: short((quicker - 1) * 100) })}</p>
-                    )}
+                    {rates.map((rate) => (
+                        <p className="card__hint" key={`${rate.kind}|${rate.resource ?? ''}`}>
+                            {describeRate(rate, t)}
+                        </p>
+                    ))}
 
                     {faster === 1 ? null : (
                         <p className="card__hint">{t('tech.trainsFaster', { value: short((faster - 1) * 100) })}</p>
