@@ -1,4 +1,3 @@
-import { ECONOMY_RECORD } from '../../data/dataset.ts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
@@ -153,8 +152,6 @@ export function TechnologyPage() {
 
     const faster = technology ? upgrades.productionSpeed(technology.key) : 1;
     const rates = technology ? upgrades.workRates(technology.key) : [];
-    const buildings = useMemo(() => (technology ? upgrades.buildingsChangedBy(technology) : []), [upgrades, technology]);
-    const farmFood = ECONOMY_RECORD.farmUpgrades.find((upgrade) => upgrade.tech === technology?.key)?.extraFood ?? 0;
 
     const civilizations = useMemo(
         () =>
@@ -229,22 +226,7 @@ export function TechnologyPage() {
                         )}
                     </div>
 
-                    {changed.length === 0 && faster === 1 && rates.length === 0 && farmFood === 0 && buildings.length === 0 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
-
-                    {buildings.map((entry) => (
-                        <div key={entry.building} className="roster__group">
-                            <div className="upgrade-item__effects">
-                                <EffectChips effects={describeEffect(entry.delta, t, (unitKey) => text.unit(unitKey).name)} />
-                            </div>
-                            <div className="row" style={{ marginTop: 'var(--space-2)' }}>
-                                <span className="chip">{t(`buildings.${entry.building}`, entry.building)}</span>
-                            </div>
-                        </div>
-                    ))}
-
-                    {farmFood === 0 ? null : (
-                        <p className="card__hint">{t('tech.farmFood', { value: `+${short(farmFood)}` })}</p>
-                    )}
+                    {changed.length === 0 && faster === 1 && rates.length === 0 ? <p className="prose">{t('tech.changesNoUnit')}</p> : null}
 
                     {(changed.length > 0 ? [] : rates).map((rate) => (
                         <p className="card__hint" key={`${rate.kind}|${rate.resource ?? ''}`}>
