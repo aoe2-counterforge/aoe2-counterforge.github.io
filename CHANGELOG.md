@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.3](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.2...v0.7.3) (2026-10-14)
+
+
+### Bug Fixes
+
+* leave building effects off the technology pages for now ([2a0bdf0](https://github.com/giovani-freitag/aoe2-counterforge/commit/2a0bdf0f38abc444ec9b16739eff85e116ac081c))
+* render carry, price, blast, pass-through, villager-form and building effects on technology pages ([85a3f05](https://github.com/giovani-freitag/aoe2-counterforge/commit/85a3f05fcb7151b81b2ba8fbd41044dbf13ac2e6))
+* stop showing the trade unit work rate, which does nothing in game ([fecbb23](https://github.com/giovani-freitag/aoe2-counterforge/commit/fecbb2312f48c4831157007b6511fbb30893ac54))
+* word carry and farm chips plainly and ignore non-gatherers when naming the carried resource ([3898e31](https://github.com/giovani-freitag/aoe2-counterforge/commit/3898e31f853019320e794bc02fed21b422d815f2))
+
 ## [0.7.2](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.1...v0.7.2) (2026-10-14)
 
 
