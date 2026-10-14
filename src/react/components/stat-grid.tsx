@@ -40,11 +40,17 @@ const GLYPHS: Partial<Record<StatKey, IconName>> = {
 /** Lower is better for these, so an increase must not be painted as a gain. */
 const INVERTED: ReadonlySet<StatKey> = new Set(['reloadTime', 'minRange']);
 
+/** What only means something for a unit that attacks. */
+const FIGHTING: ReadonlySet<StatKey> = new Set(['attack', 'range', 'reloadTime', 'accuracy', 'minRange', 'blastWidth']);
+
 /**
- * Stats that only clutter the grid when they are zero.
+ * Stats that only clutter the grid: zero ones that are optional, and a fighter's numbers on a unit
+ * that has no attack, such as a trade cart or a transport ship.
  */
-function isHidden(key: StatKey, value: number): boolean {
-    return value === 0 && (key === 'range' || key === 'minRange' || key === 'blastWidth');
+function isHidden(key: StatKey, stats: UnitStatsRecord): boolean {
+    if (stats.attack === 0 && FIGHTING.has(key)) return true;
+
+    return stats[key] === 0 && (key === 'range' || key === 'minRange' || key === 'blastWidth' || key === 'reloadTime');
 }
 
 /** The stat block, optionally annotated with the gain each upgrade brings. */
@@ -53,7 +59,7 @@ export function StatGrid({ stats, compareWith }: StatGridProps) {
 
     return (
         <div className="stat-grid">
-            {ORDER.filter((key) => !isHidden(key, stats[key])).map((key) => {
+            {ORDER.filter((key) => !isHidden(key, stats)).map((key) => {
                 const difference = compareWith ? stats[key] - compareWith[key] : 0;
                 const isGain = INVERTED.has(key) ? difference < 0 : difference > 0;
 
