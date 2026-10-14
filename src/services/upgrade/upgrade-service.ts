@@ -139,6 +139,7 @@ function canonical(delta: StatDelta): string {
         delta.chargeBlast,
         delta.aftereffect,
         delta.population,
+        delta.populationMultiplier,
         delta.damageReflection,
     ].map((value) => String(value ?? ''));
 
@@ -163,6 +164,7 @@ function scaled(delta: StatDelta): boolean {
         delta.hpMultiplier !== undefined ||
         delta.speedMultiplier !== undefined ||
         delta.reloadTimeMultiplier !== undefined ||
+        delta.populationMultiplier !== undefined ||
         delta.trainTimeMultiplier !== undefined ||
         delta.attackMultipliers !== undefined ||
         delta.armourMultipliers !== undefined ||
@@ -436,6 +438,9 @@ export class UpgradeService {
                 }
                 if (effect.attribute === 'trainTime') {
                     delta.trainTimeMultiplier = (delta.trainTimeMultiplier ?? 1) * effect.value;
+                }
+                if (effect.attribute === 'population') {
+                    delta.populationMultiplier = (delta.populationMultiplier ?? 1) * effect.value;
                 }
                 if (effect.attribute === 'hp') delta.hpMultiplier = (delta.hpMultiplier ?? 1) * effect.value;
                 if (effect.attribute === 'speed') delta.speedMultiplier = (delta.speedMultiplier ?? 1) * effect.value;

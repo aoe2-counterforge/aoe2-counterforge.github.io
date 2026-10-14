@@ -100,6 +100,9 @@ export function describeEffect(
     if (change.population !== undefined) {
         labels.push(t('upgrades.effect.population', { value: delta(change.population) }));
     }
+    if (change.populationMultiplier !== undefined && change.populationMultiplier !== 1) {
+        labels.push(t('upgrades.effect.populationPercent', { value: percentDelta(change.populationMultiplier) }));
+    }
     if (change.damageReflection !== undefined) {
         labels.push(t('upgrades.effect.damageReflection', { value: short(change.damageReflection * 100) }));
     }

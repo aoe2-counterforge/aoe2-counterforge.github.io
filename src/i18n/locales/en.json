@@ -248,6 +248,7 @@
             "aftereffect": "Its hits leave a lingering effect",
             "minRange": "Minimum range down to {{value}}",
             "population": "{{value}} population",
+            "populationPercent": "{{value}}% population space",
             "damageReflection": "Sends {{value}}% of melee damage back"
         },
         "uniqueHint": "Bonuses a civilization is given, and the castle technologies that reach this unit.",

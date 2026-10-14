@@ -29,6 +29,12 @@ describe('describeEffect', () => {
         expect(labels).toEqual(['Spawns 5', 'Trainable at the Barracks']);
     });
 
+    it('writes a population share as the percentage it takes away', () => {
+        const labels = describeEffect({ populationMultiplier: 0.8 }, t);
+
+        expect(labels).toEqual(['-20% population space']);
+    });
+
     it('writes a factor as the percentage it adds', () => {
         const labels = describeEffect({ hpMultiplier: 1.2 }, t);
 

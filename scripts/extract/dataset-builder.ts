@@ -1161,14 +1161,19 @@ export class DatasetBuilder {
                 const building = attribute === 'trainLocation' ? BUILDINGS[command.value] : undefined;
                 if (attribute === 'trainLocation' && building === undefined) continue;
 
+                // The table writes 'population space becomes this share of what it was' as a set to the
+                // share's negative, so minus one means no change and minus 0.8 means twenty percent less.
+                const shared = attribute === 'population' && mode === 'set' && command.value < 0;
+                if (shared && command.value <= -1) continue;
+
                 for (const target of shooters ?? [command.unit >= 0 ? command.unit : null]) {
                     add(
                         {
-                            mode,
+                            mode: shared ? 'multiply' : mode,
                             unit: target,
                             unitClass: command.unitClass >= 0 ? command.unitClass : null,
                             attribute,
-                            value: packed === null ? this.round(command.value) : packed.value,
+                            value: packed === null ? this.round(shared ? -command.value : command.value) : packed.value,
                             ...(damageClass ? { damageClass } : {}),
                             ...(building ? { building } : {}),
                             ...(resource ? { resource } : {}),

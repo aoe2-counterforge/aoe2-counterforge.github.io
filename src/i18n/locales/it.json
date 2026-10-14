@@ -248,6 +248,7 @@
             "aftereffect": "I suoi colpi lasciano un effetto persistente",
             "minRange": "Gittata minima ridotta a {{value}}",
             "population": "{{value}} popolazione",
+            "populationPercent": "{{value}}% di spazio popolazione",
             "damageReflection": "Restituisce il {{value}}% dei danni da mischia"
         },
         "uniqueHint": "Bonus che una civiltà riceve fin dall'inizio, e le tecnologie del castello che raggiungono questa unità.",

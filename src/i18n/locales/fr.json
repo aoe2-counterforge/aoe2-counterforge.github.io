@@ -248,6 +248,7 @@
             "aftereffect": "Ses coups laissent un effet durable",
             "minRange": "Portée minimale réduite à {{value}}",
             "population": "{{value}} de population",
+            "populationPercent": "{{value}}% de place de population",
             "damageReflection": "Renvoie {{value}}% des dégâts de mêlée"
         },
         "uniqueHint": "Les bonus qu'une civilisation reçoit, et les technologies de château qui touchent cette unité.",

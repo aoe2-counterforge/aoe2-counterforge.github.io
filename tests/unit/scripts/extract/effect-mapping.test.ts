@@ -77,4 +77,12 @@ describe('technology effects', () => {
 
         expect(counts).toEqual([0, 0, 0]);
     });
+
+    it('reads a set to a negative share as the share of population space the unit keeps', () => {
+        const effects = technologies.find((technology) => technology.key === 'aznauri-cavalry')?.effects ?? [];
+
+        const shares = effects.filter((effect) => effect.attribute === 'population').map((effect) => [effect.mode, effect.value]);
+
+        expect(new Set(shares.map((share) => share.join(':')))).toEqual(new Set(['multiply:0.8']));
+    });
 });

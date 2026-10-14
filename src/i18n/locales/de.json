@@ -248,6 +248,7 @@
             "aftereffect": "Seine Treffer wirken nach",
             "minRange": "Mindestreichweite auf {{value}} gesenkt",
             "population": "{{value}} Bevölkerung",
+            "populationPercent": "{{value}}% Bevölkerungsplatz",
             "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück"
         },
         "uniqueHint": "Boni, die ein Volk bekommt, und die Burgtechnologien, die diese Einheit betreffen.",
