@@ -14,7 +14,7 @@ const civilizations = JSON.parse(
 const units = JSON.parse(readFileSync('src/data/generated/units.json', 'utf8')) as UnitRecord[];
 
 describe('technology effects', () => {
-    it('hands a unit one change per technology, however many missiles it fires', () => {
+    it('hands a unit one change per technology and missile, however many copies of it the file names', () => {
         const listed = new Set(units.map((unit) => unit.id));
 
         const repeated = technologies.flatMap((technology) => {
@@ -23,7 +23,14 @@ describe('technology effects', () => {
             return technology.effects.flatMap((effect) => {
                 if (effect.unit === null || !listed.has(effect.unit)) return [];
 
-                const key = [effect.unit, effect.attribute, effect.damageClass ?? '', effect.mode, effect.value].join('|');
+                const key = [
+                    effect.unit,
+                    effect.attribute,
+                    effect.damageClass ?? '',
+                    effect.mode,
+                    effect.value,
+                    effect.projectile ?? '',
+                ].join('|');
                 if (!seen.has(key)) {
                     seen.add(key);
 
@@ -35,6 +42,17 @@ describe('technology effects', () => {
         });
 
         expect(repeated).toEqual([]);
+    });
+
+    it('puts the Fletching arrow of the Fire Archer on its charged attack, not a second time on the unit', () => {
+        const fireArcher = units.find((unit) => unit.key === 'fire-archer');
+        const fletching = technologies.find((technology) => technology.key === 'fletching')?.effects ?? [];
+
+        const onTheUnit = fletching
+            .filter((effect) => effect.unit === fireArcher?.id && effect.attribute === 'attack')
+            .map((effect) => [effect.value, effect.projectile]);
+
+        expect(onTheUnit).toEqual([[1, 'charge']]);
     });
 
     it('keeps what a technology does to a unit that is not a number', () => {

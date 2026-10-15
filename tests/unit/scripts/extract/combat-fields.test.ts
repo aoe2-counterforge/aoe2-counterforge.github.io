@@ -38,4 +38,29 @@ describe('the combat fields read out of the unit record', () => {
     it('reads a base armour far above any attack, so an unmatched class comes to nothing', () => {
         expect(byKey.get('champion')?.baseArmour).toBe(10000);
     });
+
+    it('reads the Hearth Troop javelin as a charged attack thrown from six tiles', () => {
+        const javelin = byKey.get('hearth-troop')?.specialAttacks.find((attack) => attack.role === 'charge');
+
+        expect([javelin?.projectile, javelin?.range, javelin?.attacks.filter((entry) => entry.amount !== 0)]).toEqual([
+            2702,
+            6,
+            [
+                { class: 'base-pierce', amount: 6 },
+                { class: 'archer', amount: 3 },
+            ],
+        ]);
+    });
+
+    it('describes every volley the combat model fires as a secondary special attack too', () => {
+        const volleys = units.filter((unit) => unit.extraProjectiles > 0);
+
+        const mismatched = volleys.filter((unit) => {
+            const secondary = unit.specialAttacks.find((attack) => attack.role === 'secondary');
+
+            return secondary?.count !== unit.extraProjectiles || JSON.stringify(secondary.attacks) !== JSON.stringify(unit.secondaryAttacks);
+        });
+
+        expect([volleys.length > 0, mismatched.map((unit) => unit.key)]).toEqual([true, []]);
+    });
 });

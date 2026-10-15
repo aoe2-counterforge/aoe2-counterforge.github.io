@@ -3,6 +3,7 @@ import type {
     CivilizationRecord,
     ClassAmountRecord,
     CostRecord,
+    SpecialAttackRecord,
     TechEffectRecord,
     TechnologyRecord,
     UnitRecord,
@@ -37,6 +38,7 @@ export interface UnitRecordOverrides {
     upgradesTo?: string[];
     inTechTree?: boolean;
     uniqueTo?: string | null;
+    specialAttacks?: SpecialAttackRecord[];
 }
 
 /**
@@ -66,6 +68,7 @@ export function unitRecord(overrides: UnitRecordOverrides): UnitRecord {
         bonusDamageResistance: 0,
         extraProjectiles: 0,
         secondaryAttacks: [],
+        specialAttacks: overrides.specialAttacks ?? [],
         ignoresArmour: false,
         resistsArmourIgnore: false,
         attacks: toClassAmounts(overrides.attacks ?? { 'base-melee': 10 }),

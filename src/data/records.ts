@@ -12,6 +12,40 @@ export interface ClassAmountRecord {
     amount: number;
 }
 
+/**
+ * Which of a unit's missiles something is about.
+ *
+ * The game gives a unit up to three: the main shot, the secondary missiles that fly with it, and
+ * the one a charged attack fires. Each is a unit of its own in the file, with its own damage.
+ */
+export type ProjectileRoleRecord = 'main' | 'secondary' | 'charge';
+
+/** How a charged attack fills up again once it is spent. */
+export interface ChargeRecord {
+    /** How much charge the unit holds; zero until a technology hands it one. */
+    capacity: number;
+    /** Charge regained per second. */
+    rechargeRate: number;
+}
+
+/** An attack a unit makes with a missile whose damage is not the unit's own. */
+export interface SpecialAttackRecord {
+    role: ProjectileRoleRecord;
+    /** The missile's id in the game file, which is what a technology aimed at it names. */
+    projectile: number;
+    attacks: ClassAmountRecord[];
+    /** How far it reaches, which for a charged attack is offset from the unit's own range. */
+    range: number;
+    /**
+     * For secondary missiles, how many fly with each ordinary shot.
+     *
+     * Zero when something else puts them in the air: a technology such as Bolt Magazine, or a
+     * charged volley such as the Xianbei Raider's.
+     */
+    count?: number;
+    charge?: ChargeRecord;
+}
+
 export interface UnitRecord {
     id: number;
     key: string;
@@ -38,6 +72,8 @@ export interface UnitRecord {
     extraProjectiles: number;
     /** What each of those extra missiles hits with, which is not what the shooter hits with. */
     secondaryAttacks: ClassAmountRecord[];
+    /** Attacks made with a missile of its own: secondary missiles and charged attacks. */
+    specialAttacks: SpecialAttackRecord[];
     /** Whether the unit's attacks go through melee and pierce armour. */
     ignoresArmour: boolean;
     /** Whether the unit's armour holds against attacks that go through it. */
@@ -79,6 +115,8 @@ export interface TechEffectRecord {
     resource?: string;
     /** The building the change is about, when the unit it names is one the guide has no page for. */
     target?: string;
+    /** The missile of the unit the change lands on, when the game wrote it on a missile. */
+    projectile?: ProjectileRoleRecord;
 }
 
 export interface TechnologyRecord {

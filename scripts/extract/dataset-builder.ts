@@ -7,6 +7,8 @@ import type {
     EconomyRecord,
     FarmUpgradeRecord,
     GatherUpgradeRecord,
+    ProjectileRoleRecord,
+    SpecialAttackRecord,
     TechEffectRecord,
     TechnologyRecord,
     TechnologyTextRecord,
@@ -190,6 +192,9 @@ const ATTRIBUTES: Record<number, string> = {
     145: 'onHitEffect',
 };
 
+/** The attribute that counts the missiles a unit puts in the air with each shot. */
+const PROJECTILES_ATTRIBUTE = 102;
+
 /** Effect command that swaps a unit for another, and the one that makes a number of units appear. */
 const UPGRADE_COMMAND = 3;
 const SPAWN_COMMAND = 7;
@@ -335,7 +340,8 @@ export class DatasetBuilder {
 
     /** Age of every age advance, resolved once because every bonus asks for it. */
     private ages: Map<number, number> | null = null;
-    private shooters: Map<number, number[]> | null = null;
+    private shooters: Map<number, Shooter[]> | null = null;
+    private raisers: { units: ReadonlySet<number>; classes: ReadonlySet<number> } | null = null;
     private producers: Set<number> | null = null;
     /** Units the tech tree lists, which are the only ones the guide has a page for. */
     private treeUnits: ReadonlySet<number> = new Set();
@@ -987,27 +993,90 @@ export class DatasetBuilder {
     }
 
     /**
-     * Which units fire each missile in the file.
+     * Which units fire each missile in the file, and as which of their missiles.
      *
      * Ballistics does not touch a single archer: it sets a flag on the arrows, and the reader who
-     * opens the Crossbowman is asking about the archer. Reading the missile each unit carries is
-     * what lets an effect aimed at the projectile be shown on the unit that shoots it.
+     * opens the Crossbowman is asking about the archer. Reading the missiles each unit carries is
+     * what lets an effect aimed at a projectile be shown on the unit that shoots it. Only a unit
+     * the guide lists has its secondary and charged missiles read: a tower's extra arrows have no
+     * page to be shown on.
      *
      * @returns Missile id mapped to the units that fire it.
      */
-    private shootersByProjectile(): Map<number, number[]> {
+    private shootersByProjectile(): Map<number, Shooter[]> {
         if (this.shooters) return this.shooters;
 
-        this.shooters = new Map<number, number[]>();
+        this.shooters = new Map<number, Shooter[]>();
         for (const unit of this.referenceUnits().values()) {
-            if (unit.projectileUnitId < 0 || unit.type < UNIT_TYPE.creatable) continue;
+            if (unit.type < UNIT_TYPE.creatable) continue;
 
-            const firing = this.shooters.get(unit.projectileUnitId) ?? [];
-            firing.push(unit.id);
-            this.shooters.set(unit.projectileUnitId, firing);
+            const missiles: [number, ProjectileRoleRecord][] = [[unit.projectileUnitId, 'main']];
+            if (this.treeUnits.has(unit.id)) {
+                missiles.push([unit.secondaryProjectileUnit, 'secondary'], [unit.chargeProjectileUnit, 'charge']);
+            }
+
+            const byMissile = new Map<number, Set<ProjectileRoleRecord>>();
+            for (const [missile, role] of missiles) {
+                if (missile >= 0) byMissile.set(missile, (byMissile.get(missile) ?? new Set()).add(role));
+            }
+            for (const [missile, roles] of byMissile) {
+                this.shooters.set(missile, [...(this.shooters.get(missile) ?? []), { unit: unit.id, roles }]);
+            }
         }
 
         return this.shooters;
+    }
+
+    /**
+     * Which of a shooter's missiles a change written on one of them belongs to.
+     *
+     * One missile can serve several roles: the Fire Archer's main shot and its charged attack are
+     * the same arrow. A damage list is what the attack fired with it hits with, and the main shot
+     * hits with the shooter's own attack, so damage goes to the charged attack first, then to the
+     * secondary missiles. Anything else — Ballistics, Curare's poison — is a property of the
+     * missile in flight, and on the main one it is the unit's own shot.
+     *
+     * @param shooter - The unit and the roles the missile plays for it.
+     * @param attribute - The guide's name for what the change touches.
+     * @returns The role the change is shown under.
+     */
+    private roleOf(shooter: Shooter, attribute: string): ProjectileRoleRecord {
+        if (!PACKED.has(attribute) && shooter.roles.has('main')) return 'main';
+        if (shooter.roles.has('charge')) return 'charge';
+
+        return shooter.roles.has('secondary') ? 'secondary' : 'main';
+    }
+
+    /**
+     * Units and classes some technology or bonus gives more missiles per shot.
+     *
+     * A unit's secondary missile only flies once it fires more than one: the Crossbowman carries
+     * one it never uses until Bolt Magazine hands it two more. Only technologies of the covered
+     * civilizations, or of none, count; another era's are about other units.
+     *
+     * @returns The ids and the classes whose missile count can rise.
+     */
+    private projectileRaisers(): { units: ReadonlySet<number>; classes: ReadonlySet<number> } {
+        if (this.raisers) return this.raisers;
+
+        const covered = new Set(this.civilizations().map((meta) => this.config.civilizations.indexOf(meta)));
+        const units = new Set<number>();
+        const classes = new Set<number>();
+        for (const tech of this.config.game.technologies) {
+            if (tech.civ >= 0 && !covered.has(tech.civ)) continue;
+
+            for (const command of this.config.game.effects[tech.effectId]?.commands ?? []) {
+                const mode = MODES[command.type];
+                const raises = (mode === 'add' && command.value > 0) || (mode === 'set' && command.value > 1);
+                if (command.attribute !== PROJECTILES_ATTRIBUTE || !raises) continue;
+
+                if (command.unit >= 0) units.add(command.unit);
+                else classes.add(command.unitClass);
+            }
+        }
+        this.raisers = { units, classes };
+
+        return this.raisers;
     }
 
     /**
@@ -1200,11 +1269,14 @@ export class DatasetBuilder {
 
         const records: TechEffectRecord[] = [];
 
-        // A unit can be named by the effect and reached again through the missile it fires, and a
-        // unit that fires several missiles is reached once per missile. Both would hand it the same
-        // change twice, so a change that arrives by way of a projectile is only kept if it is new.
+        // A unit can be named by the effect and reached again through the missile it fires, and the
+        // file often writes one change on several copies of a missile. Both would hand it the same
+        // change twice, so a change that arrives by way of a projectile is only kept if it is new
+        // where it lands: on the unit itself, which the main missile's flight properties are, or
+        // on the special attack whose damage it changes, which is never the unit's own.
         const emitted = new Set<string>();
         const add = (record: TechEffectRecord, derived: boolean, byValue = false): void => {
+            const ownShot = record.projectile === 'main' && !PACKED.has(record.attribute);
             const key = [
                 record.unit,
                 record.unitClass,
@@ -1212,6 +1284,7 @@ export class DatasetBuilder {
                 record.damageClass,
                 record.mode,
                 record.resource,
+                ownShot ? undefined : record.projectile,
             ].join('|');
             if (derived && !byValue && emitted.has(key)) return;
 
@@ -1280,7 +1353,10 @@ export class DatasetBuilder {
                 const shared = attribute === 'population' && mode === 'set' && command.value < 0;
                 if (shared && command.value <= -1) continue;
 
-                for (const target of shooters ?? [this.listedWorker(command.unit)]) {
+                const targets = shooters?.map((shooter) => ({ unit: shooter.unit, projectile: this.roleOf(shooter, attribute) })) ?? [
+                    { unit: this.listedWorker(command.unit), projectile: undefined },
+                ];
+                for (const { unit: target, projectile } of targets) {
                     const place =
                         shooters !== undefined
                             ? undefined
@@ -1300,6 +1376,7 @@ export class DatasetBuilder {
                             ...(building ? { building } : {}),
                             ...(resource ? { resource } : {}),
                             ...(place ? { target: place } : {}),
+                            ...(projectile ? { projectile } : {}),
                         },
                         pass === 'derived',
                         shooters === undefined && (target !== command.unit || place !== undefined),
@@ -1331,6 +1408,61 @@ export class DatasetBuilder {
         if (extras === 0 || attacks.length === 0) return { extraProjectiles: 0, secondaryAttacks: [] };
 
         return { extraProjectiles: extras, secondaryAttacks: this.classList(attacks) };
+    }
+
+    /**
+     * The attacks a unit makes with a missile whose damage is its own rather than the unit's.
+     *
+     * A secondary missile counts once it can fly: the unit fires more than one, or can, or a
+     * technology makes it. One without damage is a piece of a blast, which the unit's own attack already
+     * covers. A charged attack counts whatever it carries; the fire ships only get theirs from a
+     * technology, and a Jomsviking's torch carries no damage list at all. The main missile is left
+     * out: it hits with the shooter's own attack, and where the file gives it damage of its own,
+     * the same change is written on the unit too.
+     *
+     * A charged attack reaches the unit's maximum range plus its charge event. That is read, not
+     * assumed: the Fire Archer and the Lou Chuan reach 9 and 13, carry -4 and -3, and the game
+     * displays 5 and 10; the Blacksmith arrow technologies raise the Hearth Troop's event exactly
+     * where they raise other archers' range; and Siege Engineers lowers the Lou Chuan's by one
+     * while raising its range by one, so its arrows stay where they were.
+     *
+     * @param unit - The shooter, as the file describes it.
+     * @returns Its secondary and charged attacks, in that order.
+     */
+    private specialAttacksOf(unit: GenieUnit): SpecialAttackRecord[] {
+        const units = this.referenceUnits();
+        const attacks: SpecialAttackRecord[] = [];
+
+        const secondary = units.get(unit.secondaryProjectileUnit);
+        const damage = secondary ? this.classList(secondary.attacks) : [];
+        const raisers = this.projectileRaisers();
+        // The Xianbei Raider fires one arrow a shot and up to six in its charged volley.
+        const flies =
+            Math.max(Math.round(unit.totalProjectiles), Math.round(unit.maxTotalProjectiles)) > 1 ||
+            raisers.units.has(unit.id) ||
+            raisers.classes.has(unit.classId);
+        if (secondary && flies && damage.some((entry) => entry.amount > 0)) {
+            attacks.push({
+                role: 'secondary',
+                projectile: secondary.id,
+                attacks: damage,
+                range: this.round(unit.maxRange),
+                count: Math.max(0, Math.round(unit.totalProjectiles) - 1),
+            });
+        }
+
+        const charged = units.get(unit.chargeProjectileUnit);
+        if (charged) {
+            attacks.push({
+                role: 'charge',
+                projectile: charged.id,
+                attacks: this.classList(charged.attacks),
+                range: this.round(unit.maxRange + unit.chargeEvent),
+                charge: { capacity: this.round(unit.maxCharge), rechargeRate: this.round(unit.rechargeRate) },
+            });
+        }
+
+        return attacks;
     }
 
     private unitRecord(input: {
@@ -1368,6 +1500,7 @@ export class DatasetBuilder {
             baseArmour: unit.baseArmour,
             bonusDamageResistance: this.round(unit.bonusDamageResistance),
             ...this.volleyOf(unit),
+            specialAttacks: this.specialAttacksOf(unit),
             ignoresArmour: (unit.combatAbility & IGNORES_ARMOUR) !== 0,
             resistsArmourIgnore: (unit.combatAbility & RESISTS_ARMOUR_IGNORE) !== 0,
             attacks,
@@ -1672,6 +1805,12 @@ export class DatasetBuilder {
 
         return bundles;
     }
+}
+
+/** A unit that fires a missile, with every role that missile plays for it. */
+interface Shooter {
+    unit: number;
+    roles: ReadonlySet<ProjectileRoleRecord>;
 }
 
 interface SwitchedOnUnit {
