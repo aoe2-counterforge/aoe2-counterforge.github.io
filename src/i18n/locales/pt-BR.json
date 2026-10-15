@@ -20,10 +20,10 @@
         "hint": "Dica: escreva \"bretões arqueiro\" para filtrar por civilização",
         "empty": "Nada encontrado para \"{{query}}\"",
         "clearCiv": "Remover filtro de civilização",
-        "groups": {
-            "unit": "Unidades",
-            "civilization": "Civilizações",
-            "technology": "Tecnologias"
+        "kinds": {
+            "unit": "Unidade",
+            "civilization": "Civilização",
+            "technology": "Tecnologia"
         },
         "keys": {
             "navigate": "navegar",

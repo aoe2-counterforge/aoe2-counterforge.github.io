@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import type { SearchDocument, SearchKind } from '../../services/search/search-index-builder.ts';
+import type { SearchHit } from '../../services/search/search-service.ts';
 import { useCommandPalette } from '../hooks/use-command-palette.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitSearch } from '../hooks/use-unit-search.ts';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
-
-const GROUP_ORDER: readonly SearchKind[] = ['unit', 'civilization', 'technology'];
 
 const ROUTE_PREFIX: Record<SearchKind, string> = {
     unit: '/unit/',
@@ -50,17 +49,17 @@ function PaletteDialog({ close }: { close: () => void }) {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const outcome = useUnitSearch(query, preferences.civ);
-
-    const groups = useMemo(
-        () =>
-            GROUP_ORDER.map((kind) => ({
-                kind,
-                items: outcome.hits.filter((hit) => hit.document.kind === kind),
-            })).filter((group) => group.items.length > 0),
-        [outcome.hits],
-    );
-    const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
+    const flat = outcome.hits;
     const active = Math.min(activeIndex, Math.max(0, flat.length - 1));
+
+    // A unit's category already says what it is; the other kinds name themselves first.
+    const subtitleOf = (hit: SearchHit): string =>
+        [
+            hit.document.categoryKey ? t(`categories.${hit.document.categoryKey}`) : t(`search.kinds.${hit.document.kind}`),
+            hit.document.subtitle,
+        ]
+            .filter(Boolean)
+            .join(' · ');
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -137,47 +136,36 @@ function PaletteDialog({ close }: { close: () => void }) {
                     {flat.length === 0 ? (
                         <p className="empty">{query ? t('search.empty', { query }) : t('search.hint')}</p>
                     ) : (
-                        groups.map((group) => (
-                            <div key={group.kind}>
-                                <div className="palette__group section-label">{t(`search.groups.${group.kind}`)}</div>
-                                {group.items.map((hit) => {
-                                    const index = flat.indexOf(hit);
-                                    const subtitle = [
-                                        hit.document.categoryKey ? t(`categories.${hit.document.categoryKey}`) : '',
-                                        hit.document.subtitle,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(' · ');
-
-                                    return (
-                                        <button
-                                            key={hit.document.id}
-                                            type="button"
-                                            className="palette__item"
-                                            data-active={index === active}
-                                            onMouseMove={() => { setActiveIndex(index); }}
-                                            onClick={() => { go(hit.document); }}
-                                            ref={(node) => {
-                                                if (index === active) node?.scrollIntoView({ block: 'nearest' });
-                                            }}
-                                        >
-                                            <GameIcon
-                                                path={hit.document.icon}
-                                                alt=""
-                                                className={
-                                                    hit.document.kind === 'civilization' ? 'icon--civ' : undefined
-                                                }
-                                            />
-                                            <span className="list-item__body">
-                                                <span className="list-item__title">
-                                                    {highlight(hit.document.title, hit.positions)}
-                                                </span>
-                                                <span className="list-item__subtitle">{subtitle}</span>
+                        flat.map((hit, index) => (
+                            <button
+                                key={hit.document.id}
+                                type="button"
+                                className="palette__item"
+                                data-active={index === active}
+                                onMouseMove={() => { setActiveIndex(index); }}
+                                onClick={() => { go(hit.document); }}
+                                ref={(node) => {
+                                    if (index === active) node?.scrollIntoView({ block: 'nearest' });
+                                }}
+                            >
+                                <GameIcon
+                                    path={hit.document.icon}
+                                    alt=""
+                                    className={hit.document.kind === 'civilization' ? 'icon--civ' : undefined}
+                                />
+                                <span className="list-item__body">
+                                    <span className="list-item__title">
+                                        {highlight(hit.document.title, hit.positions)}
+                                        {hit.alias ? (
+                                            <span className="palette__alias">
+                                                {' ('}
+                                                {highlight(hit.alias.text, hit.alias.positions)})
                                             </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                                        ) : null}
+                                    </span>
+                                    <span className="list-item__subtitle">{subtitleOf(hit)}</span>
+                                </span>
+                            </button>
                         ))
                     )}
                 </div>

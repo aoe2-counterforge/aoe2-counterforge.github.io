@@ -20,10 +20,10 @@
         "hint": "Consejo: escribe \"britanos arquero\" para limitar los resultados a una civilización",
         "empty": "Nada encontrado para \"{{query}}\"",
         "clearCiv": "Quitar el filtro de civilización",
-        "groups": {
-            "unit": "Unidades",
-            "civilization": "Civilizaciones",
-            "technology": "Tecnologías"
+        "kinds": {
+            "unit": "Unidad",
+            "civilization": "Civilización",
+            "technology": "Tecnología"
         },
         "keys": {
             "navigate": "navegar",

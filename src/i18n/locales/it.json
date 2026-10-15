@@ -20,10 +20,10 @@
         "hint": "Suggerimento: scrivi \"britanni arciere\" per limitare i risultati a una civiltà",
         "empty": "Nessun risultato per \"{{query}}\"",
         "clearCiv": "Rimuovi il filtro civiltà",
-        "groups": {
+        "kinds": {
             "unit": "Unità",
             "civilization": "Civiltà",
-            "technology": "Tecnologie"
+            "technology": "Tecnologia"
         },
         "keys": {
             "navigate": "naviga",

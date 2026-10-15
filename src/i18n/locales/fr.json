@@ -20,10 +20,10 @@
         "hint": "Astuce : tapez \"britanniques archer\" pour limiter les résultats à une civilisation",
         "empty": "Aucun résultat pour \"{{query}}\"",
         "clearCiv": "Retirer le filtre de civilisation",
-        "groups": {
-            "unit": "Unités",
-            "civilization": "Civilisations",
-            "technology": "Technologies"
+        "kinds": {
+            "unit": "Unité",
+            "civilization": "Civilisation",
+            "technology": "Technologie"
         },
         "keys": {
             "navigate": "naviguer",

@@ -64,10 +64,6 @@
     overscroll-behavior: contain;
 }
 
-.palette__group {
-    padding: var(--space-3) var(--space-2) var(--space-1);
-}
-
 .palette__item {
     display: flex;
     align-items: center;
@@ -88,6 +84,11 @@
     background: none;
     color: var(--gold-soft);
     font-weight: 700;
+}
+
+.palette__alias {
+    color: var(--text-muted);
+    font-weight: 400;
 }
 
 .palette__footer {

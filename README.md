@@ -76,10 +76,12 @@ the numbers follow.
 
 ### Find anything from anywhere
 
-<img src="docs/screenshots/search-dark.png" alt="The search palette open on the query hun, listing the Tarkan, the Hussite Wagon and other units">
+<img src="docs/screenshots/search-dark.png" alt="The search palette open on the query hun: the Huns civilization first, then a technology and units, each with its kind on the line beneath">
 
-`Ctrl` + `K` (`Cmd` + `K` on a Mac) opens one search across units, civilizations and technologies. It
-matches loosely and ignores accents in all six languages, and the keyboard alone takes you from the
+`Ctrl` + `K` (`Cmd` + `K` on a Mac) opens one search across units, civilizations and technologies,
+ranked together, with the kind of each result on the line beneath it. It matches loosely and ignores
+accents, and a name typed in any of the six languages finds the item too, with that name shown beside
+the title: in Portuguese, *arch* brings up Arqueiro (Archer). The keyboard alone takes you from the
 query to the page.
 
 ### And also

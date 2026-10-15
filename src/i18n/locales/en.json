@@ -20,10 +20,10 @@
         "hint": "Tip: type \"britons archer\" to scope the results to a civilization",
         "empty": "Nothing found for \"{{query}}\"",
         "clearCiv": "Remove civilization filter",
-        "groups": {
-            "unit": "Units",
-            "civilization": "Civilizations",
-            "technology": "Technologies"
+        "kinds": {
+            "unit": "Unit",
+            "civilization": "Civilization",
+            "technology": "Technology"
         },
         "keys": {
             "navigate": "navigate",

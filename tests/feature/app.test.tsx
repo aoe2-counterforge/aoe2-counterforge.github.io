@@ -36,6 +36,32 @@ describe('App', () => {
         expect(screen.getByRole('dialog')).toBeDefined();
     });
 
+    it('lists every kind of result together, the best first, with its kind on the line beneath', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
+        const dialog = screen.getByRole('dialog');
+
+        await user.type(within(dialog).getByRole('searchbox'), 'hun');
+
+        await waitFor(() => {
+            expect(dialog.querySelector('.palette__item')?.textContent).toMatch(/^Hunos.*Civilização/);
+        });
+    });
+
+    it('shows the name in another language that the search matched', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
+        const dialog = screen.getByRole('dialog');
+
+        await user.type(within(dialog).getByRole('searchbox'), 'arch');
+
+        await waitFor(() => {
+            expect(dialog.querySelector('.palette__item .list-item__title')?.textContent).toBe('Arqueiro (Archer)');
+        });
+    });
+
     it('closes the command palette from its close button', async () => {
         const user = userEvent.setup();
         render(<App locale="pt-BR" />);

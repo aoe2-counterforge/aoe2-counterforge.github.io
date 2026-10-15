@@ -20,10 +20,10 @@
         "hint": "Tipp: Tippe \"briten bogenschütze\", um die Ergebnisse auf ein Volk einzugrenzen",
         "empty": "Nichts gefunden für \"{{query}}\"",
         "clearCiv": "Volksfilter entfernen",
-        "groups": {
-            "unit": "Einheiten",
-            "civilization": "Völker",
-            "technology": "Technologien"
+        "kinds": {
+            "unit": "Einheit",
+            "civilization": "Volk",
+            "technology": "Technologie"
         },
         "keys": {
             "navigate": "navigieren",
