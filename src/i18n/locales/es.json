@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s por aldeano",
         "demand": "Consumo",
         "free": "Esta unidad no cuesta recursos.",
-        "note": "Las tasas base ya incluyen el camino hasta el punto de entrega. Las mejoras de carga y la carga extra del arado pasan por el modelo de viajes: aumentan la capacidad y la velocidad, así que rinden menos que una mejora directa de recolección.",
+        "note": "Cada viaje incluye el camino hasta el punto de entrega, en una disposición típica: {{nearby}} casillas desde una granja o una oveja, {{hunt}} desde una caza llevada bajo el centro urbano y {{ordinary}} desde cualquier otro recurso. Las mejoras de carga y la carga extra del arado pasan por el modelo de viajes: aumentan la capacidad y la velocidad, así que rinden menos que una mejora directa de recolección.",
         "villagers_other": "{{count}} aldeanos",
         "villagers_one": "{{count}} aldeano",
         "sustain_other": "{{villagers}} aldeanos mantienen {{buildings}} edificios en marcha",

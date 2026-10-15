@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s pro Dorfbewohner",
         "demand": "Verbrauch",
         "free": "Diese Einheit kostet keine Rohstoffe.",
-        "note": "Die Basisraten enthalten bereits den Weg zur Abgabestelle. Tragekapazitäts-Verbesserungen und der Tragebonus des Pflugs laufen über das Wegemodell: Sie erhöhen Kapazität und Geschwindigkeit und bringen deshalb weniger als ein direkter Sammelbonus.",
+        "note": "Jeder Sammelgang enthält den Weg zur Abgabestelle, bei typischer Aufstellung: {{nearby}} Felder von einem Feld oder Schaf, {{hunt}} von Jagdbeute, die unter das Dorfzentrum gelockt wird, und {{ordinary}} von allem anderen. Tragekapazitäts-Verbesserungen und der Tragebonus des Pflugs laufen über das Wegemodell: Sie erhöhen Kapazität und Geschwindigkeit und bringen deshalb weniger als ein direkter Sammelbonus.",
         "villagers_other": "{{count}} Dorfbewohner",
         "villagers_one": "{{count}} Dorfbewohner",
         "sustain_other": "{{villagers}} Dorfbewohner halten {{buildings}} Gebäude am Laufen",

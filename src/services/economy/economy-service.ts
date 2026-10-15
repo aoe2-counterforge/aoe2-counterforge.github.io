@@ -117,6 +117,16 @@ export class EconomyService {
     }
 
     /**
+     * Tiles a villager walks from the resource to the drop-off, one way.
+     *
+     * @param query - Resource to gather and, for food, which source to assume.
+     * @returns The distance the trip is worked out with.
+     */
+    public dropOffDistance(query: Omit<GatherRateQuery, 'techs'>): number {
+        return this.profileOf(query.resource, query.foodSource ?? 'farm').dropOffDistance;
+    }
+
+    /**
      * Villagers needed per resource to keep a set of production buildings busy forever.
      *
      * @param query - Unit to train, how many buildings run in parallel and the economy assumptions.

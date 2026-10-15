@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s por aldeão",
         "demand": "Consumo",
         "free": "Esta unidade não custa recursos.",
-        "note": "As taxas base incluem a caminhada até o depósito. As melhorias de transporte e a carga extra do arado entram pelo modelo de viagem: aumentam a carga e a velocidade, então rendem menos que uma melhoria de coleta pura.",
+        "note": "Cada viagem inclui a caminhada até o depósito, num layout típico: {{nearby}} tiles de uma fazenda ou ovelha, {{hunt}} de uma caça trazida para baixo do Centro Urbano e {{ordinary}} de qualquer outro recurso. As melhorias de transporte e a carga extra do arado entram pelo modelo de viagem: aumentam a carga e a velocidade, então rendem menos que uma melhoria de coleta pura.",
         "villagers_other": "{{count}} aldeões",
         "villagers_one": "{{count}} aldeão",
         "sustain_other": "Com {{villagers}} aldeões você sustenta {{buildings}} construções",

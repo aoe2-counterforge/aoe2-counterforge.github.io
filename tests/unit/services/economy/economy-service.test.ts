@@ -78,6 +78,26 @@ describe('EconomyService gather rates', () => {
     });
 });
 
+describe('EconomyService drop-off distance', () => {
+    it('reports the walk the trip is worked out with', () => {
+        const distance = economy.dropOffDistance({ resource: 'wood' });
+
+        expect(distance).toBe(stated.wood.dropOffDistance);
+    });
+
+    it('reads the food walk from the chosen source', () => {
+        const distance = economy.dropOffDistance({ resource: 'food', foodSource: 'hunt' });
+
+        expect(distance).toBe(stated.food.hunt.dropOffDistance);
+    });
+
+    it('assumes a farm when no food source is named', () => {
+        const distance = economy.dropOffDistance({ resource: 'food' });
+
+        expect(distance).toBe(stated.food.farm.dropOffDistance);
+    });
+});
+
 describe('EconomyService production plan', () => {
     it('divides the resource drain by the gather rate to size the villager count', () => {
         const unit = makeUnit({ cost: { wood: 25, gold: 45 }, trainTime: 35 });

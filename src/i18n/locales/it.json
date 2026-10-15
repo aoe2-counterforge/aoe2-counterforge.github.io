@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s per abitante",
         "demand": "Consumo",
         "free": "Questa unità non costa risorse.",
-        "note": "I tassi base includono già il tragitto fino al punto di consegna. I potenziamenti del carico e il carico extra dell'aratro passano per il modello dei viaggi: aumentano capacità e velocità, quindi rendono meno di un bonus diretto alla raccolta.",
+        "note": "Ogni viaggio include il tragitto fino al punto di consegna, in una disposizione tipica: {{nearby}} caselle da una fattoria o una pecora, {{hunt}} da una preda portata sotto il centro città e {{ordinary}} da qualsiasi altra risorsa. I potenziamenti del carico e il carico extra dell'aratro passano per il modello dei viaggi: aumentano capacità e velocità, quindi rendono meno di un bonus diretto alla raccolta.",
         "villagers_other": "{{count}} abitanti",
         "villagers_one": "{{count}} abitante",
         "sustain_other": "{{villagers}} abitanti tengono in funzione {{buildings}} edifici",

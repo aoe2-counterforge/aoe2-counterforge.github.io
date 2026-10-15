@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s par villageois",
         "demand": "Consommation",
         "free": "Cette unité ne coûte aucune ressource.",
-        "note": "Les taux de base incluent déjà le trajet jusqu'au point de dépôt. Les améliorations de charge et le bonus de charge de la charrue passent par le modèle de trajets : ils augmentent la capacité et la vitesse, et rapportent donc moins qu'un bonus de récolte direct.",
+        "note": "Chaque trajet inclut la marche jusqu'au point de dépôt, dans une disposition typique : {{nearby}} cases depuis une ferme ou un mouton, {{hunt}} depuis une chasse amenée sous le forum et {{ordinary}} depuis tout le reste. Les améliorations de charge et le bonus de charge de la charrue passent par le modèle de trajets : ils augmentent la capacité et la vitesse, et rapportent donc moins qu'un bonus de récolte direct.",
         "villagers_other": "{{count}} villageois",
         "villagers_one": "{{count}} villageois",
         "sustain_other": "{{villagers}} villageois font tourner {{buildings}} bâtiments",

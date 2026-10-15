@@ -298,7 +298,7 @@
         "gatherRate": "{{value}}/s per villager",
         "demand": "Drain",
         "free": "This unit costs no resources.",
-        "note": "Base rates already include walking to the drop-off. Carrying upgrades and the plough carry bonus go through the trip model: they raise capacity and speed, so they pay less than a straight gathering bonus.",
+        "note": "Every trip includes the walk to the drop-off, in a typical layout: {{nearby}} tiles from a farm or sheep, {{hunt}} from a hunt brought under the Town Center and {{ordinary}} from anything else. Carrying upgrades and the plough carry bonus go through the trip model: they raise capacity and speed, so they pay less than a straight gathering bonus.",
         "villagers_other": "{{count}} villagers",
         "villagers_one": "{{count}} villager",
         "sustain_other": "{{villagers}} villagers keep {{buildings}} buildings running",

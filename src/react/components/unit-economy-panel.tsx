@@ -69,7 +69,7 @@ function techGroupsFor(
  */
 export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
     const { t } = useTranslation();
-    const { upgrades, catalog } = useServices();
+    const { upgrades, catalog, economy } = useServices();
     const text = useGameText();
     const [buildings, setBuildings] = useState(1);
     const [foodSource, setFoodSource] = useState<FoodSource>('farm');
@@ -211,7 +211,13 @@ export function UnitEconomyPanel({ unit }: UnitEconomyPanelProps) {
                             })}
                         </p>
                     ) : null}
-                    <p className="card__hint planner__note">{t('economy.note')}</p>
+                    <p className="card__hint planner__note">
+                        {t('economy.note', {
+                            nearby: economy.dropOffDistance({ resource: 'food', foodSource: 'farm' }),
+                            hunt: economy.dropOffDistance({ resource: 'food', foodSource: 'hunt' }),
+                            ordinary: economy.dropOffDistance({ resource: 'wood' }),
+                        })}
+                    </p>
                 </div>
 
                 <div className="planner__plan">
