@@ -6,9 +6,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/giovani-freitag/aoe2-counterforge"
+    "url": "https://github.com/aoe2-counterforge/aoe2-counterforge.github.io"
   },
-  "homepage": "https://giovani-freitag.github.io/aoe2-counterforge/",
+  "homepage": "https://aoe2-counterforge.github.io/",
   "description": "AoE2 Counterforge: counters, stats, upgrades and villager economy for every Age of Empires II unit.",
   "engines": {
     "node": ">=20.19"

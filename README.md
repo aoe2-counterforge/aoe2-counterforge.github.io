@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/giovani-freitag/aoe2-counterforge/actions/workflows/ci.yml"><img src="https://github.com/giovani-freitag/aoe2-counterforge/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/actions/workflows/ci.yml"><img src="https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/license-MIT-C79A45?style=flat-square&labelColor=16222D" alt="MIT licensed">
   &nbsp;·&nbsp;
   <img src="https://img.shields.io/badge/React-19-C79A45?style=flat-square&logo=react&logoColor=white&labelColor=16222D" alt="React 19">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://giovani-freitag.github.io/aoe2-counterforge/en/"><strong>Open the guide →</strong></a>
+  <a href="https://aoe2-counterforge.github.io/en/"><strong>Open the guide →</strong></a>
 </p>
 
 <p align="center">

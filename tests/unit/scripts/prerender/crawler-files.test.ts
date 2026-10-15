@@ -3,7 +3,7 @@ import { buildPageHead } from '../../../../src/react/page-head.ts';
 import { robotsTxt, sitemapXml } from '../../../../scripts/prerender/crawler-files.ts';
 import { pageHeadInput } from '../../../fixtures/page-head.ts';
 
-const SITE = 'https://giovani-freitag.github.io/aoe2-counterforge/';
+const SITE = 'https://aoe2-counterforge.github.io/';
 
 describe('sitemapXml', () => {
     it('lists a page with the same page in every language', () => {

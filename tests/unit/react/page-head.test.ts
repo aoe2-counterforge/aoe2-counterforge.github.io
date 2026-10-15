@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { applyPageHead, buildPageHead, headTags, renderHeadMarkup } from '../../../src/react/page-head.ts';
 import { pageHeadInput } from '../../fixtures/page-head.ts';
 
-const SITE = 'https://giovani-freitag.github.io/aoe2-counterforge/';
+const SITE = 'https://aoe2-counterforge.github.io/';
 
 describe('buildPageHead', () => {
     it('names the site after the page', () => {

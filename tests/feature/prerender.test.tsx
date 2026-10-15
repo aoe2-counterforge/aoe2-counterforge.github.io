@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createServices } from '../../src/composition-root.ts';
 import { pagePaths, prerenderPage } from '../../src/prerender.tsx';
 
-const SITE = 'https://giovani-freitag.github.io/aoe2-counterforge/';
+const SITE = 'https://aoe2-counterforge.github.io/';
 const { catalog } = createServices();
 
 describe('prerenderPage', () => {
