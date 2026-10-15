@@ -1786,6 +1786,15 @@ details[open] > summary::after {
     margin-top: var(--space-3);
 }
 
+/* A unit whose changes differ from the shared ones carries them next to its name. */
+.tech-unit {
+    margin-top: var(--space-2);
+}
+
+.tech-unit__effects {
+    margin-top: 0;
+}
+
 /* ---------- the row above a detail page: the way back on the left, the one action on the right ---------- */
 
 .page-nav {
@@ -1972,4 +1981,19 @@ details[open] > summary::after {
     .demand__rate {
         display: none;
     }
+}
+
+/* ---------- the charged attack and extra projectiles of a unit, under its stat block ---------- */
+
+.special-attack__title {
+    margin-bottom: var(--space-2);
+    font-weight: 650;
+}
+
+.special-attack__bonuses {
+    margin-top: var(--space-3);
+}
+
+.special-attack + .special-attack {
+    margin-top: var(--space-3);
 }

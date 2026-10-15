@@ -92,7 +92,13 @@ export function UnitPage() {
                 onChange={setTab}
             />
 
-            {tab === 'overview' ? <UnitOverviewPanel unit={unit} upgradedStats={upgrades.upgradedStats} /> : null}
+            {tab === 'overview' ? (
+                <UnitOverviewPanel
+                    unit={unit}
+                    upgradedStats={upgrades.upgradedStats}
+                    upgradedSpecialAttacks={upgrades.upgradedSpecialAttacks}
+                />
+            ) : null}
             {tab === 'counters' ? <UnitCountersPanel key={unit.key} unit={unit} /> : null}
             {tab === 'upgrades' ? <UnitUpgradesPanel unit={unit} /> : null}
             {tab === 'economy' ? <UnitEconomyPanel unit={unit} /> : null}

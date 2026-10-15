@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Unit } from '../../domain/entities/unit.ts';
+import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
 import { SegmentedControl } from './segmented-control.tsx';
+import { SpecialAttacks } from './special-attacks.tsx';
 import { StatGrid } from './stat-grid.tsx';
 import { UnitCivilizationsCard } from './unit-civilizations-card.tsx';
 import { UnitLineDiagram } from './unit-line-diagram.tsx';
@@ -13,12 +15,14 @@ import { UnitLineDiagram } from './unit-line-diagram.tsx';
 export interface UnitOverviewPanelProps {
     unit: Unit;
     upgradedStats: UnitStats;
+    /** The special attacks the unit fires, with every technology applied. */
+    upgradedSpecialAttacks: readonly SpecialAttack[];
 }
 
 type StatsMode = 'base' | 'upgraded';
 
 /** Role, official matchup summary, stat block and upgrade line of a unit. */
-export function UnitOverviewPanel({ unit, upgradedStats }: UnitOverviewPanelProps) {
+export function UnitOverviewPanel({ unit, upgradedStats, upgradedSpecialAttacks }: UnitOverviewPanelProps) {
     const { t } = useTranslation();
     const text = useGameText();
     const steps = useUnitLine(unit);
@@ -65,6 +69,10 @@ export function UnitOverviewPanel({ unit, upgradedStats }: UnitOverviewPanelProp
                     </p>
                 ) : null}
                 <StatGrid stats={mode === 'base' ? base : upgraded} compareWith={mode === 'base' ? undefined : base} />
+                <SpecialAttacks
+                    base={unit.activeSpecialAttacks}
+                    upgraded={mode === 'base' ? undefined : upgradedSpecialAttacks}
+                />
             </section>
 
             <section className="card">

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { Unit } from '../../domain/entities/unit.ts';
+import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import type { AppliedUpgrade } from '../../services/upgrade/upgrade-service.ts';
 import type { StatDelta } from '../../services/upgrade/tech-effect.ts';
@@ -21,6 +22,8 @@ export interface UnitUpgradeView {
     /** Every civilization whose own technologies change this unit, whether or not one is chosen. */
     byCivilization: CivilizationUpgrades[];
     upgradedStats: UnitStats;
+    /** The special attacks the unit fires, with the same technologies applied. */
+    upgradedSpecialAttacks: SpecialAttack[];
     upgradedTrainTime: number;
 }
 
@@ -66,6 +69,7 @@ export function useUnitUpgrades(unit: Unit | null): UnitUpgradeView | null {
             generic: reaching.filter((upgrade) => !upgrade.technology.isUnique),
             byCivilization: [...byCiv.values()].sort((left, right) => left.civ.localeCompare(right.civ)),
             upgradedStats: outcome.stats,
+            upgradedSpecialAttacks: outcome.specialAttacks,
             upgradedTrainTime: outcome.trainTime,
         };
     }, [upgrades, unit, preferences.civ]);
