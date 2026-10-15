@@ -1,5 +1,5 @@
 import { normalize, type FuzzyMatcher } from './fuzzy-matcher.ts';
-import type { SearchDocument, SearchIndexBuilder, SearchKind } from './search-index-builder.ts';
+import type { SearchAlias, SearchDocument, SearchIndexBuilder, SearchKind } from './search-index-builder.ts';
 
 export interface SearchServiceConfig {
     indexBuilder: SearchIndexBuilder;
@@ -14,11 +14,25 @@ export interface SearchQuery {
     limit?: number;
 }
 
+/** A name from another language the query matched, with the characters it matched. */
+export interface MatchedAlias {
+    text: string;
+    positions: readonly number[];
+}
+
 export interface SearchHit {
     document: SearchDocument;
     score: number;
+    /** Characters of the title the query matched. */
     positions: readonly number[];
+    /** Set when the query matched the item's name in another language rather than its title. */
+    alias: MatchedAlias | null;
 }
+
+type TermMatch =
+    | { field: 'title'; score: number; positions: readonly number[] }
+    | { field: 'alias'; score: number; positions: readonly number[]; alias: SearchAlias }
+    | { field: 'keyword'; score: number };
 
 export interface SearchOutcome {
     hits: SearchHit[];
@@ -28,7 +42,21 @@ export interface SearchOutcome {
 
 const DEFAULT_LIMIT = 12;
 const MIN_CIV_TOKEN = 3;
-const KEYWORD_PENALTY = 0.55;
+
+/**
+ * A word must be this long before another language's civilization name may scope the query, or
+ * "war" in "war galley" reads as the start of Waräger, the German name for the Varangians.
+ */
+const MIN_ALIAS_CIV_TOKEN = 4;
+
+/**
+ * Another language's name counts half as much as the title. Any more and a few typed letters start
+ * pulling in names from Spanish or Italian ahead of the title the reader was typing in their own.
+ */
+const ALIAS_WEIGHT = 0.5;
+
+/** Words the title does not show, such as the owning civilization, count well below the title. */
+const KEYWORD_WEIGHT = 0.3;
 const KIND_ORDER: Record<SearchKind, number> = { unit: 0, civilization: 1, technology: 2 };
 
 /** Ranks the catalog against a free-text query, including "unit + civilization" phrasing. */
@@ -83,24 +111,25 @@ export class SearchService {
 
         for (const document of pool) {
             let total = 0;
-            let positions: readonly number[] = [];
+            const positions = new Set<number>();
+            let alias: MatchedAlias | null = null;
             let matchedAll = true;
 
             for (const term of terms) {
-                const onTitle = this.config.matcher.match(term, document.normalizedTitle);
-                const onKeyword = onTitle ? null : this.bestKeywordScore(document, term);
-                const score = onTitle?.score ?? onKeyword;
-
-                if (score === null || score === undefined) {
+                const match = this.bestMatch(document, term);
+                if (!match) {
                     matchedAll = false;
                     break;
                 }
 
-                total += score;
-                if (onTitle && positions.length === 0) positions = onTitle.positions;
+                total += match.score;
+                if (match.field === 'title') match.positions.forEach((position) => positions.add(position));
+                if (match.field === 'alias' && !alias) alias = { text: match.alias.text, positions: match.positions };
             }
 
-            if (matchedAll) hits.push({ document, positions, score: total * document.weight });
+            if (matchedAll) {
+                hits.push({ document, positions: [...positions].sort((a, b) => a - b), alias, score: total * document.weight });
+            }
         }
 
         return hits.sort(
@@ -111,20 +140,31 @@ export class SearchService {
         );
     }
 
-    private bestKeywordScore(document: SearchDocument, term: string): number | null {
-        let best: number | null = null;
-        for (const keyword of document.keywords) {
-            const match = this.config.matcher.match(term, keyword);
-            if (match && (best === null || match.score > best)) best = match.score;
+    /** The strongest place one query word lands: the title, another language's name, or a keyword. */
+    private bestMatch(document: SearchDocument, term: string): TermMatch | null {
+        const { matcher } = this.config;
+        const candidates: TermMatch[] = [];
+
+        const onTitle = matcher.match(term, document.normalizedTitle);
+        if (onTitle) candidates.push({ field: 'title', score: onTitle.score, positions: onTitle.positions });
+
+        for (const alias of document.aliases) {
+            const onAlias = matcher.match(term, alias.normalized);
+            if (onAlias) candidates.push({ field: 'alias', alias, score: onAlias.score * ALIAS_WEIGHT, positions: onAlias.positions });
         }
 
-        return best === null ? null : best * KEYWORD_PENALTY;
+        for (const keyword of document.keywords) {
+            const onKeyword = matcher.match(term, keyword);
+            if (onKeyword) candidates.push({ field: 'keyword', score: onKeyword.score * KEYWORD_WEIGHT });
+        }
+
+        return candidates.reduce<TermMatch | null>((best, candidate) => (!best || candidate.score > best.score ? candidate : best), null);
     }
 
     private defaultHits(pool: readonly SearchDocument[], civ: SearchDocument | null): SearchHit[] {
         return pool
             .filter((document) => (civ ? document.id !== civ.id : true))
-            .map((document) => ({ document, score: document.weight, positions: [] }))
+            .map((document) => ({ document, score: document.weight, positions: [], alias: null }))
             .sort(
                 (left, right) =>
                     KIND_ORDER[left.document.kind] - KIND_ORDER[right.document.kind] ||
@@ -158,6 +198,8 @@ export class SearchService {
                 (document) =>
                     document.kind === 'civilization' &&
                     (document.normalizedTitle.startsWith(token) ||
+                        (token.length >= MIN_ALIAS_CIV_TOKEN &&
+                            document.aliases.some((alias) => alias.normalized.startsWith(token))) ||
                         document.keywords.some((keyword) => keyword.startsWith(token))),
             );
             if (civ) return { civ, token };

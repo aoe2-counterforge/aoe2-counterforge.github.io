@@ -4,12 +4,20 @@ import { normalize } from './fuzzy-matcher.ts';
 
 export type SearchKind = 'unit' | 'civilization' | 'technology';
 
+/** The name an item goes by in another language. */
+export interface SearchAlias {
+    text: string;
+    normalized: string;
+}
+
 export interface SearchDocument {
     id: string;
     kind: SearchKind;
     key: string;
     title: string;
     normalizedTitle: string;
+    /** The same name in the other languages, so a query in any of them finds the item. */
+    aliases: readonly SearchAlias[];
     subtitle: string;
     /** Unit category slug the interface localizes on its own. */
     categoryKey: string | null;
@@ -22,7 +30,8 @@ export interface SearchDocument {
 export interface SearchIndexBuilderConfig {
     catalog: GameCatalogService;
     text: GameTextService;
-    fallbackLocale: string;
+    /** Every language the game names things in. */
+    locales: readonly string[];
 }
 
 const UNIT_WEIGHT = 1;
@@ -53,7 +62,6 @@ export class SearchIndexBuilder {
 
         return this.config.catalog.units().map((unit) => {
             const text = this.config.text.unit(locale, unit.key);
-            const english = this.config.text.unit(this.config.fallbackLocale, unit.key);
             const owner = unit.uniqueTo ? this.config.text.civilization(locale, unit.uniqueTo).name : '';
 
             return {
@@ -62,9 +70,10 @@ export class SearchIndexBuilder {
                 key: unit.key,
                 title: text.name,
                 normalizedTitle: normalize(text.name),
+                aliases: this.aliases(text.name, (other) => this.config.text.unit(other, unit.key).name),
                 subtitle: owner,
                 categoryKey: unit.category,
-                keywords: this.keywords([english.name, unit.key, unit.category, ...unit.buildings, owner, ...unit.tags]),
+                keywords: this.keywords([unit.key, unit.category, ...unit.buildings, owner, ...unit.tags]),
                 icon: unit.icon === null ? null : `Unit/${unit.icon}.png`,
                 civs: unit.civs,
                 weight: UNIT_WEIGHT + (unit.civs.length / roster) * 0.25,
@@ -75,7 +84,6 @@ export class SearchIndexBuilder {
     private civilizationDocuments(locale: string): SearchDocument[] {
         return this.config.catalog.civilizations().map((civilization) => {
             const text = this.config.text.civilization(locale, civilization.key);
-            const english = this.config.text.civilization(this.config.fallbackLocale, civilization.key);
 
             return {
                 id: `civilization:${civilization.key}`,
@@ -83,9 +91,10 @@ export class SearchIndexBuilder {
                 key: civilization.key,
                 title: text.name,
                 normalizedTitle: normalize(text.name),
+                aliases: this.aliases(text.name, (other) => this.config.text.civilization(other, civilization.key).name),
                 subtitle: text.intro,
                 categoryKey: null,
-                keywords: this.keywords([english.name, civilization.key, text.intro]),
+                keywords: this.keywords([civilization.key, text.intro]),
                 icon: `Civs/${civilization.icon}.png`,
                 civs: [civilization.key],
                 weight: CIVILIZATION_WEIGHT,
@@ -96,7 +105,6 @@ export class SearchIndexBuilder {
     private technologyDocuments(locale: string): SearchDocument[] {
         return this.config.catalog.technologies().map((technology) => {
             const text = this.config.text.technology(locale, technology.key);
-            const english = this.config.text.technology(this.config.fallbackLocale, technology.key);
 
             return {
                 id: `technology:${technology.key}`,
@@ -104,14 +112,32 @@ export class SearchIndexBuilder {
                 key: technology.key,
                 title: text.name,
                 normalizedTitle: normalize(text.name),
+                aliases: this.aliases(text.name, (other) => this.config.text.technology(other, technology.key).name),
                 subtitle: text.description,
                 categoryKey: null,
-                keywords: this.keywords([english.name, technology.key, technology.building]),
+                keywords: this.keywords([technology.key, technology.building]),
                 icon: technology.icon === null ? null : `Tech/${technology.icon}.png`,
                 civs: technology.civs,
                 weight: TECHNOLOGY_WEIGHT,
             } satisfies SearchDocument;
         });
+    }
+
+    /** The distinct names other languages give the item, leaving out any that match its own. */
+    private aliases(title: string, nameIn: (locale: string) => string): SearchAlias[] {
+        const seen = new Set([normalize(title)]);
+        const aliases: SearchAlias[] = [];
+
+        for (const locale of this.config.locales) {
+            const text = nameIn(locale);
+            const normalized = normalize(text);
+            if (!text || seen.has(normalized)) continue;
+
+            seen.add(normalized);
+            aliases.push({ text, normalized });
+        }
+
+        return aliases;
     }
 
     private keywords(values: readonly string[]): string[] {

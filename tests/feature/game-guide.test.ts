@@ -145,6 +145,27 @@ describe('search', () => {
 
         expect(outcome.hits.some((hit) => hit.document.key === 'bloodlines')).toBe(true);
     });
+
+    it('finds an item by its name in another language and says which name matched', () => {
+        const outcome = services.search.search({ text: 'arch', locale: 'pt-BR' });
+
+        expect(outcome.hits[0]?.document.key).toBe('archer');
+        expect(outcome.hits[0]?.alias).toEqual({ text: 'Archer', positions: [0, 1, 2, 3] });
+    });
+
+    it('ranks a match on the line under a title below the titles that match', () => {
+        const keys = services.search.search({ text: 'hun', locale: 'en' }).hits.map((hit) => hit.document.key);
+
+        expect(keys[0]).toBe('huns');
+        expect(keys.indexOf('tarkan')).toBeGreaterThan(keys.indexOf('hussite-wagon'));
+    });
+
+    it('does not read a short word as the start of a civilization name in another language', () => {
+        const outcome = services.search.search({ text: 'war galley', locale: 'en' });
+
+        expect(outcome.civScope).toBeNull();
+        expect(outcome.hits[0]?.document.key).toBe('war-galley');
+    });
 });
 
 describe('opponent pools on the shipped roster', () => {

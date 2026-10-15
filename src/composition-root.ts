@@ -143,7 +143,7 @@ export function createServices(): AppServices {
     });
 
     const search = new SearchService({
-        indexBuilder: new SearchIndexBuilder({ catalog, text, fallbackLocale: FALLBACK_LOCALE }),
+        indexBuilder: new SearchIndexBuilder({ catalog, text, locales: Object.keys(GAME_STRING_BUNDLES) }),
         matcher: new FuzzyMatcher(),
     });
 
