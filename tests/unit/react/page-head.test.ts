@@ -41,10 +41,10 @@ describe('buildPageHead', () => {
         expect(head.description.length).toBeLessThanOrEqual(160);
     });
 
-    it('describes the home page as the website', () => {
-        const head = buildPageHead(pageHeadInput({ path: '/', trail: [] }));
+    it('describes the home page as the website at the root of the host', () => {
+        const head = buildPageHead(pageHeadInput({ path: '/', trail: [], locale: 'de' }));
 
-        expect(head.structuredData[0]).toMatchObject({ '@type': 'WebSite', url: `${SITE}en/` });
+        expect(head.structuredData[0]).toMatchObject({ '@type': 'WebSite', url: SITE });
     });
 
     it('places any other page in a breadcrumb under its section', () => {

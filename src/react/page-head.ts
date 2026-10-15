@@ -79,14 +79,16 @@ function clampDescription(text: string): string {
     return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.]+$/, '')}…`;
 }
 
-function structuredData(input: PageHeadInput, canonical: string): Record<string, unknown>[] {
+function structuredData(input: PageHeadInput): Record<string, unknown>[] {
     if (input.trail.length === 0) {
         return [
             {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
                 name: input.siteName,
-                url: canonical,
+                // Search engines take the site name only from the root of the host, never from a
+                // language's home page, so every language points at the root.
+                url: __SITE_URL__,
                 inLanguage: input.locale,
                 description: clampDescription(input.description),
             },
@@ -132,7 +134,7 @@ export function buildPageHead(input: PageHeadInput): PageHead {
             : [],
         indexable: input.indexable,
         image: new URL('og-image.png', __SITE_URL__).href,
-        structuredData: canonical ? structuredData(input, canonical) : [],
+        structuredData: canonical ? structuredData(input) : [],
     };
 }
 
