@@ -1,7 +1,7 @@
 # How the economy is calculated
 
 <p align="center">
-  <img src="screenshots/economy-mobile.png" alt="Economy tab: gather technologies by age, and villagers per resource" width="300">
+  <img src="screenshots/economy-dark.png" alt="Economy tab: gather technologies by age, and villagers per resource" width="860">
 </p>
 
 The question the tab answers is: to keep this unit coming out of its building without a pause, how

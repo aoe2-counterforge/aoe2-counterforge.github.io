@@ -39,13 +39,12 @@ you have, and whether you plan to stand and fight or shoot on the move.
 
 <img src="docs/screenshots/counters-light.png" alt="The Knight's counters tab: filters for type, opponents, engagement and upgrades, with strong, weak and every matchup behind one switch">
 
-A unit's **Counters** tab runs every matchup through the game's damage formula: attack against armour
-for each shared class, damage per hit, damage per second, how long each side stands in the other's
-range, and whether a shooter can kite. Each fight is then weighed by what both sides cost, so a
-favourable trade means you come out ahead on resources, not just that your unit is left standing.
+A unit's **Counters** tab runs every matchup through the damage formula: attack against armour for
+each shared class, damage per hit, damage per second, how long each side stands in the other's range,
+and whether a shooter can kite. Each fight is then weighed by what both sides cost, so a favourable
+trade means you come out ahead on resources, not just that your unit is left standing.
 
-Change the engagement, the upgrades or the civilization and the ranking works itself out again. The
-strong matchups, the weak ones and every opponent sit behind one switch.
+The strong matchups, the weak ones and every opponent sit behind one switch.
 
 ### Every technology, and what it actually does
 
@@ -64,8 +63,12 @@ the total once everything is researched.
 
 The **Economy** tab answers the question every build order runs into: how many villagers on each
 resource keep this building producing without a pause. It starts from the unit's cost, its training
-time and the Definitive Edition gather rates, walking to the drop-off included, and calls out the
-resource that holds production back.
+time and the game's gather rates, and calls out the resource that holds production back.
+
+Every trip also includes the walk back to the drop-off. The game states no distance for it, so the
+guide assumes **2 tiles** from a farm or sheep, **3** from trees, mines, berries and shore fish, and
+**4** from a boar or deer. [How the economy is calculated](docs/economy.md) shows where each of those
+numbers enters the sum.
 
 Add buildings, apply a bonus such as Conscription, or research the gathering upgrades age by age, and
 the numbers follow.
