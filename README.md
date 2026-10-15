@@ -65,9 +65,10 @@ The **Economy** tab answers the question every build order runs into: how many v
 resource keep this building producing without a pause. It starts from the unit's cost, its training
 time and the game's gather rates, and calls out the resource that holds production back.
 
-Every trip also includes the walk back to the drop-off. The game states no distance for it, so the
-guide assumes **2 tiles** from a farm or sheep, **3** from trees, mines, berries and shore fish, and
-**4** from a boar or deer. [How the economy is calculated](docs/economy.md) shows where each of those
+Every trip also includes the walk back to the drop-off. How far that is depends on how each match is
+played, on where the mill, the lumber camp or the mining camp goes up, so the guide assumes a typical
+layout: **2 tiles** from a farm or sheep, **3** from trees, mines, berries and shore fish, and **4**
+from a boar or deer. [How the economy is calculated](docs/economy.md) shows where each of those
 numbers enters the sum.
 
 Add buildings, apply a bonus such as Conscription, or research the gathering upgrades age by age, and

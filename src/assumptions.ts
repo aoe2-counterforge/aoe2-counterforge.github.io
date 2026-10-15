@@ -41,11 +41,11 @@ export const ASSUMPTIONS = {
     },
     dropOffTilesNearby: {
         value: 2,
-        reason: 'Tiles from a farm or a sheep to the drop-off. The game states no distance.',
+        reason: 'Tiles from a farm or a sheep to the drop-off in a typical layout; it depends on where the player builds.',
     },
     dropOffTilesOrdinary: {
         value: 3,
-        reason: 'Tiles from a bush, a tree, a mine or the shore to the drop-off. The game states no distance.',
+        reason: 'Tiles from a bush, a tree, a mine or the shore to the drop-off in a typical layout; it depends on where the player builds.',
     },
     dropOffTilesHunt: {
         value: 4,

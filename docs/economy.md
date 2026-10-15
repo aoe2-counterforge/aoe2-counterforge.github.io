@@ -21,8 +21,9 @@ records — one record per kind of work, so the forager, the hunter and the lumb
 their own. The hunter carries a whole boar, thirty-five at a time against everyone else's ten, and
 that is why it walks a third as often.
 
-What the game does not state is how far the walk is. That distance is the only invented number in
-the economy, and the guide assumes:
+How far the walk is depends on how each match is played: on where the mill, the lumber camp or the
+mining camp goes up. That distance is the only number in the economy the guide has to choose, and it
+assumes a typical layout:
 
 | Gathering from | Tiles to the drop-off |
 |---|---|
