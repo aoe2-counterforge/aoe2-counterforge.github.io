@@ -51,7 +51,8 @@ Keeping the work and the walk apart is what lets every upgrade land where it act
   uses to work out the **wood spent rebuilding farms** — a Knight costs no wood, but producing
   Knights non-stop still needs lumberjacks.
 
-Conscription can be toggled on, cutting the train time by 33%.
+Conscription can be toggled on. It makes the barracks, archery range, stable and castle work 33%
+faster, so the train time is divided by 1.33: about a quarter less, not a third.
 
 The result is shown as a whole number of villagers per resource, with the exact figure beside it,
 plus the bottleneck: the resource that runs out first and therefore sets the pace.
