@@ -102,6 +102,52 @@ Ballistics changes no archer. It sets a flag on the arrows, and the game files c
 each unit fires, so an effect aimed at a projectile is read back onto whoever shoots it. Sixty units
 turn out to be listed that way, and the reader who opens the Crossbowman is asking about the archer.
 
+## Special attacks
+
+A unit carries up to three missiles, each a unit of its own in the file with its own damage list:
+the main shot, the secondary missiles that fly with it, and the one a charged attack fires. The main
+shot hits with the unit's own attack. The other two do not, so they ship apart from the stat line,
+in `specialAttacks`: 41 units have one, 25 with secondary missiles and 18 with a charged attack.
+
+- **Secondary** missiles count once they can fly: the unit fires more than one (the Chu Ko Nu, the
+  Kipchak, the Hussite Wagon), can fire more in a charged volley (the Xianbei Raider), or a
+  technology or bonus raises its missile count (Bolt Magazine, Double Crossbow, Hul'che
+  Javelineers, Sitting Tiger). One without damage is a piece of a blast, like the Mangonel's, and is
+  left out. `count` is how many fly with an ordinary shot, so zero when only something else adds them.
+- **Charged** attacks count whatever they carry. The fire ships only get a charge from Siphons, and
+  the Jomsviking's torch carries no damage list of its own.
+
+A technology often writes the same change on the unit and on its missile. Fletching gives every
+archer +1 pierce, and also gives the Fire Archer's missile +1, because that missile is both its main
+shot and its charged attack. Each change aimed at a missile is therefore tagged with the role the
+missile plays for the shooter, in `projectile`, and never added to the unit's own numbers:
+
+- a damage list goes to the charged attack first, then to the secondary missiles, and on the main
+  missile it lands nowhere, since the shot hits with the unit's attack and the file writes the same
+  change on the unit as well;
+- anything else, such as Ballistics or Curare's poison, is the unit's own shot when the missile is
+  its main one, exactly as before, and otherwise belongs to the special attack.
+
+So Fletching reads +1 attack on the Fire Archer and +1 on its charged attack, not +2. A unit with
+two special attacks, like the Xianbei Raider, gets one change for each. None of this reaches the
+matchups or the ratings yet.
+
+### How far a charged attack reaches
+
+A charged attack reaches the unit's maximum range plus its `chargeEvent`. The file supports reading
+it that way on three counts. The Fire Archer reaches 9 with an event of −4 and the Lou Chuan 13 with
+−3, and the range the game displays for them is 5 and 10. The Blacksmith arrow technologies raise
+the Hearth Troop's and the Lou Chuan's event by one exactly where they raise other archers' range,
+and the game's text lists range among both units' Blacksmith upgrades. Siege Engineers raises the
+Lou Chuan's range by one and lowers its event by one, so its arrows stay where they were while its
+trebuchet gains a tile. That puts the Hearth Troop's javelin at 6 tiles, the Fire Lancer's shot at 4
+(5 elite) and the Jomsviking's torch at 3. It has not been measured in game.
+
+What is left out on purpose: the missile's own accuracy and blast, which on the main shot are known
+not to be the ones used (the Archer shoots at 80% with an arrow that says 85%); and a technology that
+swaps a missile for another, like Thunderclap Bombs or Incendiaries, which stays a flag on the unit
+while the special attack keeps the damage of the missile the unit starts with.
+
 ## What links a unit to a civilization
 
 Two statements in the same install, and they agree. The civilization's tech tree lists the node,
@@ -220,6 +266,11 @@ community's figures), not from a published attribute list.
   Byzantines, Celts, Malians, Cumans in Spanish, Italian and French), probably a different split of
   the game's text.
 - The monk attribute above is named by inference.
+- How far a charged attack reaches is read from the file, not measured in game (see
+  [Special attacks](#how-far-a-charged-attack-reaches)).
+- A secondary missile is taken to hit with its own damage list, as the Chu Ko Nu's does. For the
+  skirmishers' second javelin under Hul'che Javelineers that list says 1 pierce, which has not
+  been checked in game.
 
 ## Backlog: buildings
 
