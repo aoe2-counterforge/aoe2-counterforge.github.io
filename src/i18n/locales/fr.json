@@ -71,7 +71,18 @@
         "noBonusDamage": "Aucun dégât bonus.",
         "availableIn_other": "{{count}} civilisations",
         "availableIn_one": "{{count}} civilisation",
-        "trainedBy": "Formée par"
+        "trainedBy": "Formée par",
+        "special": {
+            "title": "Attaques spéciales",
+            "hint": "Chacune tire un projectile à part, donc rien de tout cela n'entre dans les statistiques ci-dessus.",
+            "charge": "Attaque chargée",
+            "secondary": "Projectiles supplémentaires",
+            "recharge": "Rechargement",
+            "instant": "Instantané",
+            "seconds": "{{value}} s",
+            "projectiles": "Projectiles par tir",
+            "volley": "Tirés avec l'attaque chargée"
+        }
     },
     "stats": {
         "hp": "PV",
@@ -269,7 +280,19 @@
             "population": "{{value}} de population",
             "populationPercent": "{{value}}% de place de population",
             "faith": "Regagne sa foi {{value}}% plus vite",
-            "damageReflection": "Renvoie {{value}}% des dégâts de mêlée"
+            "damageReflection": "Renvoie {{value}}% des dégâts de mêlée",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} d'attaque chargée{{against}}",
+                    "attackPercent": "{{value}}% d'attaque chargée{{against}}",
+                    "range": "{{value}} de portée de l'attaque chargée"
+                },
+                "secondary": {
+                    "attack": "{{value}} d'attaque des projectiles supplémentaires{{against}}",
+                    "attackPercent": "{{value}}% d'attaque des projectiles supplémentaires{{against}}",
+                    "aftereffect": "Ses projectiles supplémentaires laissent un effet durable"
+                }
+            }
         },
         "uniqueHint": "Les bonus qu'une civilisation reçoit, et les technologies de château qui touchent cette unité.",
         "noUnique": "Aucune civilisation ne change cette unité à elle seule.",

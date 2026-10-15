@@ -1,6 +1,7 @@
 import type { TFunction } from 'i18next';
+import { SPECIAL_ROLES } from '../domain/enums/projectile-role.ts';
 import type { ClassAmount } from '../domain/values/class-amount.ts';
-import type { StatDelta } from '../services/upgrade/tech-effect.ts';
+import type { SpecialDeltas, StatDelta } from '../services/upgrade/tech-effect.ts';
 import type { WorkRate } from '../services/upgrade/upgrade-service.ts';
 import { delta, percentDelta, preciseDelta, short } from './format.ts';
 
@@ -45,10 +46,7 @@ export function describeEffect(
     }
 
     const labels: string[] = [];
-    const against = (armourClass: string) =>
-        armourClass === 'base-melee' || armourClass === 'base-pierce'
-            ? ''
-            : t('upgrades.effect.against', { class: t(`armourClasses.${armourClass}`) });
+    const against = (armourClass: string) => againstOf(armourClass, t);
 
     if (change.hp !== undefined) labels.push(t('upgrades.effect.hp', { value: delta(change.hp) }));
     if (change.hpMultiplier && change.hpMultiplier !== 1) {
@@ -153,29 +151,9 @@ export function describeEffect(
         labels.push(t('upgrades.effect.trainSpeed', { value: short((1 / change.trainTimeMultiplier - 1) * 100) }));
     }
 
-    for (const [key, entries] of [
-        ['attackPercent', change.attackMultipliers ?? []],
-        ['armourPercent', change.armourMultipliers ?? []],
-    ] as const) {
-        for (const [factor, classes] of byFactor(entries)) {
-            const broad = classes.length >= BROAD_ENOUGH;
-            for (const armourClass of broad ? [null] : classes) {
-                labels.push(
-                    t(`upgrades.effect.${key}`, {
-                        value: percentDelta(factor),
-                        against: armourClass === null ? '' : against(armourClass),
-                    }),
-                );
-            }
-        }
-    }
-
-    for (const entry of change.attack ?? []) {
-        if (entry.amount === 0) continue;
-        labels.push(
-            t('upgrades.effect.attack', { value: delta(entry.amount), against: against(entry.armourClass) }),
-        );
-    }
+    labels.push(...scaledLabels(change.attackMultipliers, 'upgrades.effect.attackPercent', t));
+    labels.push(...scaledLabels(change.armourMultipliers, 'upgrades.effect.armourPercent', t));
+    labels.push(...addedLabels(change.attack, 'upgrades.effect.attack', t));
     for (const entry of change.armour ?? []) {
         if (entry.amount === 0) continue;
         if (entry.armourClass === 'base-melee' || entry.armourClass === 'base-pierce') {
@@ -188,7 +166,65 @@ export function describeEffect(
         );
     }
 
+    labels.push(...describeSpecial(change.special, t));
+
     return labels;
+}
+
+/**
+ * Words what a technology does to a unit's special attacks, each kept apart from the unit.
+ *
+ * The Fire Archer gets +1 attack and its charged arrows another +1; two chips, one per attack,
+ * so neither reads as a +2 that no stat shows.
+ *
+ * @param special - The change per missile role, as the upgrade service reports it.
+ * @param t - Translator bound to the active interface language.
+ * @returns One label per measurable change, charged attack first.
+ */
+export function describeSpecial(special: SpecialDeltas | undefined, t: TFunction): string[] {
+    const labels: string[] = [];
+
+    for (const role of SPECIAL_ROLES) {
+        const change = special?.[role];
+        if (change === undefined) continue;
+
+        const base = `upgrades.effect.special.${role}`;
+        labels.push(...scaledLabels(change.attackMultipliers, `${base}.attackPercent`, t));
+        labels.push(...addedLabels(change.attack, `${base}.attack`, t));
+        if (change.range !== undefined) labels.push(t(`${base}.range`, { value: delta(change.range) }));
+        if (change.aftereffect) labels.push(t(`${base}.aftereffect`));
+    }
+
+    return labels;
+}
+
+/** The phrase that says which armour class a bonus is against, empty for the two base damage types. */
+function againstOf(armourClass: string, t: TFunction): string {
+    return armourClass === 'base-melee' || armourClass === 'base-pierce'
+        ? ''
+        : t('upgrades.effect.against', { class: t(`armourClasses.${armourClass}`) });
+}
+
+/** Factors on a damage list, one chip per factor, or one for them all when the factor is broad. */
+function scaledLabels(entries: readonly ClassAmount[] | undefined, key: string, t: TFunction): string[] {
+    const labels: string[] = [];
+    for (const [factor, classes] of byFactor(entries ?? [])) {
+        const broad = classes.length >= BROAD_ENOUGH;
+        for (const armourClass of broad ? [null] : classes) {
+            labels.push(
+                t(key, { value: percentDelta(factor), against: armourClass === null ? '' : againstOf(armourClass, t) }),
+            );
+        }
+    }
+
+    return labels;
+}
+
+/** Points added to a damage list, one chip per class. */
+function addedLabels(entries: readonly ClassAmount[] | undefined, key: string, t: TFunction): string[] {
+    return (entries ?? [])
+        .filter((entry) => entry.amount !== 0)
+        .map((entry) => t(key, { value: delta(entry.amount), against: againstOf(entry.armourClass, t) }));
 }
 
 /** One age's worth of a bonus the game hands out once per age. */
@@ -209,6 +245,10 @@ function divided(change: StatDelta, ages: number): StatDelta {
         reloadTime: share(change.reloadTime),
         attack: shares(change.attack),
         armour: shares(change.armour),
+        special: change.special && {
+            charge: change.special.charge && divided(change.special.charge, ages),
+            secondary: change.special.secondary && divided(change.special.secondary, ages),
+        },
     };
 }
 

@@ -71,7 +71,18 @@
         "noBonusDamage": "Sin daño adicional.",
         "availableIn_other": "{{count}} civilizaciones",
         "availableIn_one": "{{count}} civilización",
-        "trainedBy": "La entrenan"
+        "trainedBy": "La entrenan",
+        "special": {
+            "title": "Ataques especiales",
+            "hint": "Cada uno dispara un proyectil propio, así que nada de esto cuenta en las estadísticas de arriba.",
+            "charge": "Ataque de carga",
+            "secondary": "Proyectiles extra",
+            "recharge": "Recarga",
+            "instant": "Instantánea",
+            "seconds": "{{value}} s",
+            "projectiles": "Proyectiles por disparo",
+            "volley": "Se disparan junto con el ataque de carga"
+        }
     },
     "stats": {
         "hp": "PR",
@@ -269,7 +280,19 @@
             "population": "{{value}} de población",
             "populationPercent": "{{value}}% de espacio de población",
             "faith": "Recupera la fe un {{value}}% más rápido",
-            "damageReflection": "Devuelve el {{value}}% del daño cuerpo a cuerpo"
+            "damageReflection": "Devuelve el {{value}}% del daño cuerpo a cuerpo",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} de ataque de carga{{against}}",
+                    "attackPercent": "{{value}}% de ataque de carga{{against}}",
+                    "range": "{{value}} de alcance del ataque de carga"
+                },
+                "secondary": {
+                    "attack": "{{value}} de ataque de los proyectiles extra{{against}}",
+                    "attackPercent": "{{value}}% de ataque de los proyectiles extra{{against}}",
+                    "aftereffect": "Sus proyectiles extra dejan un efecto duradero"
+                }
+            }
         },
         "uniqueHint": "Bonificaciones que la civilización recibe de entrada, y las tecnologías de castillo que alcanzan a esta unidad.",
         "noUnique": "Ninguna civilización cambia esta unidad por su cuenta.",

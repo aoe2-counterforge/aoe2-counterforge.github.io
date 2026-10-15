@@ -71,7 +71,18 @@
         "noBonusDamage": "Sem dano bônus.",
         "availableIn_other": "{{count}} civilizações",
         "availableIn_one": "{{count}} civilização",
-        "trainedBy": "Civilizações que treinam"
+        "trainedBy": "Civilizações que treinam",
+        "special": {
+            "title": "Ataques especiais",
+            "hint": "Cada um dispara um projétil próprio, então nada disso entra nos atributos acima.",
+            "charge": "Ataque de carga",
+            "secondary": "Projéteis extras",
+            "recharge": "Recarga",
+            "instant": "Instantânea",
+            "seconds": "{{value}} s",
+            "projectiles": "Projéteis por disparo",
+            "volley": "Disparados junto com o ataque de carga"
+        }
     },
     "stats": {
         "hp": "PV",
@@ -269,7 +280,19 @@
             "population": "{{value}} de população",
             "populationPercent": "{{value}}% de espaço de população",
             "faith": "Recupera a fé {{value}}% mais rápido",
-            "damageReflection": "Devolve {{value}}% do dano corpo a corpo"
+            "damageReflection": "Devolve {{value}}% do dano corpo a corpo",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} de ataque de carga{{against}}",
+                    "attackPercent": "{{value}}% de ataque de carga{{against}}",
+                    "range": "{{value}} de alcance do ataque de carga"
+                },
+                "secondary": {
+                    "attack": "{{value}} de ataque dos projéteis extras{{against}}",
+                    "attackPercent": "{{value}}% de ataque dos projéteis extras{{against}}",
+                    "aftereffect": "Seus projéteis extras deixam um efeito duradouro"
+                }
+            }
         },
         "uniqueHint": "Bônus que a civilização já ganha, e as tecnologias de castelo que alcançam a unidade.",
         "noUnique": "Nenhuma civilização muda esta unidade por conta própria.",

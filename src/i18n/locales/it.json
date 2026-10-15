@@ -71,7 +71,18 @@
         "noBonusDamage": "Nessun danno bonus.",
         "availableIn_other": "{{count}} civiltà",
         "availableIn_one": "{{count}} civiltà",
-        "trainedBy": "Addestrata da"
+        "trainedBy": "Addestrata da",
+        "special": {
+            "title": "Attacchi speciali",
+            "hint": "Ognuno lancia un proiettile tutto suo, quindi nulla di questo rientra nelle statistiche qui sopra.",
+            "charge": "Attacco a carica",
+            "secondary": "Proiettili extra",
+            "recharge": "Ricarica",
+            "instant": "Istantanea",
+            "seconds": "{{value}} s",
+            "projectiles": "Proiettili per colpo",
+            "volley": "Lanciati insieme all'attacco a carica"
+        }
     },
     "stats": {
         "hp": "PV",
@@ -269,7 +280,19 @@
             "population": "{{value}} popolazione",
             "populationPercent": "{{value}}% di spazio popolazione",
             "faith": "Recupera la fede il {{value}}% più velocemente",
-            "damageReflection": "Restituisce il {{value}}% dei danni da mischia"
+            "damageReflection": "Restituisce il {{value}}% dei danni da mischia",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} attacco a carica{{against}}",
+                    "attackPercent": "{{value}}% attacco a carica{{against}}",
+                    "range": "{{value}} gittata dell'attacco a carica"
+                },
+                "secondary": {
+                    "attack": "{{value}} attacco dei proiettili extra{{against}}",
+                    "attackPercent": "{{value}}% attacco dei proiettili extra{{against}}",
+                    "aftereffect": "I suoi proiettili extra lasciano un effetto persistente"
+                }
+            }
         },
         "uniqueHint": "Bonus che una civiltà riceve fin dall'inizio, e le tecnologie del castello che raggiungono questa unità.",
         "noUnique": "Nessuna civiltà cambia questa unità per conto suo.",

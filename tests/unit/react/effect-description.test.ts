@@ -146,3 +146,64 @@ describe('describeRate', () => {
         expect(label).toBe('Villagers gather gold 15% faster.');
     });
 });
+
+describe('describeEffect special attacks', () => {
+    const pierce = [{ armourClass: 'base-pierce' as const, amount: 1 }];
+
+    it('words a charged attack gain apart from the unit gain', () => {
+        const labels = describeEffect(
+            { lineOfSight: 1, attack: pierce, range: 1, special: { charge: { attack: pierce, range: 1 } } },
+            t,
+        );
+
+        expect(labels).toEqual(['+1 range', '+1 line of sight', '+1 attack', '+1 charged attack', '+1 charged attack range']);
+    });
+
+    it('words the Hearth Troop gain without a unit attack chip', () => {
+        const labels = describeEffect({ lineOfSight: 1, special: { charge: { attack: pierce, range: 1 } } }, t);
+
+        expect(labels).toEqual(['+1 line of sight', '+1 charged attack', '+1 charged attack range']);
+    });
+
+    it('words a gain on extra projectiles', () => {
+        const labels = describeEffect({ special: { secondary: { attack: pierce } } }, t);
+
+        expect(labels).toEqual(['+1 extra projectile attack']);
+    });
+
+    it('states a broad factor on a charged attack once, as a percentage', () => {
+        const classes = (['all-buildings', 'castle', 'wall-gate'] as const).map((armourClass) => ({ armourClass, amount: 1.4 }));
+
+        const labels = describeEffect({ special: { charge: { attackMultipliers: classes } } }, t);
+
+        expect(labels).toEqual(['+40% charged attack']);
+    });
+
+    it('names the class a narrow factor and a flat gain apply to', () => {
+        const labels = describeEffect(
+            {
+                special: {
+                    charge: {
+                        attack: [{ armourClass: 'base-pierce', amount: 2 }],
+                        attackMultipliers: [{ armourClass: 'ship', amount: 1.25 }],
+                    },
+                },
+            },
+            t,
+        );
+
+        expect(labels).toEqual(['+25% charged attack vs Ships', '+2 charged attack']);
+    });
+
+    it('says the extra projectiles leave a lingering effect', () => {
+        const labels = describeEffect({ special: { secondary: { aftereffect: true } } }, t);
+
+        expect(labels).toEqual(['Its extra projectiles leave a lingering effect']);
+    });
+
+    it('splits a per-age gain on a charged attack into the share each age grants', () => {
+        const labels = describeEffect({ perAge: 2, special: { charge: { attack: [{ armourClass: 'base-pierce', amount: 2 }] } } }, t);
+
+        expect(labels).toEqual(['+1 charged attack per age']);
+    });
+});

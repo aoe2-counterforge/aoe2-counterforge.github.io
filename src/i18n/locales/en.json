@@ -71,7 +71,18 @@
         "noBonusDamage": "No bonus damage.",
         "availableIn_other": "{{count}} civilizations",
         "availableIn_one": "{{count}} civilization",
-        "trainedBy": "Trained by"
+        "trainedBy": "Trained by",
+        "special": {
+            "title": "Special attacks",
+            "hint": "Each one fires a missile of its own, so none of it is counted in the stats above.",
+            "charge": "Charged attack",
+            "secondary": "Extra projectiles",
+            "recharge": "Recharge",
+            "instant": "Instant",
+            "seconds": "{{value}} s",
+            "projectiles": "Projectiles per shot",
+            "volley": "Fired together with the charged attack"
+        }
     },
     "stats": {
         "hp": "HP",
@@ -269,7 +280,19 @@
             "population": "{{value}} population",
             "populationPercent": "{{value}}% population space",
             "faith": "Regains faith {{value}}% faster",
-            "damageReflection": "Sends {{value}}% of melee damage back"
+            "damageReflection": "Sends {{value}}% of melee damage back",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} charged attack{{against}}",
+                    "attackPercent": "{{value}}% charged attack{{against}}",
+                    "range": "{{value}} charged attack range"
+                },
+                "secondary": {
+                    "attack": "{{value}} extra projectile attack{{against}}",
+                    "attackPercent": "{{value}}% extra projectile attack{{against}}",
+                    "aftereffect": "Its extra projectiles leave a lingering effect"
+                }
+            }
         },
         "uniqueHint": "Bonuses a civilization is given, and the castle technologies that reach this unit.",
         "noUnique": "No civilization changes this unit on its own.",

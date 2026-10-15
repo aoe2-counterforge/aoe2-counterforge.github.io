@@ -71,7 +71,18 @@
         "noBonusDamage": "Kein Bonusschaden.",
         "availableIn_other": "{{count}} Völker",
         "availableIn_one": "{{count}} Volk",
-        "trainedBy": "Ausgebildet von"
+        "trainedBy": "Ausgebildet von",
+        "special": {
+            "title": "Spezialangriffe",
+            "hint": "Jeder feuert ein eigenes Geschoss ab und zählt daher nicht in den Werten oben.",
+            "charge": "Ladungsangriff",
+            "secondary": "Zusatzgeschosse",
+            "recharge": "Aufladung",
+            "instant": "Sofort",
+            "seconds": "{{value}} s",
+            "projectiles": "Geschosse pro Schuss",
+            "volley": "Wird zusammen mit dem Ladungsangriff abgefeuert"
+        }
     },
     "stats": {
         "hp": "LP",
@@ -269,7 +280,19 @@
             "population": "{{value}} Bevölkerung",
             "populationPercent": "{{value}}% Bevölkerungsplatz",
             "faith": "Gewinnt den Glauben {{value}}% schneller zurück",
-            "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück"
+            "damageReflection": "Wirft {{value}}% des Nahkampfschadens zurück",
+            "special": {
+                "charge": {
+                    "attack": "{{value}} Ladungsangriff{{against}}",
+                    "attackPercent": "{{value}}% Ladungsangriff{{against}}",
+                    "range": "{{value}} Reichweite des Ladungsangriffs"
+                },
+                "secondary": {
+                    "attack": "{{value}} Angriff der Zusatzgeschosse{{against}}",
+                    "attackPercent": "{{value}}% Angriff der Zusatzgeschosse{{against}}",
+                    "aftereffect": "Seine Zusatzgeschosse wirken nach"
+                }
+            }
         },
         "uniqueHint": "Boni, die ein Volk bekommt, und die Burgtechnologien, die diese Einheit betreffen.",
         "noUnique": "Kein Volk ändert diese Einheit für sich allein.",
