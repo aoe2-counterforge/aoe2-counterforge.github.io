@@ -27,14 +27,11 @@ interface Shot {
     path: string;
     scheme: 'dark' | 'light';
     viewport: { width: number; height: number };
-    /** Taken as a phone would show it, touch and all. */
-    phone?: boolean;
     /** What to do on the page before the picture, such as opening the search. */
     prepare?: (page: Page) => Promise<void>;
 }
 
 const DESKTOP = { width: 1120, height: 777 };
-const PHONE = { width: 400, height: 837 };
 
 const SHOTS: readonly Shot[] = [
     { file: 'unit-dark.png', path: 'en/unit/knight', scheme: 'dark', viewport: DESKTOP },
@@ -51,7 +48,7 @@ const SHOTS: readonly Shot[] = [
         },
     },
     { file: 'technology-dark.png', path: 'en/tech/bloodlines', scheme: 'dark', viewport: { ...DESKTOP, height: 632 } },
-    { file: 'economy-mobile.png', path: 'en/unit/archer?tab=economy', scheme: 'dark', viewport: PHONE, phone: true },
+    { file: 'economy-dark.png', path: 'en/unit/archer?tab=economy', scheme: 'dark', viewport: { ...DESKTOP, height: 900 } },
 ];
 
 /**
@@ -96,8 +93,6 @@ async function take(origin: string, shot: Shot): Promise<void> {
     const context = await browser.newContext({
         viewport: shot.viewport,
         deviceScaleFactor: 1,
-        isMobile: shot.phone ?? false,
-        hasTouch: shot.phone ?? false,
         colorScheme: shot.scheme,
     });
     const page = await context.newPage();

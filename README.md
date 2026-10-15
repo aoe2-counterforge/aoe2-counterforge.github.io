@@ -33,40 +33,57 @@ Pick a unit and get an answer, not a wiki page. The counters are **computed from
 damage formula** every time you open them, so they follow the civilization you picked, the upgrades
 you have, and whether you plan to stand and fight or shoot on the move.
 
-## ✨ Features
+## ✨ A tour of the guide
 
-- ⚔️ **Counters that are calculated** — damage per hit, DPS, range exposure and kiting, weighted by what each side costs, with the fight capped where one side stops being able to answer. Not a hand-written table.
-- 🛡️ **Every upgrade that touches the unit**, read from the game's effect table, with the number it changes and the total once everything is researched.
-- 🔨 **A page per technology** — what it costs, every unit it changes and by how much, and which civilizations get to research it.
-- 🏰 **Civilization-aware** — pick one and every stat, counter and ranking follows what it can research *and* the bonuses it is simply given.
-- 👥 **Villagers per resource** to keep a building producing non-stop, with the bottleneck called out.
+### Counters worked out, not written down
+
+<img src="docs/screenshots/counters-light.png" alt="The Knight's counters tab: filters for type, opponents, engagement and upgrades, with strong, weak and every matchup behind one switch">
+
+A unit's **Counters** tab runs every matchup through the game's damage formula: attack against armour
+for each shared class, damage per hit, damage per second, how long each side stands in the other's
+range, and whether a shooter can kite. Each fight is then weighed by what both sides cost, so a
+favourable trade means you come out ahead on resources, not just that your unit is left standing.
+
+Change the engagement, the upgrades or the civilization and the ranking works itself out again. The
+strong matchups, the weak ones and every opponent sit behind one switch.
+
+### Every technology, and what it actually does
+
+<img src="docs/screenshots/technology-dark.png" alt="The Bloodlines page: cost, research time, the 88 units it changes and the 37 civilizations that research it">
+
+Each technology has a page of its own with its cost, its research time, every unit it changes and by how
+much, and the civilizations that get to research it. The effects come from the game's effect table
+rather than the in-game tooltip, so a technology that does more than its text admits shows all of it.
+
+The same data runs the **Upgrades** tab of each unit, which lists every technology that touches it and
+the total once everything is researched.
+
+### How many villagers keep it coming
+
+<img src="docs/screenshots/economy-dark.png" alt="The Archer's economy tab: eight villagers in total, three on wood and five on gold, with gold called out as the bottleneck">
+
+The **Economy** tab answers the question every build order runs into: how many villagers on each
+resource keep this building producing without a pause. It starts from the unit's cost, its training
+time and the Definitive Edition gather rates, walking to the drop-off included, and calls out the
+resource that holds production back.
+
+Add buildings, apply a bonus such as Conscription, or research the gathering upgrades age by age, and
+the numbers follow.
+
+### Find anything from anywhere
+
+<img src="docs/screenshots/search-dark.png" alt="The search palette open on the query hun, listing the Tarkan, the Hussite Wagon and other units">
+
+`Ctrl` + `K` (`Cmd` + `K` on a Mac) opens one search across units, civilizations and technologies. It
+matches loosely and ignores accents in all six languages, and the keyboard alone takes you from the
+query to the page.
+
+### And also
+
+- 🏰 **Civilization-aware.** Pick a civilization and every stat, counter and ranking follows what it can research *and* the bonuses it is simply given.
 - ⚖️ **Four units side by side**, best value crowned on every row, plus who beats whom as duels, standings or a matrix.
-- 🔎 **`Ctrl`/`Cmd` + `K`** across units, civilizations and technologies — fuzzy, accent-blind, in English, Portuguese, Spanish, Italian, German and French.
-- 🌐 **A real page for every unit, technology and civilization**, in English, Portuguese, Spanish, Italian, German and French, written ahead of time so it reads without JavaScript and can be found from a search.
+- 🌐 **A real page for every unit, technology and civilization** in English, Portuguese, Spanish, Italian, German and French, written ahead of time so it reads without JavaScript and can be found from a search.
 - 📴 **Works offline.** The whole dataset ships with the page; nothing is fetched at runtime.
-
-<table>
-<tr>
-<td width="50%" valign="top">
-<img src="docs/screenshots/counters-light.png" alt="Counters tab: strong, weak and every matchup behind one switch">
-<p align="center"><sub>Counters, in either theme</sub></p>
-</td>
-<td width="50%" valign="top">
-<img src="docs/screenshots/search-dark.png" alt="Command palette with unit, civilization and technology results">
-<p align="center"><sub>One palette, every kind of result</sub></p>
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-<img src="docs/screenshots/technology-dark.png" alt="Technology page: cost, the units it changes and who researches it">
-<p align="center"><sub>Every technology, and what it actually does</sub></p>
-</td>
-<td width="50%" valign="top">
-<img src="docs/screenshots/economy-mobile.png" alt="Economy tab on a phone: gather technologies by age and villagers per resource">
-<p align="center"><sub>Mobile first, not mobile last</sub></p>
-</td>
-</tr>
-</table>
 
 ## 🚀 Run it locally
 
@@ -75,7 +92,7 @@ npm install
 npm run dev
 ```
 
-Then open <http://localhost:5173/aoe2-counterforge/>. No game install, no API key, no network — the data is in
+Then open <http://localhost:5173/>. No game install, no API key, no network — the data is in
 the repository.
 
 Every drop-down is driven by [select-box](https://github.com/giovani-freitag/select-box), which is not on npm
