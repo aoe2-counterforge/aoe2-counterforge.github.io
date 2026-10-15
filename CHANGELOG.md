@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/compare/v0.7.3...v0.8.0) (2026-10-15)
+
+
+### Features
+
+* add square favicon and touch icons drawn from the brand shield ([67171f7](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/67171f79caf5ee4f25756355d9fc4f241de0734f))
+* move the site to aoe2-counterforge.github.io ([eed0a33](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/eed0a3326dc00305402bb4278f0da9c8c85256e6))
+
+
+### Bug Fixes
+
+* point the website structured data at the root of the host ([9942981](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/9942981ba79a57f2a300146845cf2a099f3bfcb6))
+
 ## [0.7.3](https://github.com/giovani-freitag/aoe2-counterforge/compare/v0.7.2...v0.7.3) (2026-10-14)
 
 
