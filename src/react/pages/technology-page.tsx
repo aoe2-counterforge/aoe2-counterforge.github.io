@@ -25,6 +25,7 @@ import { usePreferences } from '../hooks/use-preferences.ts';
 import { useSearchParam } from '../hooks/use-search-param.ts';
 import { useServices } from '../hooks/use-services.ts';
 import { ROSTER_VIEWS } from '../roster-view.ts';
+import { sharedBundle } from '../shared-bundle.ts';
 import { NotFoundPage } from './not-found-page.tsx';
 
 const TABS = ['units', 'civs'] as const;
@@ -50,14 +51,16 @@ interface TouchedLine extends RosterLine {
     reach: number;
 }
 
-/** The units of one age that get the same change. */
+/** The units of one age: those that get the shared bundle, and those whose changes differ from it. */
 interface AgeBucket {
     age: AgeId;
-    units: Unit[];
+    plain: Unit[];
+    differing: { unit: Unit; effects: string[] }[];
 }
 
-interface EffectGroup {
-    effects: string[];
+/** The change most units share, stated once, above every age the technology reaches. */
+interface UnitListing {
+    shared: string[];
     ages: AgeBucket[];
 }
 
@@ -67,6 +70,16 @@ interface LineGroup {
 }
 
 const effectKey = (effects: readonly string[]) => effects.join('|');
+
+/** A unit the technology reaches, as a chip that opens its page. */
+function UnitChip({ unit, name }: { unit: Unit; name: string }) {
+    return (
+        <Link className="chip" to={`/unit/${unit.key}`}>
+            <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
+            {name}
+        </Link>
+    );
+}
 
 /** Technology profile: what it costs, every unit it changes, and who gets to research it. */
 export function TechnologyPage() {
@@ -102,25 +115,28 @@ export function TechnologyPage() {
     );
 
     // Bloodlines reaches eighty-three units with the same twenty hit points; that is one fact, not
-    // eighty-three rows, so the units are gathered under the change they share, an age at a time.
-    const groups = useMemo<EffectGroup[]>(() => {
+    // eighty-three rows. It is stated once, the ages are listed once, and a unit whose changes
+    // differ carries them beside its name.
+    const listing = useMemo<UnitListing>(() => {
         // Sorted by the name on screen rather than by slug: a slug order reads as random in any
         // other language, and even in English once a name is abbreviated.
         const byName = (left: Unit, right: Unit) =>
             text.unit(left.key).name.localeCompare(text.unit(right.key).name);
+        // Filed under the age the chosen civilization reaches each unit in, as the roster lists it.
+        const ageOf = (unit: Unit) => unit.ageFor(preferences.civ);
 
-        return groupBy(touched, (entry) => effectKey(entry.effects))
-            .sort((left, right) => right.length - left.length)
-            .map((members) => {
-                const units = members.map((entry) => entry.unit);
-                // Filed under the age the chosen civilization reaches each unit in, as the roster lists it.
-                const ageOf = (unit: Unit) => unit.ageFor(preferences.civ);
-                const ages = groupBy(units, (unit) => String(ageOf(unit)))
-                    .map((bucket) => ({ age: ageOf(bucket[0]), units: bucket.sort(byName) }))
-                    .sort((left, right) => left.age - right.age);
+        const { shared, entries } = sharedBundle(touched.map((entry) => ({ item: entry.unit, effects: entry.effects })));
+        const ages = groupBy(entries, (entry) => String(ageOf(entry.item)))
+            .map((bucket) => ({
+                age: ageOf(bucket[0].item),
+                plain: bucket.filter((entry) => entry.own === null).map((entry) => entry.item).sort(byName),
+                differing: bucket
+                    .flatMap((entry) => (entry.own === null ? [] : [{ unit: entry.item, effects: entry.own }]))
+                    .sort((left, right) => byName(left.unit, right.unit)),
+            }))
+            .sort((left, right) => left.age - right.age);
 
-                return { effects: members[0].effects, ages };
-            });
+        return { shared, ages };
     }, [touched, text, preferences.civ]);
 
     // The same units as the lines they belong to, gathered under the change they share the same
@@ -244,28 +260,34 @@ export function TechnologyPage() {
                         </p>
                     ) : null}
 
-                    {view === 'list'
-                        ? groups.map((group) => (
-                              <div key={effectKey(group.effects)} className="roster__group">
-                                  <div className="upgrade-item__effects">
-                                      <EffectChips effects={group.effects} />
-                                  </div>
-                                  {group.ages.map((bucket) => (
-                                      <div className="tech-ages" key={bucket.age}>
-                                          <AgeLabel age={bucket.age} />
-                                          <div className="row" style={{ marginTop: 'var(--space-2)' }}>
-                                              {bucket.units.map((unit) => (
-                                                  <Link key={unit.key} className="chip" to={`/unit/${unit.key}`}>
-                                                      <GameIcon path={unitIconPath(unit.icon)} alt="" size="sm" />
-                                                      {text.unit(unit.key).name}
-                                                  </Link>
-                                              ))}
-                                          </div>
-                                      </div>
-                                  ))}
-                              </div>
-                          ))
-                        : lines.map((group) => (
+                    {view === 'list' ? (
+                        <div className="roster__group">
+                            <div className="upgrade-item__effects">
+                                <EffectChips effects={listing.shared} />
+                            </div>
+                            {listing.ages.map((bucket) => (
+                                <div className="tech-ages" key={bucket.age}>
+                                    <AgeLabel age={bucket.age} />
+                                    {bucket.plain.length > 0 ? (
+                                        <div className="row" style={{ marginTop: 'var(--space-2)' }}>
+                                            {bucket.plain.map((unit) => (
+                                                <UnitChip key={unit.key} unit={unit} name={text.unit(unit.key).name} />
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                    {bucket.differing.map((entry) => (
+                                        <div className="row tech-unit" key={entry.unit.key}>
+                                            <UnitChip unit={entry.unit} name={text.unit(entry.unit.key).name} />
+                                            <span className="upgrade-item__effects tech-unit__effects">
+                                                <EffectChips effects={entry.effects} />
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        lines.map((group) => (
                               <div key={effectKey(group.effects)} className="roster__group">
                                   <div className="upgrade-item__effects">
                                       <EffectChips effects={group.effects} />
@@ -274,7 +296,8 @@ export function TechnologyPage() {
                                       <RosterLines groups={group.categories} missing={missing} />
                                   </div>
                               </div>
-                          ))}
+                          ))
+                    )}
                 </section>
             ) : (
                 <section className="card">
