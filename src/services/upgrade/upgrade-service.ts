@@ -56,7 +56,7 @@ export interface UpgradeSelection {
 
 export interface UpgradeOutcome {
     stats: UnitStats;
-    /** The unit's special attacks with the same technologies applied, which the stat line leaves out. */
+    /** The special attacks the unit fires, with the same technologies applied, which the stat line leaves out. */
     specialAttacks: SpecialAttack[];
     trainTime: number;
     applied: AppliedUpgrade[];
@@ -396,7 +396,7 @@ export class UpgradeService {
         return {
             applied,
             stats: selection.unit.stats.patched(this.mergePatch(deltas)),
-            specialAttacks: selection.unit.specialAttacks.map((attack) =>
+            specialAttacks: selection.unit.activeSpecialAttacks.map((attack) =>
                 attack.patched(this.mergeSpecialPatch(attack.role, deltas)),
             ),
             trainTime: selection.unit.trainTime * faster,
@@ -490,11 +490,11 @@ export class UpgradeService {
     private landingOf(unit: Unit | null, effect: TechEffect): Landing {
         const role = effect.projectile;
         if (role === null) {
-            return effect.attribute === CHARGE_REACH && unit?.specialAttack('charge') ? 'charge' : 'unit';
+            return effect.attribute === CHARGE_REACH && unit?.activeSpecialAttack('charge') ? 'charge' : 'unit';
         }
         if (role === 'main') return DAMAGE.has(effect.attribute) ? null : 'unit';
 
-        return unit?.specialAttack(role) ? role : null;
+        return unit?.activeSpecialAttack(role) ? role : null;
     }
 
     /**
@@ -510,7 +510,7 @@ export class UpgradeService {
     private appliesTo(unit: Unit, effect: TechEffect): boolean {
         if (effect.damageClass === undefined) return true;
 
-        const special = effect.projectile === null ? null : unit.specialAttack(effect.projectile);
+        const special = effect.projectile === null ? null : unit.activeSpecialAttack(effect.projectile);
         const own = special === null ? [unit.stats.attack, unit.stats.secondaryAttack] : [special.attack];
         const profiles =
             effect.attribute === 'attack' ? own : effect.attribute === 'armour' && special === null ? [unit.stats.armour] : [];
@@ -557,7 +557,7 @@ export class UpgradeService {
         const special: SpecialDeltas = {};
 
         for (const role of SPECIAL_ROLES) {
-            if (!unit?.specialAttack(role)) continue;
+            if (!unit?.activeSpecialAttack(role)) continue;
 
             const landing = effects.filter((effect) => this.landingOf(unit, effect) === role);
             const change: StatDelta = this.accumulate(landing.filter((effect) => effect.attribute !== CHARGE_REACH));

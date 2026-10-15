@@ -174,3 +174,72 @@ describe('UpgradeService special attacks', () => {
         expect(upgrades).toEqual(['fletching']);
     });
 });
+
+describe('UpgradeService dormant secondary missiles', () => {
+    function dormant() {
+        const catalog = new GameCatalogService({
+            assembler: new CatalogAssembler(),
+            units: [
+                unitRecord({
+                    key: 'archer',
+                    id: 1,
+                    classId: ARCHERS,
+                    category: 'archer',
+                    attacks: { 'base-pierce': 4 },
+                    specialAttacks: [
+                        { role: 'secondary', projectile: 902, attacks: [{ class: 'base-pierce', amount: 3 }], range: 4, count: 0 },
+                    ],
+                }),
+                unitRecord({
+                    key: 'kipchak',
+                    id: 2,
+                    classId: ARCHERS,
+                    category: 'cavalry-archer',
+                    attacks: { 'base-pierce': 6 },
+                    specialAttacks: [
+                        { role: 'secondary', projectile: 903, attacks: [{ class: 'base-pierce', amount: 3 }], range: 4, count: 2 },
+                    ],
+                }),
+            ],
+            technologies: [
+                technologyRecord({
+                    key: 'curare',
+                    age: 3,
+                    building: 'dock',
+                    effects: [
+                        { mode: 'set', unit: 1, unitClass: null, attribute: 'onHitEffect', value: 1, projectile: 'secondary' },
+                        { mode: 'set', unit: 2, unitClass: null, attribute: 'onHitEffect', value: 1, projectile: 'secondary' },
+                        pierceOn(1, 'secondary'),
+                    ],
+                }),
+            ],
+            civilizations: [civilizationRecord('wu')],
+        });
+
+        return { catalog, service: new UpgradeService({ catalog }) };
+    }
+
+    it('reports no change on a secondary missile the plain unit never fires', () => {
+        const { catalog, service } = dormant();
+
+        const changed = service.unitsChangedBy(catalog.technology('curare')).map((entry) => entry.unit.key);
+
+        expect(changed).toEqual(['kipchak']);
+    });
+
+    it('reports the change on a secondary missile the unit does fire', () => {
+        const { catalog, service } = dormant();
+
+        const changed = service.unitsChangedBy(catalog.technology('curare')).find((entry) => entry.unit.key === 'kipchak');
+
+        expect(changed?.delta.special).toEqual({ secondary: { aftereffect: true } });
+    });
+
+    it('hands back no special attack for a unit whose only one never fires', () => {
+        const { catalog, service } = dormant();
+
+        const outcome = service.apply({ unit: catalog.unit('archer'), techs: ['curare'] });
+
+        expect(outcome.specialAttacks).toEqual([]);
+    });
+});

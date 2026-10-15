@@ -81,6 +81,23 @@ export class SpecialAttack {
     }
 
     /**
+     * Whether the other attack names exactly the damage classes this one does.
+     *
+     * A secondary missile that carries the same damage list as the unit's charged one is the
+     * charged volley's own arrows, which is how the Xianbei Raider's flies even though it fires
+     * none with an ordinary shot.
+     *
+     * @param other - The attack to compare with.
+     * @returns True when both carry the same set of damage classes.
+     */
+    public hitsSameClassesAs(other: SpecialAttack): boolean {
+        const mine = new Set(this.config.attack.entries().map((entry) => entry.armourClass));
+        const theirs = new Set(other.attack.entries().map((entry) => entry.armourClass));
+
+        return mine.size === theirs.size && [...mine].every((armourClass) => theirs.has(armourClass));
+    }
+
+    /**
      * Applies what a set of technologies does to the attack.
      *
      * @param patch - Damage added and scaled per class, and the change in reach.

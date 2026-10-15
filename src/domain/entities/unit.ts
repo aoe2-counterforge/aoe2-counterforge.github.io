@@ -121,6 +121,40 @@ export class Unit {
         return this.config.specialAttacks.find((attack) => attack.role === role) ?? null;
     }
 
+    /**
+     * The special attacks that actually fire.
+     *
+     * The game gives every archer, skirmisher and galley a secondary missile it never uses until a
+     * technology or a bonus raises the missile count, and a fire ship a charge it only holds after
+     * Siphons; listing those would tell a reader the plain unit does something it does not. A
+     * secondary counts when it flies with the ordinary shot or with the unit's charged volley.
+     *
+     * @returns The charged attack and the secondary missiles the unit fires as it stands.
+     */
+    public get activeSpecialAttacks(): readonly SpecialAttack[] {
+        return this.config.specialAttacks.filter((attack) => this.fires(attack));
+    }
+
+    /**
+     * The special attack a missile role carries, when that attack really fires.
+     *
+     * @param role - Which of the unit's missiles to look for.
+     * @returns The attack, or null when the unit makes none with that missile or never fires it.
+     */
+    public activeSpecialAttack(role: ProjectileRole): SpecialAttack | null {
+        return this.activeSpecialAttacks.find((attack) => attack.role === role) ?? null;
+    }
+
+    private fires(attack: SpecialAttack): boolean {
+        if (attack.role === 'charge') return (attack.charge?.capacity ?? 0) > 0;
+        if (attack.role !== 'secondary') return false;
+        if ((attack.count ?? 0) > 0) return true;
+
+        const volley = this.specialAttack('charge');
+
+        return volley !== null && this.fires(volley) && attack.hitsSameClassesAs(volley);
+    }
+
     public get line(): string {
         return this.config.line;
     }
