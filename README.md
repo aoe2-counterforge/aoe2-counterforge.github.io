@@ -76,13 +76,13 @@ the numbers follow.
 
 ### Find anything from anywhere
 
-<img src="docs/screenshots/search-dark.png" alt="The search palette open on the query hun: the Huns civilization first, then a technology and units, each with its kind on the line beneath">
+<img src="docs/screenshots/search-dark.png" alt="The search palette on the German word ritter: the Knight, the Teutonic Knight and the Chivalry technology, each with the German name it matched beside it">
 
 `Ctrl` + `K` (`Cmd` + `K` on a Mac) opens one search across units, civilizations and technologies,
-ranked together, with the kind of each result on the line beneath it. It matches loosely and ignores
-accents, and a name typed in any of the six languages finds the item too, with that name shown beside
-the title: in Portuguese, *arch* brings up Arqueiro (Archer). The keyboard alone takes you from the
-query to the page.
+ranked together, with the kind of each result on the line beneath it. It matches loosely, ignores
+accents and understands all six languages at once: type the German *ritter* into the English guide
+and the Knight, the Teutonic Knight and Chivalry come up, each with the German name it matched. The
+keyboard alone takes you from the query to the page.
 
 ### And also
 

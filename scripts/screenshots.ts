@@ -41,10 +41,11 @@ const SHOTS: readonly Shot[] = [
         path: 'en/',
         scheme: 'dark',
         viewport: { ...DESKTOP, height: 686 },
-        // One query that lands a unit, a civilization and a technology on the first screen.
+        // A German word typed into the English guide, landing units and technologies by the German
+        // names they matched.
         prepare: async (page) => {
             await page.getByRole('button', { name: /Search a unit or civilization/ }).first().click();
-            await page.getByRole('searchbox').fill('hun');
+            await page.getByRole('searchbox').fill('ritter');
         },
     },
     { file: 'technology-dark.png', path: 'en/tech/bloodlines', scheme: 'dark', viewport: { ...DESKTOP, height: 632 } },
