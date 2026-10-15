@@ -11,9 +11,8 @@ Consumption per second is the unit cost times the number of production buildings
 train time. Villagers per resource is that consumption divided by the gather rate.
 
 Every technology figure here is read from the game's own effect table, the same one the counters
-use — including the ones a hand-written list forgets, such as Grand Trunk Road. What is still set
-by hand is the pair the file does not state: the effective gather rates below, measured with the
-walk included, and the villager's carry capacity of ten.
+use — including the ones a hand-written list forgets, such as Grand Trunk Road. The one thing set
+by hand is what the game files do not state: how far a villager walks to the drop-off.
 
 ## The gather rate is a trip, not a constant
 
@@ -23,15 +22,23 @@ their own. The hunter carries a whole boar, thirty-five at a time against everyo
 that is why it walks a third as often.
 
 What the game does not state is how far the walk is. That distance is the only invented number in
-the economy, it lives with the rest of the guide's assumptions under one roof, and each value there
-carries the sentence that justifies it. A trip is therefore the time to fill up plus the time to
-walk there and back, and the rate the guide reports is a load divided by that trip — always lower
-than the rate at the resource, because the walk is real.
+the economy, and the guide assumes:
 
-The published Definitive Edition rates already include walking to the drop-off point, so the app
-works backwards: knowing the carry capacity (10) and the villager's walking speed (0.8 tiles/s), it
-separates how much of a trip is gathering from how much is walking. That is what lets every upgrade
-land where it actually acts:
+| Gathering from | Tiles to the drop-off |
+|---|---|
+| A farm or a sheep | 2 |
+| Trees, a mine, berries or shore fish | 3 |
+| A boar or a deer, which sit further out | 4 |
+
+These values live with the rest of the guide's assumptions in
+[`src/assumptions.ts`](../src/assumptions.ts), each with the sentence that justifies it.
+
+A trip is therefore the time to fill up plus the time to walk there and back, at the villager's
+walking speed of 0.8 tiles per second, which is also read from the game. The rate the guide reports
+is a load divided by that trip, always lower than the rate at the resource, because the walk is
+real.
+
+Keeping the work and the walk apart is what lets every upgrade land where it actually acts:
 
 - **Gathering** (Double-Bit Axe, Bow Saw, Two-Man Saw, Gold and Stone Mining, Grand Trunk Road)
   multiplies the work rate, by exactly the factor the game states, for exactly the job it names —
