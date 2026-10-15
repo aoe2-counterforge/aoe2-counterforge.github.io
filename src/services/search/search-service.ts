@@ -1,5 +1,5 @@
-import { normalize, type FuzzyMatcher } from './fuzzy-matcher.ts';
-import type { SearchAlias, SearchDocument, SearchIndexBuilder, SearchKind } from './search-index-builder.ts';
+import { normalize, type FuzzyMatch, type FuzzyMatcher } from './fuzzy-matcher.ts';
+import type { SearchDocument, SearchIndexBuilder, SearchKind } from './search-index-builder.ts';
 
 export interface SearchServiceConfig {
     indexBuilder: SearchIndexBuilder;
@@ -29,10 +29,20 @@ export interface SearchHit {
     alias: MatchedAlias | null;
 }
 
-type TermMatch =
-    | { field: 'title'; score: number; positions: readonly number[] }
-    | { field: 'alias'; score: number; positions: readonly number[]; alias: SearchAlias }
-    | { field: 'keyword'; score: number };
+/** One name an item goes by: its title, or what another language calls it. */
+interface Name {
+    text: string;
+    normalized: string;
+    weight: number;
+    isTitle: boolean;
+}
+
+/** How well the whole query reads as one of the item's names. */
+interface NameMatch {
+    name: Name;
+    score: number;
+    positions: number[];
+}
 
 export interface SearchOutcome {
     hits: SearchHit[];
@@ -57,6 +67,9 @@ const ALIAS_WEIGHT = 0.5;
 
 /** Words the title does not show, such as the owning civilization, count well below the title. */
 const KEYWORD_WEIGHT = 0.3;
+
+/** Shorter words must appear as typed: scattered, two letters such as "at" fit almost any name. */
+const MIN_SCATTERED_TERM = 3;
 const KIND_ORDER: Record<SearchKind, number> = { unit: 0, civilization: 1, technology: 2 };
 
 /** Ranks the catalog against a free-text query, including "unit + civilization" phrasing. */
@@ -110,26 +123,16 @@ export class SearchService {
         const hits: SearchHit[] = [];
 
         for (const document of pool) {
-            let total = 0;
-            const positions = new Set<number>();
-            let alias: MatchedAlias | null = null;
-            let matchedAll = true;
+            const match = this.bestName(document, terms);
+            if (!match) continue;
 
-            for (const term of terms) {
-                const match = this.bestMatch(document, term);
-                if (!match) {
-                    matchedAll = false;
-                    break;
-                }
-
-                total += match.score;
-                if (match.field === 'title') match.positions.forEach((position) => positions.add(position));
-                if (match.field === 'alias' && !alias) alias = { text: match.alias.text, positions: match.positions };
-            }
-
-            if (matchedAll) {
-                hits.push({ document, positions: [...positions].sort((a, b) => a - b), alias, score: total * document.weight });
-            }
+            const positions = [...new Set(match.positions)].sort((a, b) => a - b);
+            hits.push({
+                document,
+                score: match.score * document.weight,
+                positions: match.name.isTitle ? positions : [],
+                alias: match.name.isTitle ? null : { text: match.name.text, positions },
+            });
         }
 
         return hits.sort(
@@ -140,25 +143,64 @@ export class SearchService {
         );
     }
 
-    /** The strongest place one query word lands: the title, another language's name, or a keyword. */
-    private bestMatch(document: SearchDocument, term: string): TermMatch | null {
-        const { matcher } = this.config;
-        const candidates: TermMatch[] = [];
+    /**
+     * The name the whole query reads best as.
+     *
+     * Every word has to land on that one name or, at a much lower weight, on a keyword, so a query
+     * never stitches a match together from pieces of different languages.
+     */
+    private bestName(document: SearchDocument, terms: readonly string[]): NameMatch | null {
+        const names: Name[] = [
+            { text: document.title, normalized: document.normalizedTitle, weight: 1, isTitle: true },
+            ...document.aliases.map((alias) => ({ ...alias, weight: ALIAS_WEIGHT, isTitle: false })),
+        ];
+        const onKeywords = terms.map((term) => this.keywordScore(document, term));
+        let best: NameMatch | null = null;
 
-        const onTitle = matcher.match(term, document.normalizedTitle);
-        if (onTitle) candidates.push({ field: 'title', score: onTitle.score, positions: onTitle.positions });
+        for (const name of names) {
+            let score = 0;
+            const positions: number[] = [];
+            let matchedAll = true;
 
-        for (const alias of document.aliases) {
-            const onAlias = matcher.match(term, alias.normalized);
-            if (onAlias) candidates.push({ field: 'alias', alias, score: onAlias.score * ALIAS_WEIGHT, positions: onAlias.positions });
+            for (const [index, term] of terms.entries()) {
+                const onName = this.matchTerm(term, name.normalized);
+                const named = onName ? onName.score * name.weight : null;
+                const onKeyword = onKeywords[index];
+
+                if (onName && named !== null && (onKeyword === null || named >= onKeyword)) {
+                    score += named;
+                    positions.push(...onName.positions);
+                } else if (onKeyword !== null) {
+                    score += onKeyword;
+                } else {
+                    matchedAll = false;
+                    break;
+                }
+            }
+
+            if (matchedAll && (!best || score > best.score)) best = { name, score, positions };
         }
 
+        return best;
+    }
+
+    private matchTerm(term: string, text: string): FuzzyMatch | null {
+        const match = this.config.matcher.match(term, text);
+        if (!match || term.length >= MIN_SCATTERED_TERM) return match;
+
+        const isTogether = (match.positions.at(-1) ?? 0) - (match.positions[0] ?? 0) === term.length - 1;
+
+        return isTogether ? match : null;
+    }
+
+    private keywordScore(document: SearchDocument, term: string): number | null {
+        let best: number | null = null;
         for (const keyword of document.keywords) {
-            const onKeyword = matcher.match(term, keyword);
-            if (onKeyword) candidates.push({ field: 'keyword', score: onKeyword.score * KEYWORD_WEIGHT });
+            const match = this.matchTerm(term, keyword);
+            if (match && (best === null || match.score > best)) best = match.score;
         }
 
-        return candidates.reduce<TermMatch | null>((best, candidate) => (!best || candidate.score > best.score ? candidate : best), null);
+        return best === null ? null : best * KEYWORD_WEIGHT;
     }
 
     private defaultHits(pool: readonly SearchDocument[], civ: SearchDocument | null): SearchHit[] {

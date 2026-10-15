@@ -153,6 +153,18 @@ describe('search', () => {
         expect(outcome.hits[0]?.alias).toEqual({ text: 'Archer', positions: [0, 1, 2, 3] });
     });
 
+    it('highlights every word of a name typed in another language', () => {
+        const outcome = services.search.search({ text: 'man at arms', locale: 'pt-BR' });
+
+        expect(outcome.hits[0]?.alias).toEqual({ text: 'Man-at-Arms', positions: [0, 1, 2, 4, 5, 7, 8, 9, 10] });
+    });
+
+    it('never stitches a match together from names in different languages', () => {
+        const keys = services.search.search({ text: 'man at arms', locale: 'pt-BR' }).hits.map((hit) => hit.document.key);
+
+        expect(keys).not.toContain('crossbowman');
+    });
+
     it('ranks a match on the line under a title below the titles that match', () => {
         const keys = services.search.search({ text: 'hun', locale: 'en' }).hits.map((hit) => hit.document.key);
 
