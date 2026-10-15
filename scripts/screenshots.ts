@@ -48,7 +48,19 @@ const SHOTS: readonly Shot[] = [
         },
     },
     { file: 'technology-dark.png', path: 'en/tech/bloodlines', scheme: 'dark', viewport: { ...DESKTOP, height: 632 } },
-    { file: 'economy-dark.png', path: 'en/unit/archer?tab=economy', scheme: 'dark', viewport: { ...DESKTOP, height: 900 } },
+    {
+        file: 'economy-dark.png',
+        path: 'en/unit/archer?tab=economy',
+        scheme: 'dark',
+        // The calculator ends the page, so scrolling to the end at this height leaves the tab row just
+        // under the header and the whole calculator above the floating tab bar.
+        viewport: { ...DESKTOP, height: 880 },
+        prepare: async (page) => {
+            await page.evaluate(() => {
+                window.scrollTo(0, document.documentElement.scrollHeight);
+            });
+        },
+    },
 ];
 
 /**
