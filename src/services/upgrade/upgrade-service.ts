@@ -1,10 +1,12 @@
 import type { Technology } from '../../domain/entities/technology.ts';
 import type { Unit } from '../../domain/entities/unit.ts';
+import { SPECIAL_ROLES, type ProjectileRole } from '../../domain/enums/projectile-role.ts';
 import type { ClassAmount } from '../../domain/values/class-amount.ts';
+import type { SpecialAttack, SpecialAttackPatch } from '../../domain/values/special-attack.ts';
 import type { TechEffect } from '../../domain/values/tech-effect.ts';
 import type { UnitStats, UnitStatsPatch } from '../../domain/values/unit-stats.ts';
 import type { GameCatalogService } from '../game-catalog/game-catalog-service.ts';
-import type { StatDelta } from './tech-effect.ts';
+import type { SpecialDeltas, StatDelta } from './tech-effect.ts';
 
 /** One kind of work a technology speeds up, with the resource when it is a gathering one. */
 export interface WorkRate {
@@ -54,9 +56,14 @@ export interface UpgradeSelection {
 
 export interface UpgradeOutcome {
     stats: UnitStats;
+    /** The unit's special attacks with the same technologies applied, which the stat line leaves out. */
+    specialAttacks: SpecialAttack[];
     trainTime: number;
     applied: AppliedUpgrade[];
 }
+
+/** Where a change lands for one unit: its own stat line, one of its special attacks, or nowhere. */
+type Landing = 'unit' | ProjectileRole | null;
 
 /**
  * The attributes the guide keeps in its stat line.
@@ -111,6 +118,12 @@ const MODELLED = new Set([
 
 /** The charge attributes that adjust an existing charge instead of granting one. */
 const CHARGE_TUNING = new Set(['rechargeRate', 'chargeEvent', 'chargeType']);
+
+/** The attributes that are a damage list, which on a missile belong to the attack it carries. */
+const DAMAGE = new Set(['attack', 'armour']);
+
+/** How far a charged attack reaches beyond the unit's own range. */
+const CHARGE_REACH = 'chargeEvent';
 
 /** The flag of the ballistics field that makes a shot pass through what it hits. */
 const PASS_THROUGH = 2;
@@ -229,7 +242,12 @@ function canonical(delta: StatDelta): string {
             .join(','),
     );
 
-    return [...scalars, costs, ...classes].join('|');
+    const special = Object.entries(delta.special ?? {})
+        .map(([role, change]) => `${role}:${change === undefined ? '' : canonical(change)}`)
+        .sort()
+        .join(';');
+
+    return [...scalars, costs, ...classes, special].join('|');
 }
 
 /** Whether the change is a factor, which cannot be split into equal parts the way a sum can. */
@@ -246,7 +264,8 @@ function scaled(delta: StatDelta): boolean {
         delta.trainTimeMultiplier !== undefined ||
         delta.attackMultipliers !== undefined ||
         delta.armourMultipliers !== undefined ||
-        delta.costMultipliers !== undefined
+        delta.costMultipliers !== undefined ||
+        Object.values(delta.special ?? {}).some((change) => change !== undefined && scaled(change))
     );
 }
 
@@ -377,6 +396,9 @@ export class UpgradeService {
         return {
             applied,
             stats: selection.unit.stats.patched(this.mergePatch(deltas)),
+            specialAttacks: selection.unit.specialAttacks.map((attack) =>
+                attack.patched(this.mergeSpecialPatch(attack.role, deltas)),
+            ),
             trainTime: selection.unit.trainTime * faster,
         };
     }
@@ -414,8 +436,8 @@ export class UpgradeService {
             .civilizations()
             .map((civilization) => ({
                 civ: civilization.key,
-                delta: this.toDelta(civilization.bonuses.filter((effect) => effect.reaches(unit))),
-                team: this.toDelta(civilization.teamBonuses.filter((effect) => effect.reaches(unit))),
+                delta: this.toDelta(civilization.bonuses.filter((effect) => effect.reaches(unit)), unit),
+                team: this.toDelta(civilization.teamBonuses.filter((effect) => effect.reaches(unit)), unit),
             }))
             .filter((entry) => Object.keys(entry.delta).length > 0 || Object.keys(entry.team).length > 0)
             .sort((left, right) => left.civ.localeCompare(right.civ));
@@ -445,7 +467,34 @@ export class UpgradeService {
     }
 
     private bonusFor(unit: Unit, civ: string): StatDelta {
-        return this.toDelta(this.catalog.civilization(civ).bonuses.filter((effect) => effect.reaches(unit)));
+        return this.toDelta(
+            this.catalog.civilization(civ).bonuses.filter((effect) => effect.reaches(unit)),
+            unit,
+        );
+    }
+
+    /**
+     * Where one change lands on one unit.
+     *
+     * A change the game wrote on a missile is the missile's: a damage list on the charged missile
+     * is the charged attack's, never the unit's, while the main missile's flight properties —
+     * Ballistics, Curare's poison — are the unit's own shot. A change aimed at a special attack
+     * the unit does not make lands nowhere, and so does damage on the main missile, which hits
+     * with the unit's own attack. The one unit attribute that belongs to a special attack is how
+     * far the charged one reaches.
+     *
+     * @param unit - The unit the change reaches, or null for a building.
+     * @param effect - The change.
+     * @returns The unit's stat line, a special attack, or null.
+     */
+    private landingOf(unit: Unit | null, effect: TechEffect): Landing {
+        const role = effect.projectile;
+        if (role === null) {
+            return effect.attribute === CHARGE_REACH && unit?.specialAttack('charge') ? 'charge' : 'unit';
+        }
+        if (role === 'main') return DAMAGE.has(effect.attribute) ? null : 'unit';
+
+        return unit?.specialAttack(role) ? role : null;
     }
 
     /**
@@ -461,12 +510,10 @@ export class UpgradeService {
     private appliesTo(unit: Unit, effect: TechEffect): boolean {
         if (effect.damageClass === undefined) return true;
 
+        const special = effect.projectile === null ? null : unit.specialAttack(effect.projectile);
+        const own = special === null ? [unit.stats.attack, unit.stats.secondaryAttack] : [special.attack];
         const profiles =
-            effect.attribute === 'attack'
-                ? [unit.stats.attack, unit.stats.secondaryAttack]
-                : effect.attribute === 'armour'
-                  ? [unit.stats.armour]
-                  : [];
+            effect.attribute === 'attack' ? own : effect.attribute === 'armour' && special === null ? [unit.stats.armour] : [];
         if (profiles.length === 0) return true;
 
         return profiles.some((profile) => profile.entries().some((entry) => entry.armourClass === effect.damageClass));
@@ -476,10 +523,11 @@ export class UpgradeService {
     private upgradeFor(unit: Unit, technology: Technology): AppliedUpgrade | null {
         const reaching = technology.effects
             .filter((effect) => effect.reaches({ id: unit.id, classId: unit.classId }))
+            .filter((effect) => this.landingOf(unit, effect) !== null)
             .filter((effect) => this.appliesTo(unit, effect));
         if (reaching.length === 0) return null;
 
-        const delta = this.toDelta(reaching);
+        const delta = this.toDelta(reaching, unit);
         // Commands that cancel each other out leave a unit that is not changed at all.
         if (reaching.every((effect) => MODELLED.has(effect.attribute)) && Object.keys(delta).length === 0) return null;
         // A technology that only retunes a charge the unit already had says nothing worth listing.
@@ -490,11 +538,41 @@ export class UpgradeService {
         return { technology, delta, qualitative: Object.keys(delta).length === 0 };
     }
 
-    private toDelta(effects: readonly TechEffect[]): StatDelta {
-        const delta = this.accumulate(effects);
-        const ages = this.agesRepeating(effects);
+    private toDelta(effects: readonly TechEffect[], unit: Unit | null = null): StatDelta {
+        const delta = this.split(effects, unit);
+        const ages = this.agesRepeating(effects, unit);
 
         return ages === null ? delta : { ...delta, perAge: ages };
+    }
+
+    /**
+     * The change to the unit's own stat line, with each special attack's change beside it.
+     *
+     * @param effects - Changes that reach the unit.
+     * @param unit - The unit, or null for a building, which has no special attacks.
+     * @returns The unit's change, carrying the special attacks' under `special` when any moved.
+     */
+    private split(effects: readonly TechEffect[], unit: Unit | null): StatDelta {
+        const own = this.accumulate(effects.filter((effect) => this.landingOf(unit, effect) === 'unit'));
+        const special: SpecialDeltas = {};
+
+        for (const role of SPECIAL_ROLES) {
+            if (!unit?.specialAttack(role)) continue;
+
+            const landing = effects.filter((effect) => this.landingOf(unit, effect) === role);
+            const change: StatDelta = this.accumulate(landing.filter((effect) => effect.attribute !== CHARGE_REACH));
+            // A charged attack reaches the unit's range plus its own offset, so both move it.
+            if (role === 'charge') {
+                const offset = landing
+                    .filter((effect) => effect.attribute === CHARGE_REACH && effect.mode === 'add')
+                    .reduce((sum, effect) => sum + effect.value, 0);
+                const reach = (own.range ?? 0) + offset;
+                if (reach !== 0) change.range = reach;
+            }
+            if (Object.keys(change).length > 0) special[role] = change;
+        }
+
+        return Object.keys(special).length > 0 ? { ...own, special } : own;
     }
 
     /**
@@ -504,9 +582,10 @@ export class UpgradeService {
      * exactly the same change. Anything else is a total that cannot be divided honestly.
      *
      * @param effects - Effects that reach one unit.
+     * @param unit - The unit, or null for a building.
      * @returns The number of ages, or null when this is not that kind of bonus.
      */
-    private agesRepeating(effects: readonly TechEffect[]): number | null {
+    private agesRepeating(effects: readonly TechEffect[], unit: Unit | null): number | null {
         const byAge = new Map<number, TechEffect[]>();
         for (const effect of effects) {
             if (effect.age === null) return null;
@@ -516,7 +595,7 @@ export class UpgradeService {
 
         if (byAge.size < 2) return null;
 
-        const deltas = [...byAge.values()].map((group) => this.accumulate(group));
+        const deltas = [...byAge.values()].map((group) => this.split(group, unit));
         const shapes = deltas.map(canonical);
         const uniform = shapes.every((shape) => shape === shapes[0]);
 
@@ -755,5 +834,29 @@ export class UpgradeService {
         }
 
         return { ...patch, attack, attackMultipliers, armour, armourMultipliers };
+    }
+
+    /**
+     * Everything a set of changes does to one special attack.
+     *
+     * A secondary missile flies with the main shot, so it reaches as far as the unit does; a
+     * charged attack's own change already says how far it moved.
+     *
+     * @param role - The special attack's missile.
+     * @param deltas - One change per technology and bonus applied.
+     * @returns The damage and reach to apply to it.
+     */
+    private mergeSpecialPatch(role: ProjectileRole, deltas: readonly StatDelta[]): SpecialAttackPatch {
+        const changes = deltas.map((delta) => delta.special?.[role] ?? {});
+        const reach =
+            role === 'charge'
+                ? changes.reduce((sum, change) => sum + (change.range ?? 0), 0)
+                : deltas.reduce((sum, delta) => sum + (delta.range ?? 0), 0);
+
+        return {
+            attack: changes.flatMap((change) => change.attack ?? []),
+            attackMultipliers: changes.flatMap((change) => change.attackMultipliers ?? []),
+            range: reach,
+        };
     }
 }

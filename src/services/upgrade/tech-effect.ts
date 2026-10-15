@@ -1,3 +1,4 @@
+import type { ProjectileRole } from '../../domain/enums/projectile-role.ts';
 import type { ClassAmount } from '../../domain/values/class-amount.ts';
 
 /** The stat changes a technology applies, expressed the same way the game applies them. */
@@ -78,4 +79,15 @@ export interface StatDelta {
     attackMultipliers?: readonly ClassAmount[];
     armour?: readonly ClassAmount[];
     armourMultipliers?: readonly ClassAmount[];
+    /**
+     * What the technology does to each of the unit's special attacks, kept apart from the unit.
+     *
+     * Fletching gives the Fire Archer one point of attack and its charged arrows another; the two
+     * are different attacks, so each says +1 rather than the unit saying +2. A charged attack's
+     * range is the change in how far it reaches; a secondary missile flies as far as the unit.
+     */
+    special?: SpecialDeltas;
 }
+
+/** Changes to special attacks, keyed by the missile that carries each. */
+export type SpecialDeltas = Partial<Record<ProjectileRole, StatDelta>>;
