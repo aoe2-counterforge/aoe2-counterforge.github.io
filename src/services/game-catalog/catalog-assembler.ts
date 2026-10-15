@@ -3,17 +3,20 @@ import { Technology } from '../../domain/entities/technology.ts';
 import { Unit, type UnitUpgradeInfo } from '../../domain/entities/unit.ts';
 import { toAgeId } from '../../domain/enums/age.ts';
 import { isArmourClass } from '../../domain/enums/armour-class.ts';
+import { isProjectileRole } from '../../domain/enums/projectile-role.ts';
 import { isUnitCategory } from '../../domain/enums/unit-category.ts';
 import { ArmourProfile } from '../../domain/values/armour-profile.ts';
 import { AttackProfile } from '../../domain/values/attack-profile.ts';
 import type { ClassAmount } from '../../domain/values/class-amount.ts';
 import { ResourceCost } from '../../domain/values/resource-cost.ts';
+import { SpecialAttack } from '../../domain/values/special-attack.ts';
 import { TechEffect } from '../../domain/values/tech-effect.ts';
 import { UnitStats } from '../../domain/values/unit-stats.ts';
 import type {
     CivilizationRecord,
     ClassAmountRecord,
     CostRecord,
+    SpecialAttackRecord,
     TechnologyRecord,
     UnitRecord,
 } from '../../data/records.ts';
@@ -57,6 +60,7 @@ export class CatalogAssembler {
                 speed: record.speed,
                 lineOfSight: record.lineOfSight,
             }),
+            specialAttacks: this.toSpecialAttacks(record.specialAttacks),
             line: record.line,
             inTechTree: record.inTechTree,
             upgradesFrom: record.upgradesFrom,
@@ -113,6 +117,23 @@ export class CatalogAssembler {
         return records
             .filter((record) => isArmourClass(record.class))
             .map((record) => ({ armourClass: record.class, amount: record.amount }) as ClassAmount);
+    }
+
+    private toSpecialAttacks(records: readonly SpecialAttackRecord[]): SpecialAttack[] {
+        return records.flatMap((record) => {
+            if (!isProjectileRole(record.role)) return [];
+
+            return [
+                new SpecialAttack({
+                    role: record.role,
+                    projectile: record.projectile,
+                    attack: new AttackProfile({ entries: this.toClassAmounts(record.attacks) }),
+                    range: record.range,
+                    count: record.count ?? null,
+                    charge: record.charge ?? null,
+                }),
+            ];
+        });
     }
 
     private toUpgradeInfo(record: UnitRecord): UnitUpgradeInfo | null {

@@ -4,6 +4,7 @@ import { ArmourProfile } from '../../src/domain/values/armour-profile.ts';
 import { AttackProfile } from '../../src/domain/values/attack-profile.ts';
 import type { ClassAmount } from '../../src/domain/values/class-amount.ts';
 import { ResourceCost, type ResourceCostConfig } from '../../src/domain/values/resource-cost.ts';
+import type { SpecialAttack } from '../../src/domain/values/special-attack.ts';
 import { UnitStats } from '../../src/domain/values/unit-stats.ts';
 
 export interface StatsOverrides {
@@ -39,6 +40,7 @@ export interface UnitOverrides extends StatsOverrides {
     line?: string;
     civs?: readonly string[];
     uniqueTo?: string | null;
+    specialAttacks?: readonly SpecialAttack[];
 }
 
 function toEntries(values: Partial<Record<ArmourClass, number>>): ClassAmount[] {
@@ -100,6 +102,7 @@ export function makeUnit(overrides: UnitOverrides = {}): Unit {
         cost: new ResourceCost(overrides.cost ?? { food: 60, gold: 20 }),
         trainTime: overrides.trainTime ?? 20,
         stats: makeStats(overrides),
+        specialAttacks: overrides.specialAttacks ?? [],
         line: overrides.line ?? key,
         upgradesFrom: null,
         upgradesTo: [],

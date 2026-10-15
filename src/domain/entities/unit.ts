@@ -1,6 +1,8 @@
 import type { AgeId } from '../enums/age.ts';
+import type { ProjectileRole } from '../enums/projectile-role.ts';
 import type { UnitCategory } from '../enums/unit-category.ts';
 import type { ResourceCost } from '../values/resource-cost.ts';
+import type { SpecialAttack } from '../values/special-attack.ts';
 import type { UnitStats } from '../values/unit-stats.ts';
 
 export interface UnitUpgradeInfo {
@@ -24,6 +26,8 @@ export interface UnitConfig {
     cost: ResourceCost;
     trainTime: number;
     stats: UnitStats;
+    /** Secondary missiles and charged attacks, each with damage of its own. */
+    specialAttacks: readonly SpecialAttack[];
     line: string;
     upgradesFrom: string | null;
     upgradesTo: readonly string[];
@@ -101,6 +105,20 @@ export class Unit {
 
     public get stats(): UnitStats {
         return this.config.stats;
+    }
+
+    public get specialAttacks(): readonly SpecialAttack[] {
+        return this.config.specialAttacks;
+    }
+
+    /**
+     * The special attack a missile role carries.
+     *
+     * @param role - Which of the unit's missiles to look for.
+     * @returns The attack, or null when the unit makes none with that missile.
+     */
+    public specialAttack(role: ProjectileRole): SpecialAttack | null {
+        return this.config.specialAttacks.find((attack) => attack.role === role) ?? null;
     }
 
     public get line(): string {

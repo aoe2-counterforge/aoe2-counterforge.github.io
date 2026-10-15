@@ -1,3 +1,5 @@
+import type { ProjectileRole } from '../enums/projectile-role.ts';
+
 /** How a technology changes a number: it may replace it, add to it, or scale it. */
 export type EffectMode = 'set' | 'add' | 'multiply';
 
@@ -19,6 +21,8 @@ export interface TechEffectConfig {
     resource?: string;
     /** The building the change is about, when the unit it names is one the guide has no page for. */
     target?: string;
+    /** The missile of the unit the change lands on, when the game wrote it on a missile. */
+    projectile?: ProjectileRole;
 }
 
 /** One change a technology makes, taken from the game's own effect table. */
@@ -63,6 +67,15 @@ export class TechEffect {
 
     public get damageClass(): string | undefined {
         return this.config.damageClass;
+    }
+
+    /**
+     * The missile the change was written on, which is not always the unit's own stat line.
+     *
+     * @returns The role that missile plays for the unit, or null when the change names the unit.
+     */
+    public get projectile(): ProjectileRole | null {
+        return this.config.projectile ?? null;
     }
 
     /**
