@@ -28,8 +28,8 @@ assumes a typical layout:
 | Gathering from | Tiles to the drop-off |
 |---|---|
 | A farm or a sheep | 2 |
+| A boar or a deer, lured or pushed under the Town Center | 2 |
 | Trees, a mine, berries or shore fish | 3 |
-| A boar or a deer, which sit further out | 4 |
 
 These values live with the rest of the guide's assumptions in
 [`src/assumptions.ts`](../src/assumptions.ts), each with the sentence that justifies it.

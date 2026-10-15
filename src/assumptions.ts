@@ -48,7 +48,7 @@ export const ASSUMPTIONS = {
         reason: 'Tiles from a bush, a tree, a mine or the shore to the drop-off in a typical layout; it depends on where the player builds.',
     },
     dropOffTilesHunt: {
-        value: 4,
-        reason: 'Tiles from a boar or deer to the drop-off, which sit further out than the rest.',
+        value: 2,
+        reason: 'Tiles from a boar or deer to the drop-off. The hunt is lured or pushed under the Town Center, and two tiles leave room for a sloppy one.',
     },
 } as const satisfies Record<string, Assumption>;
