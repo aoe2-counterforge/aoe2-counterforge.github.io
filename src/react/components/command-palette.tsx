@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import type { SearchDocument, SearchKind } from '../../services/search/search-index-builder.ts';
 import type { SearchHit } from '../../services/search/search-service.ts';
 import { useCommandPalette } from '../hooks/use-command-palette.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitSearch } from '../hooks/use-unit-search.ts';
+import { isApple } from '../platform.ts';
 import { GameIcon } from './game-icon.tsx';
 import { Icon } from './icon.tsx';
 
@@ -14,6 +15,15 @@ const ROUTE_PREFIX: Record<SearchKind, string> = {
     civilization: '/civ/',
     technology: '/tech/',
 };
+
+function routeOf(document: SearchDocument): string {
+    return `${ROUTE_PREFIX[document.kind]}${document.key}`;
+}
+
+/** Whether a click asks the browser for another tab or window instead of following the link here. */
+function opensElsewhere(event: React.MouseEvent): boolean {
+    return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+}
 
 /**
  * Wraps the matched characters of a title so the reason for a hit is visible.
@@ -45,6 +55,7 @@ function PaletteDialog({ close }: { close: () => void }) {
     const { preferences } = usePreferences();
     const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement>(null);
+    const activeLink = useRef<HTMLAnchorElement | null>(null);
     const [query, setQuery] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -67,7 +78,7 @@ function PaletteDialog({ close }: { close: () => void }) {
 
     const go = (document: SearchDocument) => {
         close();
-        void navigate(`${ROUTE_PREFIX[document.kind]}${document.key}`);
+        void navigate(routeOf(document));
     };
 
     const onKeyDown = (event: React.KeyboardEvent) => {
@@ -88,6 +99,11 @@ function PaletteDialog({ close }: { close: () => void }) {
         }
         if (event.key === 'Enter' && flat[active]) {
             event.preventDefault();
+            // Like a Ctrl+click, this leaves the palette open so the next result can follow.
+            if (event.ctrlKey || event.metaKey) {
+                if (activeLink.current) window.open(activeLink.current.href, '_blank', 'noopener');
+                return;
+            }
             go(flat[active].document);
         }
     };
@@ -137,15 +153,20 @@ function PaletteDialog({ close }: { close: () => void }) {
                         <p className="empty">{query ? t('search.empty', { query }) : t('search.hint')}</p>
                     ) : (
                         flat.map((hit, index) => (
-                            <button
+                            <Link
                                 key={hit.document.id}
-                                type="button"
+                                to={routeOf(hit.document)}
                                 className="palette__item"
                                 data-active={index === active}
                                 onMouseMove={() => { setActiveIndex(index); }}
-                                onClick={() => { go(hit.document); }}
+                                onClick={(event) => {
+                                    // A modified click opens a new tab and keeps the palette for the next one.
+                                    if (!opensElsewhere(event)) close();
+                                }}
                                 ref={(node) => {
-                                    if (index === active) node?.scrollIntoView({ block: 'nearest' });
+                                    if (index !== active) return;
+                                    activeLink.current = node;
+                                    node?.scrollIntoView({ block: 'nearest' });
                                 }}
                             >
                                 <GameIcon
@@ -165,7 +186,7 @@ function PaletteDialog({ close }: { close: () => void }) {
                                     </span>
                                     <span className="list-item__subtitle">{subtitleOf(hit)}</span>
                                 </span>
-                            </button>
+                            </Link>
                         ))
                     )}
                 </div>
@@ -176,6 +197,9 @@ function PaletteDialog({ close }: { close: () => void }) {
                     </span>
                     <span>
                         <kbd>↵</kbd> {t('search.keys.select')}
+                    </span>
+                    <span>
+                        <kbd>{isApple() ? '⌘' : 'Ctrl'}</kbd> <kbd>↵</kbd> {t('search.keys.newTab')}
                     </span>
                     <span>
                         <kbd>esc</kbd> {t('search.keys.close')}

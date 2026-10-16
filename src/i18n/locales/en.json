@@ -28,6 +28,7 @@
         "keys": {
             "navigate": "navigate",
             "select": "open",
+            "newTab": "new tab",
             "close": "close"
         },
         "short": "Search"

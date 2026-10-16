@@ -84,10 +84,25 @@ test('finds a unit from the search and lands on its page', async ({ page }) => {
     const palette = page.getByRole('dialog', { name: 'Search a unit or civilization' });
     await palette.getByRole('searchbox').fill('halb');
     // Scoped to the dialog: the home page behind it lists a Halberdier of its own.
-    await palette.getByRole('button', { name: /^Halberdier/ }).click();
+    await palette.getByRole('link', { name: /^Halberdier/ }).click();
 
     await expect(page.getByRole('heading', { level: 1, name: 'Halberdier' })).toBeVisible();
     await expect(page).toHaveURL(/\/en\/unit\/halberdier$/);
+});
+
+test('opens a search result in a new tab on Ctrl+click and keeps the search open', async ({ page, context }) => {
+    await page.goto('en/');
+    await page.getByRole('button', { name: /Search a unit or civilization/ }).first().click();
+    const palette = page.getByRole('dialog', { name: 'Search a unit or civilization' });
+    await palette.getByRole('searchbox').fill('halb');
+
+    const [tab] = await Promise.all([
+        context.waitForEvent('page'),
+        palette.getByRole('link', { name: /^Halberdier/ }).click({ modifiers: ['ControlOrMeta'] }),
+    ]);
+
+    await expect(tab).toHaveURL(/\/en\/unit\/halberdier$/);
+    await expect(palette).toBeVisible();
 });
 
 test('closes the search from its X', async ({ page }) => {

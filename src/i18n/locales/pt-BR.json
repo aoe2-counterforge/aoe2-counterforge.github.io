@@ -28,6 +28,7 @@
         "keys": {
             "navigate": "navegar",
             "select": "abrir",
+            "newTab": "nova aba",
             "close": "fechar"
         },
         "short": "Buscar"

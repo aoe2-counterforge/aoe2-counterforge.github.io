@@ -4,7 +4,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import i18next from 'i18next';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createI18n } from '../../src/i18n/index.ts';
 import { App } from '../../src/react/app.tsx';
 
@@ -17,6 +17,10 @@ beforeEach(async () => {
     window.history.pushState(null, '', '/pt-br/');
     // The instance is shared, so a test that switches language would leave the next one in it.
     await i18next.changeLanguage('pt-BR');
+});
+
+afterEach(() => {
+    vi.restoreAllMocks();
 });
 
 describe('App', () => {
@@ -62,6 +66,36 @@ describe('App', () => {
         });
     });
 
+    it('links each result to its page, so the browser can open it in a new tab', async () => {
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
+        const dialog = screen.getByRole('dialog');
+
+        await user.type(within(dialog).getByRole('searchbox'), 'arch');
+
+        await waitFor(() => {
+            expect(within(dialog).getAllByRole('link')[0].getAttribute('href')).toBe('/pt-br/unit/archer');
+        });
+    });
+
+    it('opens the highlighted result in a new tab on Ctrl+Enter and stays open for the next one', async () => {
+        const open = vi.spyOn(window, 'open').mockReturnValue(null);
+        const user = userEvent.setup();
+        render(<App locale="pt-BR" />);
+        await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
+        const dialog = screen.getByRole('dialog');
+        await user.type(within(dialog).getByRole('searchbox'), 'arch');
+        await waitFor(() => {
+            expect(dialog.querySelector('.palette__item .list-item__title')?.textContent).toBe('Arqueiro (Archer)');
+        });
+
+        await user.keyboard('{Control>}{Enter}{/Control}');
+
+        expect(open).toHaveBeenCalledWith(expect.stringMatching(/\/pt-br\/unit\/archer$/), '_blank', 'noopener');
+        expect(screen.getByRole('dialog')).toBeDefined();
+    });
+
     it('closes the command palette from its close button', async () => {
         const user = userEvent.setup();
         render(<App locale="pt-BR" />);
@@ -92,7 +126,7 @@ describe('App', () => {
 
         await user.click(screen.getAllByRole('button', { name: /Buscar unidade/ })[0]);
         await user.type(screen.getByRole('searchbox'), 'milicia');
-        const [result] = await screen.findAllByRole('button', { name: /^Milícia/ });
+        const [result] = await within(screen.getByRole('dialog')).findAllByRole('link', { name: /^Milícia/ });
         await user.click(result);
 
         await waitFor(() => {
