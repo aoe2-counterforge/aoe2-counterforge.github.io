@@ -72,22 +72,24 @@
         "availableIn_one": "{{count}} civiltà",
         "trainedBy": "Addestrata da",
         "attacks": {
+            "title": "Attacchi",
             "main": "Attacco principale",
-            "extra": "Attacchi extra",
-            "follows": "I valori seguono il selettore Base / Con tutti i potenziamenti",
             "charge": "Attacco a carica",
             "secondary": "Proiettili extra",
             "damage": "Danni",
             "cadence": "Cadenza",
+            "count": "Proiettili",
+            "recharge": "Tempo di carica",
             "eachAttack": "Ogni attacco",
             "eachShot": "Ogni colpo",
             "seconds": "{{value}} s",
-            "mainMissile": "Proiettile principale ×1",
-            "extraMissiles": "Proiettili extra × fino a {{amount}}",
-            "perShot": "× {{amount}} per colpo",
-            "each": "ciascuno",
-            "note": "I danni sono prima dell'armatura. Il bonus si aggiunge quando il bersaglio appartiene a quella classe.",
-            "noteWithPenalties": "I danni sono prima dell'armatura. Il bonus si aggiunge quando il bersaglio appartiene a quella classe; un meno lo riduce."
+            "missiles_one": "{{count}} proiettile",
+            "missiles_other": "{{count}} proiettili",
+            "perShot_one": "{{count}} proiettile per colpo",
+            "perShot_other": "{{count}} proiettili per colpo",
+            "upTo_one": "fino a {{count}} proiettile",
+            "upTo_other": "fino a {{count}} proiettili",
+            "upToShort": "fino a ×{{count}}"
         }
     },
     "stats": {

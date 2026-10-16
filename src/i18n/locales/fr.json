@@ -72,22 +72,24 @@
         "availableIn_one": "{{count}} civilisation",
         "trainedBy": "Formée par",
         "attacks": {
+            "title": "Attaques",
             "main": "Attaque principale",
-            "extra": "Attaques supplémentaires",
-            "follows": "Les valeurs suivent le sélecteur Base / Toutes améliorations",
             "charge": "Attaque chargée",
             "secondary": "Projectiles supplémentaires",
             "damage": "Dégâts",
             "cadence": "Cadence",
+            "count": "Projectiles",
+            "recharge": "Temps de charge",
             "eachAttack": "Chaque attaque",
             "eachShot": "Chaque tir",
             "seconds": "{{value}} s",
-            "mainMissile": "Projectile principal ×1",
-            "extraMissiles": "Projectiles supplémentaires × jusqu'à {{amount}}",
-            "perShot": "× {{amount}} par tir",
-            "each": "chacun",
-            "note": "Les dégâts s'entendent avant l'armure. Un bonus s'ajoute quand la cible appartient à cette classe.",
-            "noteWithPenalties": "Les dégâts s'entendent avant l'armure. Un bonus s'ajoute quand la cible appartient à cette classe ; un moins le réduit."
+            "missiles_one": "{{count}} projectile",
+            "missiles_other": "{{count}} projectiles",
+            "perShot_one": "{{count}} projectile par tir",
+            "perShot_other": "{{count}} projectiles par tir",
+            "upTo_one": "jusqu'à {{count}} projectile",
+            "upTo_other": "jusqu'à {{count}} projectiles",
+            "upToShort": "jusqu'à ×{{count}}"
         }
     },
     "stats": {

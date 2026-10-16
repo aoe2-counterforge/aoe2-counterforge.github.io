@@ -6,8 +6,7 @@ import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
-import { ExtraAttacks } from './extra-attacks.tsx';
-import { MainAttackPanel } from './main-attack-panel.tsx';
+import { AttackCards } from './attack-cards.tsx';
 import { SegmentedControl } from './segmented-control.tsx';
 import { StatGrid } from './stat-grid.tsx';
 import { UnitCivilizationsCard } from './unit-civilizations-card.tsx';
@@ -69,19 +68,15 @@ export function UnitOverviewPanel({ unit, upgradedStats, upgradedSpecialAttacks 
                     </p>
                 ) : null}
                 <StatGrid stats={mode === 'base' ? base : upgraded} compareWith={mode === 'base' ? undefined : base} />
-                <MainAttackPanel
+                <AttackCards
                     stats={mode === 'base' ? unit.stats : upgradedStats}
                     compareWith={mode === 'base' ? undefined : unit.stats}
-                />
-                <ExtraAttacks
                     base={unit.activeSpecialAttacks}
                     upgraded={mode === 'base' ? undefined : upgradedSpecialAttacks}
                 />
                 {classes.length > 0 ? (
                     <section className="attack-section">
-                        <div className="attack-section__head">
-                            <h3 className="attack-section__title">{t('unit.armourClasses')}</h3>
-                        </div>
+                        <h3 className="attack-section__title">{t('unit.armourClasses')}</h3>
                         <div className="row">
                             {classes.map((armourClass) => (
                                 <span key={armourClass} className="badge">

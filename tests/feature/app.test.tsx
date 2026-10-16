@@ -443,11 +443,11 @@ describe('App', () => {
         expect(await screen.findByText('Aldeões no total')).toBeDefined();
     });
 
-    it('lists the extra attacks of a unit that fires one', async () => {
+    it('shows the charged attack of a unit that fires one beside its main attack', async () => {
         window.history.pushState(null, '', '/pt-br/unit/hearth-troop');
         render(<App locale="pt-BR" />);
 
-        expect(await screen.findByRole('heading', { name: /Ataques extras/ })).toBeDefined();
+        expect(await screen.findByRole('img', { name: 'Ataque de carga' })).toBeDefined();
     });
 
     it('leaves out the extra attacks of a unit that has none to fire', async () => {
@@ -455,7 +455,11 @@ describe('App', () => {
         render(<App locale="pt-BR" />);
         await screen.findByRole('heading', { level: 1, name: 'Arqueiro' });
 
-        expect(screen.queryByRole('heading', { name: /Ataques extras/ })).toBeNull();
+        expect([
+            screen.getByRole('img', { name: 'Ataque principal' }),
+            screen.queryByRole('img', { name: 'Ataque de carga' }),
+            screen.queryByRole('img', { name: 'Projéteis extras' }),
+        ].map(Boolean)).toEqual([true, false, false]);
     });
 
     it('names the theme the document wears while following the system', async () => {

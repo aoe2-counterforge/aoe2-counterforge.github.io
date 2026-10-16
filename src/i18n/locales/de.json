@@ -72,22 +72,24 @@
         "availableIn_one": "{{count}} Volk",
         "trainedBy": "Ausgebildet von",
         "attacks": {
+            "title": "Angriffe",
             "main": "Hauptangriff",
-            "extra": "Zusatzangriffe",
-            "follows": "Die Werte folgen dem Schalter Basis / Voll verbessert",
             "charge": "Ladungsangriff",
             "secondary": "Zusatzgeschosse",
             "damage": "Schaden",
             "cadence": "Rhythmus",
+            "count": "Geschosse",
+            "recharge": "Aufladezeit",
             "eachAttack": "Jeder Angriff",
             "eachShot": "Jeder Schuss",
             "seconds": "{{value}} s",
-            "mainMissile": "Hauptgeschoss ×1",
-            "extraMissiles": "Zusatzgeschosse × bis zu {{amount}}",
-            "perShot": "× {{amount}} pro Schuss",
-            "each": "je",
-            "note": "Der Schaden gilt vor der Rüstung. Ein Bonus wird addiert, wenn das Ziel zu dieser Klasse gehört.",
-            "noteWithPenalties": "Der Schaden gilt vor der Rüstung. Ein Bonus wird addiert, wenn das Ziel zu dieser Klasse gehört; ein Minus senkt ihn."
+            "missiles_one": "{{count}} Geschoss",
+            "missiles_other": "{{count}} Geschosse",
+            "perShot_one": "{{count}} Geschoss pro Schuss",
+            "perShot_other": "{{count}} Geschosse pro Schuss",
+            "upTo_one": "bis zu {{count}} Geschoss",
+            "upTo_other": "bis zu {{count}} Geschosse",
+            "upToShort": "bis zu ×{{count}}"
         }
     },
     "stats": {

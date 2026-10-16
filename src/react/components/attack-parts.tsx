@@ -43,7 +43,8 @@ export interface BonusChipsProps {
 }
 
 /**
- * The classes an attack deals more or less to, as green and red chips.
+ * The classes an attack deals more or less to, as green and red chips, and nothing at all for an
+ * attack that hits every class alike.
  *
  * @param props.attack - The attack to list.
  * @param props.compareWith - What technologies are measured against.
@@ -51,10 +52,10 @@ export interface BonusChipsProps {
 export function BonusChips({ attack, compareWith }: BonusChipsProps) {
     const { t } = useTranslation();
     const modifiers = attack.modifiers();
-    if (modifiers.length === 0) return <span className="attack-none">—</span>;
+    if (modifiers.length === 0) return null;
 
     return (
-        <ul className="bonus-chips">
+        <ul className="bonus-chips" aria-label={t('unit.bonusDamage')}>
             {modifiers.map(({ armourClass, amount }) => (
                 <li key={armourClass} className={amount < 0 ? 'bonus-chip bonus-chip--bad' : 'bonus-chip'}>
                     <strong>

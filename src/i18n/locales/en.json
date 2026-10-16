@@ -72,22 +72,24 @@
         "availableIn_one": "{{count}} civilization",
         "trainedBy": "Trained by",
         "attacks": {
+            "title": "Attacks",
             "main": "Main attack",
-            "extra": "Extra attacks",
-            "follows": "Values follow the Base / Fully upgraded switch",
             "charge": "Charged attack",
             "secondary": "Extra projectiles",
             "damage": "Damage",
             "cadence": "Cadence",
+            "count": "Missiles",
+            "recharge": "Recharge",
             "eachAttack": "Each attack",
             "eachShot": "Each shot",
             "seconds": "{{value}} s",
-            "mainMissile": "Main missile ×1",
-            "extraMissiles": "Extra missiles × up to {{amount}}",
-            "perShot": "× {{amount}} per shot",
-            "each": "each",
-            "note": "Damage is before armour. A bonus is added when the target belongs to that class.",
-            "noteWithPenalties": "Damage is before armour. A bonus is added when the target belongs to that class; a minus lowers it."
+            "missiles_one": "{{count}} missile",
+            "missiles_other": "{{count}} missiles",
+            "perShot_one": "{{count}} missile per shot",
+            "perShot_other": "{{count}} missiles per shot",
+            "upTo_one": "up to {{count}} missile",
+            "upTo_other": "up to {{count}} missiles",
+            "upToShort": "up to ×{{count}}"
         }
     },
     "stats": {

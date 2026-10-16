@@ -36,6 +36,8 @@
     --even-dim: rgb(143 178 216 / 15%);
     /* Melee damage and armour: the coral that sets them apart from the blue of pierce. */
     --melee: #f2a68e;
+    /* A charged attack: the forge's spark, kept apart from the gold of the main attack. */
+    --charge: #ff9247;
 
     --food: #f07d63;
     --wood: #8bbf6a;
@@ -110,6 +112,7 @@
     --even: #39659b;
     --even-dim: rgb(57 101 155 / 13%);
     --melee: #a8402a;
+    --charge: #a94a06;
 
     --food: #ca4b20;
     --wood: #518133;

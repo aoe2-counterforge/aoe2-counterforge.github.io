@@ -72,22 +72,24 @@
         "availableIn_one": "{{count}} civilización",
         "trainedBy": "La entrenan",
         "attacks": {
+            "title": "Ataques",
             "main": "Ataque principal",
-            "extra": "Ataques extra",
-            "follows": "Los valores siguen el selector Base / Con todas las mejoras",
             "charge": "Ataque de carga",
             "secondary": "Proyectiles extra",
             "damage": "Daño",
             "cadence": "Cadencia",
+            "count": "Proyectiles",
+            "recharge": "Tiempo de carga",
             "eachAttack": "Cada ataque",
             "eachShot": "Cada disparo",
             "seconds": "{{value}} s",
-            "mainMissile": "Proyectil principal ×1",
-            "extraMissiles": "Proyectiles extra × hasta {{amount}}",
-            "perShot": "× {{amount}} por disparo",
-            "each": "cada uno",
-            "note": "El daño se indica antes de la armadura. El daño adicional se suma cuando el objetivo pertenece a esa clase.",
-            "noteWithPenalties": "El daño se indica antes de la armadura. El daño adicional se suma cuando el objetivo pertenece a esa clase; un signo menos lo reduce."
+            "missiles_one": "{{count}} proyectil",
+            "missiles_other": "{{count}} proyectiles",
+            "perShot_one": "{{count}} proyectil por disparo",
+            "perShot_other": "{{count}} proyectiles por disparo",
+            "upTo_one": "hasta {{count}} proyectil",
+            "upTo_other": "hasta {{count}} proyectiles",
+            "upToShort": "hasta ×{{count}}"
         }
     },
     "stats": {
