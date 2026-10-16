@@ -2100,6 +2100,17 @@ details[open] > summary::after {
         grid-column-start: 1;
     }
 
+    /* The last figure of a two-figure row takes the empty cell beside it, so its label need not wrap. */
+    .attack-card--stacked .attack-card__facts > :nth-child(2):last-child {
+        grid-column: span 2;
+    }
+
+    /* Melee is three words in the Romance languages, more than the last column holds on one line. */
+    .attack-card--stacked .attack-fact__type {
+        white-space: normal;
+        line-height: 1.15;
+    }
+
     /* A long word, such as a German label on the narrowest phones, breaks rather than run into the next column. */
     .attack-card--stacked .attack-fact .stat__label,
     .attack-card--stacked .attack-fact__word {
