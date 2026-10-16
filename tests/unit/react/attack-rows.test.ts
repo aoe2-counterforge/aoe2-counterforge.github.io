@@ -113,4 +113,10 @@ describe('attackCards', () => {
 
         expect([cards[0]?.cadence, cards[0]?.rangeBefore]).toEqual([{ kind: 'reload', seconds: 1.5, before: 2 }, 4]);
     });
+
+    it('marks the main range as the far end when the unit has a minimum range', () => {
+        const cards = attackCards({ stats: makeStats({ range: 7, minRange: 3 }), base: [charged(0.1)] });
+
+        expect(cards.map((card) => card.hasMinimumRange)).toEqual([true, false]);
+    });
 });

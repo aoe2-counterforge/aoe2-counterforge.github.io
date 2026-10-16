@@ -107,6 +107,8 @@ export interface AttackCard {
     /** Zero for a blow that needs no reach, which the card then leaves out. */
     range: number;
     rangeBefore: number | undefined;
+    /** Whether the attack cannot reach closer in either, so its range is the far end of a band. */
+    hasMinimumRange: boolean;
 }
 
 export interface AttackCardsInput {
@@ -162,6 +164,7 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
                               : null,
                       range: stats.range,
                       rangeBefore: compareWith?.range,
+                      hasMinimumRange: stats.minRange > 0,
                   },
               ]
             : [];
@@ -174,6 +177,7 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
             cadence: cadenceOf(row.attack),
             range: row.attack.range,
             rangeBefore: row.before?.range,
+            hasMinimumRange: false,
         })),
     ];
 }

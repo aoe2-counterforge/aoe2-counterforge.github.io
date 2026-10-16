@@ -162,7 +162,7 @@ function AttackCardItem({ card }: { card: AttackCard }) {
                             {only?.count ? <CountFact count={only.count} /> : null}
                             {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
                             {card.range > 0 ? (
-                                <Fact icon="range" label={t('stats.range')}>
+                                <Fact icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
                                     {short(card.range)}
                                     <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
                                 </Fact>
