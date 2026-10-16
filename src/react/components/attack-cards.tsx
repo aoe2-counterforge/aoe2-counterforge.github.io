@@ -5,7 +5,7 @@ import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { attackCards, type AttackCard, type CardCadence, type MissileCount, type Strike } from '../attack-rows.ts';
 import { short } from '../format.ts';
-import { BonusChips, DamageTypePill, Gain } from './attack-parts.tsx';
+import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
 
 export interface AttackCardsProps {
@@ -43,14 +43,13 @@ interface FactProps {
     icon: IconName;
     tint?: string;
     label: string;
-    lead?: boolean;
     children: ReactNode;
 }
 
 /** One figure on a card, labelled the way the stat tiles above label theirs. */
-function Fact({ icon, tint, label, lead = false, children }: FactProps) {
+function Fact({ icon, tint, label, children }: FactProps) {
     return (
-        <div className={lead ? 'attack-fact attack-fact--lead' : 'attack-fact'}>
+        <div className="attack-fact">
             <div className="stat__label">
                 <Icon name={icon} className={tint} />
                 {label}
@@ -67,7 +66,7 @@ function CadenceFact({ cadence }: { cadence: CardCadence }) {
     switch (cadence.kind) {
         case 'reload':
             return (
-                <Fact icon="reload" label={t('stats.reloadTime')}>
+                <Fact icon="reload" label={t('unit.attacks.reload')}>
                     {seconds(cadence.seconds)}
                     <Gain value={cadence.before === undefined ? 0 : cadence.seconds - cadence.before} inverted />
                 </Fact>
@@ -104,17 +103,32 @@ function CountFact({ count }: { count: MissileCount }) {
 function DamageFact({ strike }: { strike: Strike }) {
     const { t } = useTranslation();
     const damage = strike.attack.displayValue;
-    const type = strike.attack.damageType();
 
     return (
-        <Fact icon={type ?? 'attack'} tint={type ? `glyph--${type}` : undefined} label={t('unit.attacks.damage')} lead>
-            <span className="attack-fact__damage">
-                {short(damage)}
-                <Gain value={strike.before === undefined ? 0 : damage - strike.before.displayValue} />
-            </span>
-            {type ? <DamageTypePill type={type} /> : null}
+        <Fact icon="damage" label={t('unit.attacks.damage')}>
+            {short(damage)}
+            <Gain value={strike.before === undefined ? 0 : damage - strike.before.displayValue} />
         </Fact>
     );
+}
+
+/** Which armour a strike goes through, as a figure of its own so it never reads as part of the number. */
+function TypeFact({ type }: { type: DamageType }) {
+    const { t } = useTranslation();
+
+    return (
+        <Fact icon={type} tint={`glyph--${type}`} label={t('unit.attacks.type')}>
+            <span className={`attack-fact__type attack-fact__type--${type}`}>{t(`armourClasses.base-${type}`)}</span>
+        </Fact>
+    );
+}
+
+/** The damage type every strike of a card shares, which the card then states once. */
+function sharedType(strikes: readonly Strike[]): DamageType | null {
+    const types = new Set(strikes.map((strike) => strike.attack.damageType()));
+    const [type] = types;
+
+    return types.size === 1 && type ? type : null;
 }
 
 /**
@@ -125,43 +139,56 @@ function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
     const name = t(ROLE_NAMES[card.role]);
     const [only] = card.strikes.length === 1 ? card.strikes : [];
+    const type = sharedType(card.strikes);
     const others = [only?.count, card.cadence, card.range > 0].filter(Boolean).length;
-    // A phone cannot fit the damage and three more figures on one line, so those three get a row of their own.
-    const stacked = only !== undefined && others > 2;
+    // A phone cannot fit damage, type and two more figures beside the glyph, so such a card falls into even columns.
+    const stacked = only !== undefined && others > 1;
 
     return (
         <li className={`attack-card attack-card--${card.role}${stacked ? ' attack-card--stacked' : ''}`}>
-            <span className="attack-card__role" role="img" aria-label={name} title={name}>
-                <Icon name={ROLE_GLYPHS[card.role]} />
-            </span>
-            <div className="attack-card__head">
-                {only ? <DamageFact strike={only} /> : null}
-                {others > 0 ? (
-                    <div className="attack-card__facts">
-                        {only?.count ? <CountFact count={only.count} /> : null}
-                        {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
-                        {card.range > 0 ? (
-                            <Fact icon="range" label={t('stats.range')}>
-                                {short(card.range)}
-                                <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
-                            </Fact>
-                        ) : null}
-                    </div>
-                ) : null}
-            </div>
-            {only ? (
-                <BonusChips attack={only.attack} compareWith={only.before} />
-            ) : (
-                card.strikes.map((strike, index) => (
-                    <div key={index} className="attack-strike">
-                        <div className="attack-strike__facts">
-                            <DamageFact strike={strike} />
-                            {strike.count ? <CountFact count={strike.count} /> : null}
+            <div className="attack-card__body">
+                <span className="attack-card__role" role="img" aria-label={name} title={name}>
+                    <Icon name={ROLE_GLYPHS[card.role]} />
+                </span>
+                <div className="attack-card__head">
+                    {only || type ? (
+                        <div className="attack-card__lead">
+                            {only ? <DamageFact strike={only} /> : null}
+                            {type ? <TypeFact type={type} /> : null}
                         </div>
-                        <BonusChips attack={strike.attack} compareWith={strike.before} />
-                    </div>
-                ))
-            )}
+                    ) : null}
+                    {others > 0 ? (
+                        <div className="attack-card__facts">
+                            {only?.count ? <CountFact count={only.count} /> : null}
+                            {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
+                            {card.range > 0 ? (
+                                <Fact icon="range" label={t('stats.range')}>
+                                    {short(card.range)}
+                                    <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
+                                </Fact>
+                            ) : null}
+                        </div>
+                    ) : null}
+                </div>
+                {only ? (
+                    <BonusChips attack={only.attack} compareWith={only.before} />
+                ) : (
+                    card.strikes.map((strike, index) => {
+                        const own = type === null ? strike.attack.damageType() : null;
+
+                        return (
+                            <div key={index} className="attack-strike">
+                                <div className="attack-strike__facts">
+                                    <DamageFact strike={strike} />
+                                    {own ? <TypeFact type={own} /> : null}
+                                    {strike.count ? <CountFact count={strike.count} /> : null}
+                                </div>
+                                <BonusChips attack={strike.attack} compareWith={strike.before} />
+                            </div>
+                        );
+                    })
+                )}
+            </div>
         </li>
     );
 }

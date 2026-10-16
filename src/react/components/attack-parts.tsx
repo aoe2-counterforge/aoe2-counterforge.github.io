@@ -1,25 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import type { AttackProfile } from '../../domain/values/attack-profile.ts';
 import { delta, short } from '../format.ts';
-import { Icon } from './icon.tsx';
 
+/** The armour a hit goes through, which decides whether melee or pierce armour stops it. */
 export type DamageType = 'melee' | 'pierce';
-
-/**
- * Names the armour a hit goes through, so melee and pierce cannot be mistaken for one another.
- *
- * @param props.type - Which armour the damage is checked against.
- */
-export function DamageTypePill({ type }: { type: DamageType }) {
-    const { t } = useTranslation();
-
-    return (
-        <span className={`damage-pill damage-pill--${type}`}>
-            <Icon name={type} />
-            {t(`armourClasses.base-${type}`)}
-        </span>
-    );
-}
 
 /**
  * The change a technology made to a number, painted as a gain unless lower is the better direction.

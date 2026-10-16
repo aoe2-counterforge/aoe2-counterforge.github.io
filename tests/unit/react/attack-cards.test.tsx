@@ -71,7 +71,7 @@ describe('AttackCards', () => {
     it('labels every figure of the main attack the way the stat tiles do', () => {
         render(<AttackCards stats={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage5Pierce.*Reload2 s.*Range4.*\+3Spearmen/);
+        expect(card('Main attack').textContent).toMatch(/Damage5TypePierceReload2 sRange4.*\+3Spearmen/);
     });
 
     it('names each card by its role glyph rather than a printed heading', () => {
@@ -87,7 +87,7 @@ describe('AttackCards', () => {
     it('tells a charged attack by the time it takes to recharge', () => {
         render(<AttackCards stats={bow} base={[javelin]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6Pierce.*Recharge15 s.*Range6.*\+3Archers/);
+        expect(card('Charged attack').textContent).toMatch(/Damage6TypePierceRecharge15 sRange6.*\+3Archers/);
     });
 
     it('says a charge that refills at once goes off with each attack', () => {
@@ -105,7 +105,29 @@ describe('AttackCards', () => {
     it('gives the main missile and the extra ones of a charged volley a line each', () => {
         render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6Pierce.*×11 missile.*Damage1Pierce.*up to ×5up to 5 missiles/);
+        expect(card('Charged attack').textContent).toMatch(/Damage6Missiles×11 missile.*Damage1Missilesup to ×5up to 5 missiles/);
+    });
+
+    it('states the damage type of a volley once when all its missiles share it', () => {
+        render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
+
+        expect(card('Charged attack').textContent?.match(/Type/g)).toHaveLength(1);
+    });
+
+    it('gives each missile its own type when a volley mixes them', () => {
+        const blades = new SpecialAttack({
+            role: 'secondary',
+            projectile: 512,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-melee', amount: 2 }] }),
+            range: 4,
+            count: 0,
+            maxCount: 3,
+            charge: null,
+        });
+
+        render(<AttackCards stats={bow} base={[javelin, blades]} />);
+
+        expect(card('Charged attack').textContent).toMatch(/Damage6TypePierce.*Damage2TypeMelee/);
     });
 
     it('prints nothing for an attack with no bonus damage', () => {
@@ -119,6 +141,6 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={upgraded} compareWith={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage7\+2Pierce.*Range5\+1/);
+        expect(card('Main attack').textContent).toMatch(/Damage7\+2TypePierce.*Range5\+1/);
     });
 });
