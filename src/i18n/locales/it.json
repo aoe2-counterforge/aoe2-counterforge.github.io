@@ -68,20 +68,26 @@
         "line": "Linea di potenziamento",
         "lineCurrent": "attuale",
         "lineOr": "o",
-        "noBonusDamage": "Nessun danno bonus.",
         "availableIn_other": "{{count}} civiltà",
         "availableIn_one": "{{count}} civiltà",
         "trainedBy": "Addestrata da",
-        "special": {
-            "title": "Attacchi speciali",
-            "hint": "Ognuno lancia un proiettile tutto suo, quindi nulla di questo rientra nelle statistiche qui sopra.",
+        "attacks": {
+            "main": "Attacco principale",
+            "extra": "Attacchi extra",
+            "follows": "I valori seguono il selettore Base / Con tutti i potenziamenti",
             "charge": "Attacco a carica",
             "secondary": "Proiettili extra",
-            "recharge": "Ricarica",
-            "instant": "Istantanea",
+            "damage": "Danni",
+            "cadence": "Cadenza",
+            "eachAttack": "Ogni attacco",
+            "eachShot": "Ogni colpo",
             "seconds": "{{value}} s",
-            "projectiles": "Proiettili per colpo",
-            "volley": "Lanciati insieme all'attacco a carica"
+            "mainMissile": "Proiettile principale ×1",
+            "extraMissiles": "Proiettili extra × fino a {{amount}}",
+            "perShot": "× {{amount}} per colpo",
+            "each": "ciascuno",
+            "note": "I danni sono prima dell'armatura. Il bonus si aggiunge quando il bersaglio appartiene a quella classe.",
+            "noteWithPenalties": "I danni sono prima dell'armatura. Il bonus si aggiunge quando il bersaglio appartiene a quella classe; un meno lo riduce."
         }
     },
     "stats": {

@@ -18,6 +18,7 @@ import {
     Menu,
     Monitor,
     Moon,
+    Plus,
     Scale,
     Search,
     Shield,
@@ -48,6 +49,36 @@ function GitHubMark(props: SVGProps<SVGSVGElement>) {
 }
 
 /**
+ * A blade held point up, drawn by hand because the icon set only has diagonal swords.
+ *
+ * It stands for melee damage and melee armour, so the two read as one thing at a glance.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The sword, stroked with the surrounding text colour.
+ */
+function MeleeMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 2v13M8.5 15h7M12 15v4.5M10.5 21.5h3" />
+        </svg>
+    );
+}
+
+/**
+ * An arrow in flight, drawn by hand to pair with the sword for pierce damage and pierce armour.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The arrow, stroked with the surrounding text colour.
+ */
+function PierceMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M4 20L19 5M19 5h-6M19 5v6M4 20l3-1M4 20l1-3" />
+        </svg>
+    );
+}
+
+/**
  * Every glyph the interface is allowed to draw.
  *
  * Keeping the set in one place is what lets a stat, a resource or a tab be named rather than
@@ -57,6 +88,7 @@ const GLYPHS = {
     age: Castle,
     armour: Shield,
     attack: Sword,
+    bonus: Plus,
     civilizations: Castle,
     compare: Scale,
     food: Wheat,
@@ -64,7 +96,9 @@ const GLYPHS = {
     hitPoints: Heart,
     home: House,
     lineOfSight: Target,
+    melee: MeleeMark,
     next: ChevronRight,
+    pierce: PierceMark,
     population: Users,
     range: Crosshair,
     search: Search,

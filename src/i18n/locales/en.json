@@ -68,20 +68,26 @@
         "line": "Upgrade line",
         "lineCurrent": "current",
         "lineOr": "or",
-        "noBonusDamage": "No bonus damage.",
         "availableIn_other": "{{count}} civilizations",
         "availableIn_one": "{{count}} civilization",
         "trainedBy": "Trained by",
-        "special": {
-            "title": "Special attacks",
-            "hint": "Each one fires a missile of its own, so none of it is counted in the stats above.",
+        "attacks": {
+            "main": "Main attack",
+            "extra": "Extra attacks",
+            "follows": "Values follow the Base / Fully upgraded switch",
             "charge": "Charged attack",
             "secondary": "Extra projectiles",
-            "recharge": "Recharge",
-            "instant": "Instant",
+            "damage": "Damage",
+            "cadence": "Cadence",
+            "eachAttack": "Each attack",
+            "eachShot": "Each shot",
             "seconds": "{{value}} s",
-            "projectiles": "Projectiles per shot",
-            "volley": "Fired together with the charged attack"
+            "mainMissile": "Main missile ×1",
+            "extraMissiles": "Extra missiles × up to {{amount}}",
+            "perShot": "× {{amount}} per shot",
+            "each": "each",
+            "note": "Damage is before armour. A bonus is added when the target belongs to that class.",
+            "noteWithPenalties": "Damage is before armour. A bonus is added when the target belongs to that class; a minus lowers it."
         }
     },
     "stats": {

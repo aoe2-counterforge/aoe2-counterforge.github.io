@@ -68,20 +68,26 @@
         "line": "Linha de evolução",
         "lineCurrent": "atual",
         "lineOr": "ou",
-        "noBonusDamage": "Sem dano bônus.",
         "availableIn_other": "{{count}} civilizações",
         "availableIn_one": "{{count}} civilização",
         "trainedBy": "Civilizações que treinam",
-        "special": {
-            "title": "Ataques especiais",
-            "hint": "Cada um dispara um projétil próprio, então nada disso entra nos atributos acima.",
+        "attacks": {
+            "main": "Ataque principal",
+            "extra": "Ataques extras",
+            "follows": "Os valores seguem a chave Base / Com melhorias",
             "charge": "Ataque de carga",
             "secondary": "Projéteis extras",
-            "recharge": "Recarga",
-            "instant": "Instantânea",
+            "damage": "Dano",
+            "cadence": "Cadência",
+            "eachAttack": "A cada ataque",
+            "eachShot": "A cada disparo",
             "seconds": "{{value}} s",
-            "projectiles": "Projéteis por disparo",
-            "volley": "Disparados junto com o ataque de carga"
+            "mainMissile": "Projétil principal ×1",
+            "extraMissiles": "Projéteis extras × até {{amount}}",
+            "perShot": "× {{amount}} por disparo",
+            "each": "cada",
+            "note": "O dano é antes da armadura. O bônus é somado quando o alvo pertence àquela classe.",
+            "noteWithPenalties": "O dano é antes da armadura. O bônus é somado quando o alvo pertence àquela classe; o sinal de menos o reduz."
         }
     },
     "stats": {

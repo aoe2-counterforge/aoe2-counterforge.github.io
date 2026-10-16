@@ -68,20 +68,26 @@
         "line": "Ligne d'amélioration",
         "lineCurrent": "actuelle",
         "lineOr": "ou",
-        "noBonusDamage": "Aucun dégât bonus.",
         "availableIn_other": "{{count}} civilisations",
         "availableIn_one": "{{count}} civilisation",
         "trainedBy": "Formée par",
-        "special": {
-            "title": "Attaques spéciales",
-            "hint": "Chacune tire un projectile à part, donc rien de tout cela n'entre dans les statistiques ci-dessus.",
+        "attacks": {
+            "main": "Attaque principale",
+            "extra": "Attaques supplémentaires",
+            "follows": "Les valeurs suivent le sélecteur Base / Toutes améliorations",
             "charge": "Attaque chargée",
             "secondary": "Projectiles supplémentaires",
-            "recharge": "Rechargement",
-            "instant": "Instantané",
+            "damage": "Dégâts",
+            "cadence": "Cadence",
+            "eachAttack": "Chaque attaque",
+            "eachShot": "Chaque tir",
             "seconds": "{{value}} s",
-            "projectiles": "Projectiles par tir",
-            "volley": "Tirés avec l'attaque chargée"
+            "mainMissile": "Projectile principal ×1",
+            "extraMissiles": "Projectiles supplémentaires × jusqu'à {{amount}}",
+            "perShot": "× {{amount}} par tir",
+            "each": "chacun",
+            "note": "Les dégâts s'entendent avant l'armure. Un bonus s'ajoute quand la cible appartient à cette classe.",
+            "noteWithPenalties": "Les dégâts s'entendent avant l'armure. Un bonus s'ajoute quand la cible appartient à cette classe ; un moins le réduit."
         }
     },
     "stats": {

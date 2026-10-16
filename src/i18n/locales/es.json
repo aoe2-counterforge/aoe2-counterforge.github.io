@@ -68,20 +68,26 @@
         "line": "Línea de mejora",
         "lineCurrent": "actual",
         "lineOr": "o",
-        "noBonusDamage": "Sin daño adicional.",
         "availableIn_other": "{{count}} civilizaciones",
         "availableIn_one": "{{count}} civilización",
         "trainedBy": "La entrenan",
-        "special": {
-            "title": "Ataques especiales",
-            "hint": "Cada uno dispara un proyectil propio, así que nada de esto cuenta en las estadísticas de arriba.",
+        "attacks": {
+            "main": "Ataque principal",
+            "extra": "Ataques extra",
+            "follows": "Los valores siguen el selector Base / Con todas las mejoras",
             "charge": "Ataque de carga",
             "secondary": "Proyectiles extra",
-            "recharge": "Recarga",
-            "instant": "Instantánea",
+            "damage": "Daño",
+            "cadence": "Cadencia",
+            "eachAttack": "Cada ataque",
+            "eachShot": "Cada disparo",
             "seconds": "{{value}} s",
-            "projectiles": "Proyectiles por disparo",
-            "volley": "Se disparan junto con el ataque de carga"
+            "mainMissile": "Proyectil principal ×1",
+            "extraMissiles": "Proyectiles extra × hasta {{amount}}",
+            "perShot": "× {{amount}} por disparo",
+            "each": "cada uno",
+            "note": "El daño se indica antes de la armadura. El daño adicional se suma cuando el objetivo pertenece a esa clase.",
+            "noteWithPenalties": "El daño se indica antes de la armadura. El daño adicional se suma cuando el objetivo pertenece a esa clase; un signo menos lo reduce."
         }
     },
     "stats": {

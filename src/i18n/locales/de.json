@@ -68,20 +68,26 @@
         "line": "Verbesserungslinie",
         "lineCurrent": "aktuell",
         "lineOr": "oder",
-        "noBonusDamage": "Kein Bonusschaden.",
         "availableIn_other": "{{count}} Völker",
         "availableIn_one": "{{count}} Volk",
         "trainedBy": "Ausgebildet von",
-        "special": {
-            "title": "Spezialangriffe",
-            "hint": "Jeder feuert ein eigenes Geschoss ab und zählt daher nicht in den Werten oben.",
+        "attacks": {
+            "main": "Hauptangriff",
+            "extra": "Zusatzangriffe",
+            "follows": "Die Werte folgen dem Schalter Basis / Voll verbessert",
             "charge": "Ladungsangriff",
             "secondary": "Zusatzgeschosse",
-            "recharge": "Aufladung",
-            "instant": "Sofort",
+            "damage": "Schaden",
+            "cadence": "Rhythmus",
+            "eachAttack": "Jeder Angriff",
+            "eachShot": "Jeder Schuss",
             "seconds": "{{value}} s",
-            "projectiles": "Geschosse pro Schuss",
-            "volley": "Wird zusammen mit dem Ladungsangriff abgefeuert"
+            "mainMissile": "Hauptgeschoss ×1",
+            "extraMissiles": "Zusatzgeschosse × bis zu {{amount}}",
+            "perShot": "× {{amount}} pro Schuss",
+            "each": "je",
+            "note": "Der Schaden gilt vor der Rüstung. Ein Bonus wird addiert, wenn das Ziel zu dieser Klasse gehört.",
+            "noteWithPenalties": "Der Schaden gilt vor der Rüstung. Ein Bonus wird addiert, wenn das Ziel zu dieser Klasse gehört; ein Minus senkt ihn."
         }
     },
     "stats": {

@@ -34,6 +34,8 @@
     --bad-dim: rgb(239 131 117 / 15%);
     --even: #8fb2d8;
     --even-dim: rgb(143 178 216 / 15%);
+    /* Melee damage and armour: the coral that sets them apart from the blue of pierce. */
+    --melee: #f2a68e;
 
     --food: #f07d63;
     --wood: #8bbf6a;
@@ -107,6 +109,7 @@
     --bad-dim: rgb(172 50 37 / 12%);
     --even: #39659b;
     --even-dim: rgb(57 101 155 / 13%);
+    --melee: #a8402a;
 
     --food: #ca4b20;
     --wood: #518133;

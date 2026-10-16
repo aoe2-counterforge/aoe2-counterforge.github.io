@@ -6,8 +6,9 @@ import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { useGameText } from '../hooks/use-game-text.ts';
 import { usePreferences } from '../hooks/use-preferences.ts';
 import { useUnitLine } from '../hooks/use-unit-line.ts';
+import { ExtraAttacks } from './extra-attacks.tsx';
+import { MainAttackPanel } from './main-attack-panel.tsx';
 import { SegmentedControl } from './segmented-control.tsx';
-import { SpecialAttacks } from './special-attacks.tsx';
 import { StatGrid } from './stat-grid.tsx';
 import { UnitCivilizationsCard } from './unit-civilizations-card.tsx';
 import { UnitLineDiagram } from './unit-line-diagram.tsx';
@@ -32,7 +33,6 @@ export function UnitOverviewPanel({ unit, upgradedStats, upgradedSpecialAttacks 
     const unitText = text.unit(unit.key);
     const base = unit.stats.toRecord();
     const upgraded = upgradedStats.toRecord();
-    const bonuses = unit.stats.attack.bonuses();
     const classes = unit.stats.armour.classes().filter(
         (armourClass) => !armourClass.startsWith('base-') && !armourClass.startsWith('unused-'),
     );
@@ -69,41 +69,27 @@ export function UnitOverviewPanel({ unit, upgradedStats, upgradedSpecialAttacks 
                     </p>
                 ) : null}
                 <StatGrid stats={mode === 'base' ? base : upgraded} compareWith={mode === 'base' ? undefined : base} />
-                <SpecialAttacks
+                <MainAttackPanel
+                    stats={mode === 'base' ? unit.stats : upgradedStats}
+                    compareWith={mode === 'base' ? undefined : unit.stats}
+                />
+                <ExtraAttacks
                     base={unit.activeSpecialAttacks}
                     upgraded={mode === 'base' ? undefined : upgradedSpecialAttacks}
                 />
-            </section>
-
-            <section className="card">
-                <div className="card__title">
-                    <h2>{t('unit.bonusDamage')}</h2>
-                </div>
-                {bonuses.length === 0 ? (
-                    <p className="prose">{t('unit.noBonusDamage')}</p>
-                ) : (
-                    <ul className="bullets">
-                        {bonuses.map((bonus) => (
-                            <li key={bonus.armourClass}>
-                                <span>
-                                    <strong>+{bonus.amount}</strong> {t(`armourClasses.${bonus.armourClass}`)}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                )}
                 {classes.length > 0 ? (
-                    <>
-                        <hr className="divider" />
-                        <div className="section-label">{t('unit.armourClasses')}</div>
-                        <div className="row" style={{ marginTop: 'var(--space-2)' }}>
+                    <section className="attack-section">
+                        <div className="attack-section__head">
+                            <h3 className="attack-section__title">{t('unit.armourClasses')}</h3>
+                        </div>
+                        <div className="row">
                             {classes.map((armourClass) => (
                                 <span key={armourClass} className="badge">
                                     {t(`armourClasses.${armourClass}`)}
                                 </span>
                             ))}
                         </div>
-                    </>
+                    </section>
                 ) : null}
             </section>
 
