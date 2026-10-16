@@ -52,7 +52,7 @@ function Fact({ icon, tint, label, children }: FactProps) {
         <div className="attack-fact">
             <div className="stat__label">
                 <Icon name={icon} className={tint} />
-                {label}
+                <span className="stat__name">{label}</span>
             </div>
             <div className="stat__value">{children}</div>
         </div>

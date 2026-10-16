@@ -69,7 +69,7 @@ export function StatGrid({ stats, compareWith }: StatGridProps) {
                     <div className="stat" key={key}>
                         <div className="stat__label">
                             {GLYPHS[key] ? <Icon name={GLYPHS[key]} className={TINTS[key]} /> : null}
-                            {t(`stats.${key}`)}
+                            <span className="stat__name">{t(`stats.${key}`)}</span>
                         </div>
                         <div className="stat__value">
                             {short(stats[key])}{key === 'accuracy' ? '%' : ''}

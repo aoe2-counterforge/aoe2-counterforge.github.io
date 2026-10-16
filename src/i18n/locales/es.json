@@ -98,7 +98,7 @@
         "hp": "PR",
         "attack": "Ataque",
         "meleeArmour": "Armadura cuerpo a cuerpo",
-        "pierceArmour": "Armadura antiproyectiles",
+        "pierceArmour": "Armadura anti\u00adproyectiles",
         "range": "Alcance",
         "minRange": "Alcance mín.",
         "maxRange": "Alcance máx.",

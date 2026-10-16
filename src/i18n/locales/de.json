@@ -97,16 +97,16 @@
     "stats": {
         "hp": "LP",
         "attack": "Angriff",
-        "meleeArmour": "Nahkampfrüstung",
-        "pierceArmour": "Fernkampfrüstung",
+        "meleeArmour": "Nahkampf\u00adrüstung",
+        "pierceArmour": "Fernkampf\u00adrüstung",
         "range": "Reichweite",
         "minRange": "Min. Reichweite",
         "maxRange": "Max. Reichweite",
         "reloadTime": "Nachladen",
-        "accuracy": "Genauigkeit",
-        "speed": "Geschwindigkeit",
-        "lineOfSight": "Sichtweite",
-        "blastWidth": "Sprengradius",
+        "accuracy": "Genauig\u00adkeit",
+        "speed": "Geschwindig\u00adkeit",
+        "lineOfSight": "Sicht\u00adweite",
+        "blastWidth": "Spreng\u00adradius",
         "dps": "Schaden pro Sekunde"
     },
     "resources": {

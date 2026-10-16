@@ -427,21 +427,37 @@
     gap: var(--space-2);
 }
 
+/* Tiles in a row share its height; the figure sits at the bottom, so a label that wraps leaves the figures level. */
 .stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: var(--space-2) var(--space-3);
 }
 
+/* A line as tall as the glyph keeps the glyph level with the first line when the label wraps. */
 .stat__label {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-1);
     font-size: 0.6875rem;
+    line-height: 1.4;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-faint);
+}
+
+/*
+ * German packs a label into one long word, which the translations mark with soft hyphens where it may
+ * break; a browser hyphenation dictionary is not on every machine. Past those, a word still breaks
+ * rather than run out of the tile.
+ */
+.stat__name {
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .stat__label .glyph {
