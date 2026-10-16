@@ -24,8 +24,8 @@ const ORDER: readonly StatKey[] = [
 
 const GLYPHS: Partial<Record<StatKey, IconName>> = {
     hp: 'hitPoints',
-    meleeArmour: 'melee',
-    pierceArmour: 'pierce',
+    meleeArmour: 'meleeArmour',
+    pierceArmour: 'pierceArmour',
     speed: 'speed',
     accuracy: 'accuracy',
     lineOfSight: 'lineOfSight',

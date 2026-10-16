@@ -55,7 +55,7 @@ function GitHubMark(props: SVGProps<SVGSVGElement>) {
 /**
  * A blade held point up, drawn by hand because the icon set only has diagonal swords.
  *
- * It stands for melee damage and melee armour, so the two read as one thing at a glance.
+ * It stands for melee damage.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
  * @returns The sword, stroked with the surrounding text colour.
@@ -69,7 +69,7 @@ function MeleeMark(props: SVGProps<SVGSVGElement>) {
 }
 
 /**
- * An arrow in flight, drawn by hand to pair with the sword for pierce damage and pierce armour.
+ * An arrow in flight, drawn by hand to pair with the sword for pierce damage.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
  * @returns The arrow, stroked with the surrounding text colour.
@@ -78,6 +78,38 @@ function PierceMark(props: SVGProps<SVGSVGElement>) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
             <path d="M4 20L19 5M19 5h-6M19 5v6M4 20l3-1M4 20l1-3" />
+        </svg>
+    );
+}
+
+/**
+ * A shield bearing the upright sword, drawn by hand for melee armour.
+ *
+ * The emblem inside is the melee damage mark, so armour reads as the answer to that one kind of blow.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The shield and its sword, stroked with the surrounding text colour.
+ */
+function MeleeArmourMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 2.5l7.5 3v6c0 5-3.4 8.2-7.5 10-4.1-1.8-7.5-5-7.5-10v-6z" />
+            <path d="M12 7v6.5M9.75 13.5h4.5M12 13.5v3" />
+        </svg>
+    );
+}
+
+/**
+ * A shield bearing the arrow, drawn by hand for pierce armour.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The shield and its arrow, stroked with the surrounding text colour.
+ */
+function PierceArmourMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 2.5l7.5 3v6c0 5-3.4 8.2-7.5 10-4.1-1.8-7.5-5-7.5-10v-6z" />
+            <path d="M9 15.5l6-6.5M15 9h-3M15 9v3" />
         </svg>
     );
 }
@@ -120,8 +152,10 @@ const GLYPHS = {
     home: House,
     lineOfSight: Eye,
     melee: MeleeMark,
+    meleeArmour: MeleeArmourMark,
     next: ChevronRight,
     pierce: PierceMark,
+    pierceArmour: PierceArmourMark,
     population: Users,
     projectiles: VolleyMark,
     range: Crosshair,
