@@ -13,12 +13,14 @@ import {
     Gem,
     Hammer,
     Heart,
+    Hourglass,
     House,
     Info,
     Menu,
     Monitor,
     Moon,
     Plus,
+    Repeat,
     Scale,
     Search,
     Shield,
@@ -32,6 +34,7 @@ import {
     Users,
     Wheat,
     X,
+    Zap,
 } from 'lucide-react';
 
 /**
@@ -79,6 +82,22 @@ function PierceMark(props: SVGProps<SVGSVGElement>) {
 }
 
 /**
+ * Three arrows flying in a staggered row, drawn by hand to stand for the extra missiles a shot carries.
+ *
+ * It shares the pierce arrow's stroke so that both read as missiles, the volley being the plural.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The arrows, stroked with the surrounding text colour.
+ */
+function VolleyMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M2 5.5h12M11.5 3l2.5 2.5-2.5 2.5M8 12h13M18.5 9.5l2.5 2.5-2.5 2.5M2 18.5h12M11.5 16l2.5 2.5-2.5 2.5" />
+        </svg>
+    );
+}
+
+/**
  * Every glyph the interface is allowed to draw.
  *
  * Keeping the set in one place is what lets a stat, a resource or a tab be named rather than
@@ -89,6 +108,7 @@ const GLYPHS = {
     armour: Shield,
     attack: Sword,
     bonus: Plus,
+    charge: Zap,
     civilizations: Castle,
     compare: Scale,
     food: Wheat,
@@ -100,7 +120,11 @@ const GLYPHS = {
     next: ChevronRight,
     pierce: PierceMark,
     population: Users,
+    projectiles: VolleyMark,
     range: Crosshair,
+    recharge: Hourglass,
+    reload: Timer,
+    repeat: Repeat,
     search: Search,
     speed: Gauge,
     stone: Gem,
