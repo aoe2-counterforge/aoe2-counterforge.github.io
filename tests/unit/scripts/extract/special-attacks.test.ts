@@ -41,6 +41,10 @@ const SHOOTERS: Record<number, { name: string; fields: Partial<GenieUnit> }> = {
     },
     81: { name: 'Kipchak', fields: { maxRange: 4, projectileUnitId: 91, secondaryProjectileUnit: 92, totalProjectiles: 3 } },
     82: { name: 'Archer', fields: { maxRange: 4, projectileUnitId: 93, secondaryProjectileUnit: 94, totalProjectiles: 1 } },
+    83: {
+        name: 'Xianbei Raider',
+        fields: { maxRange: 4, projectileUnitId: 95, secondaryProjectileUnit: 94, totalProjectiles: 1, maxTotalProjectiles: 6 },
+    },
 };
 
 const MISSILES: Record<number, number> = { 90: 5, 91: 0, 92: 3, 93: 0, 94: 3 };
@@ -110,8 +114,14 @@ describe('DatasetBuilder special attacks', () => {
         const attacks = unitByKey('kipchak')?.specialAttacks;
 
         expect(attacks).toEqual([
-            { role: 'secondary', projectile: 92, attacks: [{ class: 'base-pierce', amount: 3 }], range: 4, count: 2 },
+            { role: 'secondary', projectile: 92, attacks: [{ class: 'base-pierce', amount: 3 }], range: 4, count: 2, maxCount: 2 },
         ]);
+    });
+
+    it('counts the most missiles a charged volley can put in the air', () => {
+        const attacks = unitByKey('xianbei-raider')?.specialAttacks;
+
+        expect(attacks?.map((attack) => [attack.role, attack.count, attack.maxCount])).toEqual([['secondary', 0, 5]]);
     });
 
     it('leaves out a secondary missile that never flies', () => {

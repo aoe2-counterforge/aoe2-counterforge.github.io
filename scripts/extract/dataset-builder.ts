@@ -1437,8 +1437,9 @@ export class DatasetBuilder {
         const damage = secondary ? this.classList(secondary.attacks) : [];
         const raisers = this.projectileRaisers();
         // The Xianbei Raider fires one arrow a shot and up to six in its charged volley.
+        const volley = Math.max(Math.round(unit.totalProjectiles), Math.round(unit.maxTotalProjectiles));
         const flies =
-            Math.max(Math.round(unit.totalProjectiles), Math.round(unit.maxTotalProjectiles)) > 1 ||
+            volley > 1 ||
             raisers.units.has(unit.id) ||
             raisers.classes.has(unit.classId);
         if (secondary && flies && damage.some((entry) => entry.amount > 0)) {
@@ -1448,6 +1449,7 @@ export class DatasetBuilder {
                 attacks: damage,
                 range: this.round(unit.maxRange),
                 count: Math.max(0, Math.round(unit.totalProjectiles) - 1),
+                maxCount: volley - 1,
             });
         }
 

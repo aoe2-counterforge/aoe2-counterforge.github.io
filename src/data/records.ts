@@ -43,6 +43,8 @@ export interface SpecialAttackRecord {
      * charged volley such as the Xianbei Raider's.
      */
     count?: number;
+    /** For secondary missiles, the most that can fly in one volley, charged or not. */
+    maxCount?: number;
     charge?: ChargeRecord;
 }
 
