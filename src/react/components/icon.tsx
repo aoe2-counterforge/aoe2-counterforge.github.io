@@ -64,14 +64,9 @@ function SwordShape() {
     return <path d="M12 2v13M8.5 15h7M12 15v4.5M10.5 21.5h3" />;
 }
 
-/** The upright arrow every pierce glyph is drawn with: a narrow solid head, a shaft and its fletching. */
+/** The arrow in flight every pierce glyph is drawn with. */
 function ArrowShape() {
-    return (
-        <>
-            <path d="M12 7.5v13M9.5 21l2.5-2 2.5 2" />
-            <path d="M12 2l3 5.5h-6z" fill="currentColor" stroke="none" />
-        </>
-    );
+    return <path d="M4 20L19 5M19 5h-6M19 5v6M4 20l3-1M4 20l1-3" />;
 }
 
 /**
@@ -91,8 +86,7 @@ function MeleeMark(props: SVGProps<SVGSVGElement>) {
 }
 
 /**
- * An arrow held point up with a solid head, drawn by hand to pair with the sword for pierce damage;
- * a thin diagonal arrow vanished at the size of a stat label.
+ * An arrow in flight, drawn by hand to pair with the sword for pierce damage.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
  * @returns The arrow, stroked with the surrounding text colour.
