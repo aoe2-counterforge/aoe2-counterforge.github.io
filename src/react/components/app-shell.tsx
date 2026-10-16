@@ -4,6 +4,7 @@ import { Link, Outlet, useLocation } from 'react-router';
 import { assetUrl } from '../format.ts';
 import { useCommandPalette } from '../hooks/use-command-palette.ts';
 import { useSpecular } from '../hooks/use-specular.ts';
+import { isApple } from '../platform.ts';
 import { CommandPalette } from './command-palette.tsx';
 import { EmberCanvas } from './ember-canvas.tsx';
 import { ForgeFilters } from './forge-filters.tsx';
@@ -36,15 +37,6 @@ function openTab(bar: HTMLElement | null): { from: number; width: number } {
     const box = active.getBoundingClientRect();
 
     return { from: box.left - frame.left + box.width * 0.2, width: box.width * 0.6 };
-}
-
-/**
- * Whether the reader's keyboard says Command where everyone else's says Control.
- *
- * @returns True on Apple hardware, where the palette answers to the meta key.
- */
-function isApple(): boolean {
-    return typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent);
 }
 
 /** Frame shared by every page: header, navigation and the search overlay. */
