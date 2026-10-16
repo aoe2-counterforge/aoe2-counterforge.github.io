@@ -66,8 +66,13 @@ function SwordShape() {
 
 /** The arrow in flight every pierce glyph is drawn with. */
 function ArrowShape() {
-    // The fletching points forward like the head; splayed outward it read as a second head.
-    return <path d="M4.5 19.5L19 5M19 5h-5.5M19 5v5.5M8 16h-3.5M8 16v3.5" />;
+    // A solid point reads as a missile; an open right-angled one read as an interface arrow.
+    return (
+        <>
+            <path d="M4.6 19.4L17.1 6.9M7.4 16.6L2.9 16.9M7.4 16.6L7.1 21.1" />
+            <path d="M19.4 4.6L13.3 6.2L17.8 10.7Z" fill="currentColor" />
+        </>
+    );
 }
 
 /**
