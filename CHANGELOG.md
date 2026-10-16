@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.9.0](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/compare/v0.8.0...v0.9.0) (2026-10-16)
+
+
+### Features
+
+* add a damage glyph to the icon set ([11898f4](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/11898f4ec3786ff74d36ebcdcfc0774a1e50b681))
+* add charge, volley, reload, recharge and repeat glyphs to the icon set ([3f8d3f4](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/3f8d3f484d4eb4b0373287b6bac34df2bbe59be0))
+* carry special attacks and effect missile roles through the domain ([386f059](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/386f05954010bc96b26913b453f4ccb93b71c178))
+* describe what a technology does to charged attacks and extra projectiles ([e39b04a](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/e39b04a4efcdb9dc26435b583c1e06d5c4e1bab4))
+* find items by their name in any language and rank hidden words below the title ([f7d7f35](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/f7d7f357c3192d12592a0a4a9ad4f18749212c6e))
+* lay out every attack of a unit as cards of one shape ([cca8cbc](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/cca8cbc41629347100354b48370dd133ccbec94f))
+* list search results together with their kind on the line beneath ([280a03b](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/280a03bd6663349ac56048749cb855d49dfdf10c))
+* list the changes a technology shares once and the ages once ([0a3ebba](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/0a3ebbaed913abd81910dfd2ec92fbb71b85d3ce))
+* mark accuracy with a target and line of sight with an eye ([6e77baa](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/6e77baa7ed84c21c76890ead3094f35a5edaabe9))
+* mark blast radius with a burst instead of a flame ([23fc54b](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/23fc54bf83605450a9d3dda277ea66b8ebac7cf9))
+* open a search result in a new tab with ctrl+click or ctrl+enter ([33c238b](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/33c238ba0c2831305f6c74b69840c27d31f7029e))
+* read secondary and charged missiles into the dataset and tag effects with the missile they land on ([14ea2fb](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/14ea2fbdd22fc18cd1d0cb1afde2178babc044a0))
+* record the most missiles a volley can carry ([4335289](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/4335289aba7324082e263a309512d29356bd713c))
+* shorten the minimum range label and call the main range max. range beside it ([c76cf98](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/c76cf982d1e6f56ec479675f6cc7dbe272f068b7))
+* show a charged attack with no damage list as the unit's own attack ([e2059dd](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/e2059ddade808c86818573d28ae72aa1208b2af7))
+* show a unit's attacks as compact cards with labelled figures ([ed6549d](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/ed6549d9fa8af37a48d519327fde0de46026a17f))
+* show a unit's charged attack and extra projectiles with its stats ([011139b](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/011139bc5fbb362913ab6108eb886fd05f8b3e45))
+* show a unit's main attack and extra attacks as panel and table ([88b8c50](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/88b8c5087dd70b53309c05ff0b10172c985e3b15))
+* show armour as a shield bearing the damage type it answers ([3636e29](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/3636e291fc4db33ac17fd73f8f564d4b351d3100))
+* show the damage type as its own figure and level attack cards sharing a row ([777e841](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/777e841e5e6b77a418c5a642dc2ccd09f05dac2b))
+* tell the special attacks a unit really fires from the dormant ones ([0bcbe4f](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/0bcbe4f032eb7358f7a5ab6fc1033f1aa33c249f))
+
+
+### Bug Fixes
+
+* assume the hunt is brought under the town center ([de57dcc](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/de57dcc8b64fd0e1d7857d8d255a3d5632507e4e))
+* draw label icons larger and at full stroke, with the armour shields reusing the damage marks ([f52a2ab](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/f52a2ab8f5ff232cf85331d85c2be41ee79ac158))
+* give the pierce arrow a solid point so it reads as a missile ([0c7e387](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/0c7e3878ba51a972c71ad3e8be5a5e8e9993b8bc))
+* go back to the diagonal arrow for pierce ([7f362a4](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/7f362a4fdcbb635138803d70d4650f94bad2db36))
+* keep long range labels and melee type inside phone attack cards ([f0d9446](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/f0d94465b73c5c731a8ac811e73c4805929f2ced))
+* keep missile changes off the unit stat line and report them per special attack ([969fc51](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/969fc51aa61f44411896618ec94247d9a9d89404))
+* keep the page behind the search from scrolling beside the results ([170574d](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/170574d67d59ac915bb6fb69a552af2d5691a155))
+* keep wrapped stat labels inside their tiles with figures level ([be04ab9](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/be04ab915317c3aea201f77d26971957da14501b))
+* read a multi-word search as one name and keep short words together ([6cae919](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/6cae9193de3b32bfeebcea24c75c1ff84d56a5a2))
+* state the drop-off walk in the economy note instead of claiming rates include it ([c5c16c5](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/c5c16c5eb6de206c7c4c68b71d5dad18467060c9))
+* sweep the pierce arrow's fletching back so it no longer reads as a second head ([e16084f](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/e16084fecdb417a858db38cdceb98896c751eb72))
+
 ## [0.8.0](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/compare/v0.7.3...v0.8.0) (2026-10-15)
 
 
