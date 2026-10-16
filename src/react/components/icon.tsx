@@ -111,6 +111,7 @@ const GLYPHS = {
     charge: Zap,
     civilizations: Castle,
     compare: Scale,
+    damage: Swords,
     food: Wheat,
     gold: Coins,
     hitPoints: Heart,
