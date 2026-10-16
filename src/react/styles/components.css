@@ -445,8 +445,9 @@
 }
 
 .stat__label .glyph {
-    width: 0.9em;
-    height: 0.9em;
+    flex: none;
+    width: 1.4em;
+    height: 1.4em;
     color: var(--gold);
 }
 

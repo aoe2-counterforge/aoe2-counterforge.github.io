@@ -52,6 +52,28 @@ function GitHubMark(props: SVGProps<SVGSVGElement>) {
     );
 }
 
+/** The stroke the icon library draws with; a hand-drawn mark left without it would draw at one, half as heavy. */
+const STROKE = 2;
+
+/** How small a damage mark is drawn inside an armour shield, and where its centre lands. */
+const EMBLEM_SCALE = 0.42;
+const EMBLEM_CENTRE = { x: 12, y: 11.6 };
+
+/** The upright blade every melee glyph is drawn with. */
+function SwordShape() {
+    return <path d="M12 2v13M8.5 15h7M12 15v4.5M10.5 21.5h3" />;
+}
+
+/** The upright arrow every pierce glyph is drawn with: a narrow solid head, a shaft and its fletching. */
+function ArrowShape() {
+    return (
+        <>
+            <path d="M12 7.5v13M9.5 21l2.5-2 2.5 2" />
+            <path d="M12 2l3 5.5h-6z" fill="currentColor" stroke="none" />
+        </>
+    );
+}
+
 /**
  * A blade held point up, drawn by hand because the icon set only has diagonal swords.
  *
@@ -62,55 +84,76 @@ function GitHubMark(props: SVGProps<SVGSVGElement>) {
  */
 function MeleeMark(props: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
-            <path d="M12 2v13M8.5 15h7M12 15v4.5M10.5 21.5h3" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <SwordShape />
         </svg>
     );
 }
 
 /**
- * An arrow in flight, drawn by hand to pair with the sword for pierce damage.
+ * An arrow held point up with a solid head, drawn by hand to pair with the sword for pierce damage;
+ * a thin diagonal arrow vanished at the size of a stat label.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
  * @returns The arrow, stroked with the surrounding text colour.
  */
 function PierceMark(props: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
-            <path d="M4 20L19 5M19 5h-6M19 5v6M4 20l3-1M4 20l1-3" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <ArrowShape />
         </svg>
     );
 }
 
 /**
- * A shield bearing the upright sword, drawn by hand for melee armour.
+ * A shield with a damage mark shrunk inside it, so an armour reads as the answer to that one kind of blow.
  *
- * The emblem inside is the melee damage mark, so armour reads as the answer to that one kind of blow.
+ * The mark's stroke is widened by as much as the mark is shrunk, so it draws as heavy as the shield.
+ *
+ * @param props - The mark to carry as children; the rest passes straight through to the drawing.
+ * @returns The shield and its emblem, stroked with the surrounding text colour.
+ */
+function ArmourShield({ children, ...props }: SVGProps<SVGSVGElement>) {
+    const offset = (centre: number) => centre - 12 * EMBLEM_SCALE;
+
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 2.5l7.5 3v6c0 5-3.4 8.2-7.5 10-4.1-1.8-7.5-5-7.5-10v-6z" />
+            <g
+                transform={`translate(${String(offset(EMBLEM_CENTRE.x))} ${String(offset(EMBLEM_CENTRE.y))}) scale(${String(EMBLEM_SCALE)})`}
+                strokeWidth={STROKE / EMBLEM_SCALE}
+            >
+                {children}
+            </g>
+        </svg>
+    );
+}
+
+/**
+ * Melee armour: the shield bearing the melee damage mark.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
- * @returns The shield and its sword, stroked with the surrounding text colour.
+ * @returns The shield and its sword.
  */
 function MeleeArmourMark(props: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
-            <path d="M12 2.5l7.5 3v6c0 5-3.4 8.2-7.5 10-4.1-1.8-7.5-5-7.5-10v-6z" />
-            <path d="M12 7v6.5M9.75 13.5h4.5M12 13.5v3" />
-        </svg>
+        <ArmourShield {...props}>
+            <SwordShape />
+        </ArmourShield>
     );
 }
 
 /**
- * A shield bearing the arrow, drawn by hand for pierce armour.
+ * Pierce armour: the shield bearing the pierce damage mark.
  *
  * @param props - Passed straight through, so it sizes and colours like any other glyph.
- * @returns The shield and its arrow, stroked with the surrounding text colour.
+ * @returns The shield and its arrow.
  */
 function PierceArmourMark(props: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
-            <path d="M12 2.5l7.5 3v6c0 5-3.4 8.2-7.5 10-4.1-1.8-7.5-5-7.5-10v-6z" />
-            <path d="M9 15.5l6-6.5M15 9h-3M15 9v3" />
-        </svg>
+        <ArmourShield {...props}>
+            <ArrowShape />
+        </ArmourShield>
     );
 }
 
@@ -124,7 +167,7 @@ function PierceArmourMark(props: SVGProps<SVGSVGElement>) {
  */
 function VolleyMark(props: SVGProps<SVGSVGElement>) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" {...props}>
             <path d="M2 5.5h12M11.5 3l2.5 2.5-2.5 2.5M8 12h13M18.5 9.5l2.5 2.5-2.5 2.5M2 18.5h12M11.5 16l2.5 2.5-2.5 2.5" />
         </svg>
     );
