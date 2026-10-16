@@ -105,6 +105,23 @@ test('opens a search result in a new tab on Ctrl+click and keeps the search open
     await expect(palette).toBeVisible();
 });
 
+test('opens the highlighted search result in a new tab on Ctrl+Enter and keeps the search open', async ({
+    page,
+    context,
+}) => {
+    await page.goto('en/');
+    await page.getByRole('button', { name: /Search a unit or civilization/ }).first().click();
+    const palette = page.getByRole('dialog', { name: 'Search a unit or civilization' });
+    const search = palette.getByRole('searchbox');
+    await search.fill('halb');
+    await expect(palette.getByRole('link').first()).toHaveAccessibleName(/^Halberdier/);
+
+    const [tab] = await Promise.all([context.waitForEvent('page'), search.press('ControlOrMeta+Enter')]);
+
+    await expect(tab).toHaveURL(/\/en\/unit\/halberdier$/);
+    await expect(palette).toBeVisible();
+});
+
 test('closes the search from its X', async ({ page }) => {
     await page.goto('en/');
     await page.getByRole('button', { name: /Search a unit or civilization/ }).first().click();
