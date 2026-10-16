@@ -8,9 +8,11 @@ import {
     ChevronRight,
     Coins,
     Crosshair,
+    Eye,
     Flame,
     Gauge,
     Gem,
+    Goal,
     Hammer,
     Heart,
     Hourglass,
@@ -27,7 +29,6 @@ import {
     Sun,
     Sword,
     Swords,
-    Target,
     Timer,
     TrendingUp,
     TreePine,
@@ -104,6 +105,7 @@ function VolleyMark(props: SVGProps<SVGSVGElement>) {
  * decorated: the caller asks for "attack", not for a particular drawing.
  */
 const GLYPHS = {
+    accuracy: Goal,
     age: Castle,
     armour: Shield,
     attack: Sword,
@@ -116,7 +118,7 @@ const GLYPHS = {
     gold: Coins,
     hitPoints: Heart,
     home: House,
-    lineOfSight: Target,
+    lineOfSight: Eye,
     melee: MeleeMark,
     next: ChevronRight,
     pierce: PierceMark,

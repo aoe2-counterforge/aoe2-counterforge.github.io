@@ -27,6 +27,7 @@ const GLYPHS: Partial<Record<StatKey, IconName>> = {
     meleeArmour: 'melee',
     pierceArmour: 'pierce',
     speed: 'speed',
+    accuracy: 'accuracy',
     lineOfSight: 'lineOfSight',
     minRange: 'range',
     blastWidth: 'weakAgainst',
