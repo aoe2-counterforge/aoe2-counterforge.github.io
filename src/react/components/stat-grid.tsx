@@ -30,7 +30,7 @@ const GLYPHS: Partial<Record<StatKey, IconName>> = {
     accuracy: 'accuracy',
     lineOfSight: 'lineOfSight',
     minRange: 'range',
-    blastWidth: 'weakAgainst',
+    blastWidth: 'blast',
 };
 
 /** Melee and pierce armour take the colour their damage has in the attack panel. */

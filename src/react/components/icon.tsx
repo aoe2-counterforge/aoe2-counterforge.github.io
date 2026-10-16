@@ -174,6 +174,20 @@ function VolleyMark(props: SVGProps<SVGSVGElement>) {
 }
 
 /**
+ * A ragged burst, drawn by hand because the icon set has no explosion; it stands for blast radius.
+ *
+ * @param props - Passed straight through, so it sizes and colours like any other glyph.
+ * @returns The burst, stroked with the surrounding text colour.
+ */
+function BlastMark(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M13.5 1.6L14.5 7.7L18.8 6.9L17.3 10.6L21.9 13.4L16 14.3L16.8 18.4L13.4 17.2L10.5 22.4L9.5 16.3L5 17.3L7.4 13.2L2.5 10.7L7.3 9.3L7.1 5.5L10.7 7.2Z" />
+        </svg>
+    );
+}
+
+/**
  * Every glyph the interface is allowed to draw.
  *
  * Keeping the set in one place is what lets a stat, a resource or a tab be named rather than
@@ -184,6 +198,7 @@ const GLYPHS = {
     age: Castle,
     armour: Shield,
     attack: Sword,
+    blast: BlastMark,
     bonus: Plus,
     charge: Zap,
     civilizations: Castle,
