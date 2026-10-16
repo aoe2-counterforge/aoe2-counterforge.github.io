@@ -115,7 +115,12 @@ in `specialAttacks`: 41 units have one, 25 with secondary missiles and 18 with a
   Javelineers, Sitting Tiger). One without damage is a piece of a blast, like the Mangonel's, and is
   left out. `count` is how many fly with an ordinary shot, so zero when only something else adds them.
 - **Charged** attacks count whatever they carry. The fire ships only get a charge from Siphons, and
-  the Jomsviking's torch carries no damage list of its own.
+  the Jomsviking's torch carries no damage list of its own. Blows measured in the game
+  (`scripts/benchmark/data/hit-test/jomsviking-torch.csv`, on the `game/jomsviking-torch` branch)
+  show the torch dealing exactly the unit's own melee attack, every bonus class included (+6 against
+  buildings) and reduced by melee armour, once per attack and with no burn over time, and rising
+  with Forging and the Elite upgrade. A charged attack with an empty damage list is therefore shown
+  with the unit's own attack, upgrades included.
 
 A technology often writes the same change on the unit and on its missile. Fletching gives every
 archer +1 pierce, and also gives the Fire Archer's missile +1, because that missile is both its main

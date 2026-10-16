@@ -18,8 +18,12 @@ export interface SpecialAttackConfig {
     range: number;
     /** For secondary missiles, how many fly with each shot; null for any other role. */
     count: number | null;
+    /** For secondary missiles, the most that fly in one volley, charged or not; null for any other role. */
+    maxCount?: number | null;
     /** For a charged attack, how it fills up again; null for any other role. */
     charge: ChargeConfig | null;
+    /** Whether the attack throws the damage of the unit's own attack rather than a list of its own. */
+    replicatesMain?: boolean;
 }
 
 /** What a set of technologies does to a special attack. */
@@ -63,8 +67,17 @@ export class SpecialAttack {
         return this.config.count;
     }
 
+    public get maxCount(): number | null {
+        return this.config.maxCount ?? null;
+    }
+
     public get charge(): ChargeConfig | null {
         return this.config.charge;
+    }
+
+    /** Whether its damage is the unit's own attack, thrown from the missile. */
+    public get replicatesMain(): boolean {
+        return this.config.replicatesMain === true;
     }
 
     /**
@@ -98,7 +111,29 @@ export class SpecialAttack {
     }
 
     /**
+     * Gives a charged attack the unit's own damage when the game wrote none for its missile.
+     *
+     * The Jomsviking's torch has an empty damage list in the file, and the blows measured in the
+     * game show it dealing exactly the unit's melee attack: every bonus class, reduced by melee
+     * armour, following Forging and the Elite upgrade. An attack that has a list of its own is
+     * returned as it is, and one that already replicates takes the new damage, so the same attack
+     * can be given the upgraded stat line afterwards.
+     *
+     * @param main - The unit's own attack, with whatever technologies have been applied to it.
+     * @returns A new attack carrying the unit's damage, or the receiver when it has damage of its own.
+     */
+    public replicating(main: AttackProfile): SpecialAttack {
+        if (this.config.role !== 'charge') return this;
+        if (!this.replicatesMain && !this.config.attack.isEmpty()) return this;
+
+        return new SpecialAttack({ ...this.config, attack: main, replicatesMain: true });
+    }
+
+    /**
      * Applies what a set of technologies does to the attack.
+     *
+     * An attack that replicates the unit's damage ignores the damage changes: the unit's own
+     * stat line already carries them, and counting them here as well would add them twice.
      *
      * @param patch - Damage added and scaled per class, and the change in reach.
      * @returns A new special attack; the receiver is left untouched.
@@ -106,7 +141,9 @@ export class SpecialAttack {
     public patched(patch: SpecialAttackPatch): SpecialAttack {
         return new SpecialAttack({
             ...this.config,
-            attack: this.config.attack.scaled(patch.attackMultipliers ?? []).plus(patch.attack ?? []),
+            attack: this.replicatesMain
+                ? this.config.attack
+                : this.config.attack.scaled(patch.attackMultipliers ?? []).plus(patch.attack ?? []),
             range: this.config.range + (patch.range ?? 0),
         });
     }

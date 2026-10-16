@@ -393,11 +393,13 @@ export class UpgradeService {
         const deltas = [...applied.map((upgrade) => upgrade.delta), this.bonusDelta(selection)];
         const faster = deltas.reduce((factor, delta) => factor * (delta.trainTimeMultiplier ?? 1), 1);
 
+        const stats = selection.unit.stats.patched(this.mergePatch(deltas));
+
         return {
             applied,
-            stats: selection.unit.stats.patched(this.mergePatch(deltas)),
+            stats,
             specialAttacks: selection.unit.activeSpecialAttacks.map((attack) =>
-                attack.patched(this.mergeSpecialPatch(attack.role, deltas)),
+                attack.patched(this.mergeSpecialPatch(attack.role, deltas)).replicating(stats.attack),
             ),
             trainTime: selection.unit.trainTime * faster,
         };

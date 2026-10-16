@@ -130,6 +130,7 @@ export class CatalogAssembler {
                     attack: new AttackProfile({ entries: this.toClassAmounts(record.attacks) }),
                     range: record.range,
                     count: record.count ?? null,
+                    maxCount: record.maxCount ?? null,
                     charge: record.charge ?? null,
                 }),
             ];

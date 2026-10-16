@@ -49,6 +49,48 @@ export class AttackProfile {
     }
 
     /**
+     * Whether the attack deals no damage at all, which is how the game writes a missile that
+     * borrows the damage of whoever throws it.
+     *
+     * @returns True when every class is absent or zero.
+     */
+    public isEmpty(): boolean {
+        return [...this.byClass.values()].every((amount) => amount === 0);
+    }
+
+    /**
+     * Which armour the base damage goes through.
+     *
+     * @returns Melee or pierce, whichever the attack carries more of, or null when it carries neither.
+     */
+    public damageType(): 'melee' | 'pierce' | null {
+        if (this.melee === 0 && this.pierce === 0) return null;
+
+        return this.melee > this.pierce ? 'melee' : 'pierce';
+    }
+
+    /**
+     * Every damage class the attack raises or lowers, apart from the two base damage types.
+     *
+     * Unlike `bonuses`, it keeps the negative entries, which a reader needs to see: the Xianbei
+     * Raider's arrows lose three against mounted units.
+     *
+     * @returns Non-zero entries, the largest bonus first and the penalties last.
+     */
+    public modifiers(): ClassAmount[] {
+        return [...this.byClass]
+            .filter(
+                ([armourClass, amount]) =>
+                    amount !== 0 &&
+                    armourClass !== BASE_MELEE &&
+                    armourClass !== BASE_PIERCE &&
+                    !armourClass.startsWith('unused-'),
+            )
+            .map(([armourClass, amount]) => ({ armourClass, amount }))
+            .sort((left, right) => right.amount - left.amount);
+    }
+
+    /**
      * Scales single classes by a factor.
      *
      * @param factors - One factor per class, as a multiplier of the value already there.

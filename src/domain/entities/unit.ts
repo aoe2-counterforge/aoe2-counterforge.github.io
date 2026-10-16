@@ -129,10 +129,13 @@ export class Unit {
      * Siphons; listing those would tell a reader the plain unit does something it does not. A
      * secondary counts when it flies with the ordinary shot or with the unit's charged volley.
      *
-     * @returns The charged attack and the secondary missiles the unit fires as it stands.
+     * @returns The charged attack and the secondary missiles the unit fires as it stands, a charge
+     *          whose missile carries no damage already holding the unit's own.
      */
     public get activeSpecialAttacks(): readonly SpecialAttack[] {
-        return this.config.specialAttacks.filter((attack) => this.fires(attack));
+        return this.config.specialAttacks
+            .filter((attack) => this.fires(attack))
+            .map((attack) => attack.replicating(this.config.stats.attack));
     }
 
     /**

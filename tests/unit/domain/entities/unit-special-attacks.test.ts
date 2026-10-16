@@ -66,3 +66,41 @@ describe('Unit active special attacks', () => {
         expect(active).toEqual([]);
     });
 });
+
+describe('Unit charged attack without damage of its own', () => {
+    const torch: SpecialAttackRecord = {
+        role: 'charge',
+        projectile: 2713,
+        attacks: [],
+        range: 3,
+        charge: { capacity: 1, rechargeRate: 100000 },
+    };
+
+    function jomsviking() {
+        return new CatalogAssembler().toUnit(
+            unitRecord({ key: 'jomsviking', attacks: { 'base-melee': 8, 'standard-building': 6 }, specialAttacks: [torch] }),
+        );
+    }
+
+    it('throws the unit own attack, bonus classes included', () => {
+        const attack = jomsviking().activeSpecialAttack('charge');
+
+        expect([attack?.attack.melee, attack?.attack.valueFor('standard-building')]).toEqual([8, 6]);
+    });
+
+    it('keeps the reach the missile gives it', () => {
+        const attack = jomsviking().activeSpecialAttack('charge');
+
+        expect(attack?.range).toBe(3);
+    });
+
+    it('keeps a damage list the game did write for the missile', () => {
+        const unit = new CatalogAssembler().toUnit(
+            unitRecord({ key: 'hearth-troop', attacks: { 'base-melee': 9 }, specialAttacks: [charged(1)] }),
+        );
+
+        const attack = unit.activeSpecialAttack('charge');
+
+        expect([attack?.attack.pierce, attack?.replicatesMain]).toEqual([5, false]);
+    });
+});
