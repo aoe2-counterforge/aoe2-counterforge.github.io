@@ -80,4 +80,41 @@ test.describe('the attack cards of a unit', () => {
         await expect(page.getByRole('listitem', { name: 'Extra projectiles' })).toHaveCount(0);
         expect([rider.y > charged.y, bottom(rider) <= bottom(charged)]).toEqual([true, true]);
     });
+
+    test('keeps the maximum range label on one line on the narrowest phone', async ({ page, isMobile }) => {
+        test.skip(!isMobile, 'The phone layout only.');
+        await page.setViewportSize({ width: 360, height: 800 });
+        await page.goto('pt-br/unit/mangonel');
+
+        const label = page.locator('.attack-fact[data-stat="range"] .stat__name');
+        const lines = await label.evaluate((element) => {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+
+            return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
+        });
+
+        await expect(label).toHaveText('Alcance máx.');
+        expect(lines).toBe(1);
+    });
+
+    test('counts the extra projectiles beside the damage they carry', async ({ page }) => {
+        await page.goto('pt-br/unit/chu-ko-nu');
+
+        const card = page.getByRole('listitem', { name: 'Projéteis extras' });
+        const damage = await box(card.locator('.attack-fact[data-stat="damage"]'));
+        const count = await box(card.locator('.attack-fact[data-stat="count"]'));
+
+        expect([count.y < bottom(damage), count.x >= right(damage)]).toEqual([true, true]);
+    });
+
+    test('starts the figures of every card on the same line on a phone', async ({ page, isMobile }) => {
+        test.skip(!isMobile, 'The phone layout only.');
+        await page.goto('es/unit/hearth-troop');
+
+        const reload = await box(page.locator('.attack-fact[data-stat="reload"]'));
+        const recharge = await box(page.locator('.attack-fact[data-stat="recharge"]'));
+
+        expect(Math.abs(reload.x - recharge.x)).toBeLessThan(1);
+    });
 });
