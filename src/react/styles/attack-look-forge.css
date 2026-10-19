@@ -272,14 +272,14 @@
     }
 }
 
-/* ---------- the volley inside a charged card ---------- */
+/* ---------- the extra missiles inside their shot's card ---------- */
 
-/* The extra missiles sit in a plate recessed into the charged one, joined to it by a seam of heat. */
+/* The extra missiles sit in a plate recessed into their shot's card, joined to it by a seam in the card's colour. */
 [data-look='forge'] .attack-rider {
     margin-top: var(--space-1);
     background: color-mix(in srgb, var(--bg) 40%, var(--surface-2));
     border: 1px solid var(--border);
-    border-top: 2px solid color-mix(in srgb, var(--charge) 60%, transparent);
+    border-top: 2px solid color-mix(in srgb, var(--role) 60%, transparent);
     border-radius: var(--radius);
     box-shadow: inset 0 2px 6px rgb(0 0 0 / 30%);
 }

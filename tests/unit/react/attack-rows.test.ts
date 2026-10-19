@@ -106,10 +106,16 @@ describe('attackCards', () => {
         expect([cards[1]?.strike.attack.displayValue, cards[1]?.rider?.attack.displayValue]).toEqual([5, 1]);
     });
 
-    it('says how many extra projectiles fly with each shot', () => {
+    it('hangs the extra projectiles every shot carries on the main card', () => {
         const cards = attackCards({ stats: makeStats(), base: [secondary(3, 3)] });
 
-        expect([cards[1]?.strike.count, cards[1]?.rider]).toEqual([{ kind: 'perShot', amount: 3 }, null]);
+        expect(cards.map((card) => [card.role, card.rider?.count])).toEqual([['main', { kind: 'perShot', amount: 3 }]]);
+    });
+
+    it('keeps extra projectiles on a card of their own when the unit has no main attack', () => {
+        const cards = attackCards({ stats: makeStats({ attacks: {} }), base: [secondary(3, 3)] });
+
+        expect(cards.map((card) => [card.role, card.strike.count])).toEqual([['secondary', { kind: 'perShot', amount: 3 }]]);
     });
 
     it('keeps the stat line before technologies beside the upgraded one', () => {

@@ -98,13 +98,14 @@ test.describe('the attack cards of a unit', () => {
         expect(lines).toBe(1);
     });
 
-    test('counts the extra projectiles beside the damage they carry', async ({ page }) => {
+    test('counts the extra projectiles of every shot beside their damage inside the main card', async ({ page }) => {
         await page.goto('pt-br/unit/chu-ko-nu');
 
-        const card = page.getByRole('listitem', { name: 'Projéteis extras' });
-        const damage = await box(card.locator('.attack-fact[data-stat="damage"]'));
-        const count = await box(card.locator('.attack-fact[data-stat="count"]'));
+        const rider = page.getByRole('listitem', { name: 'Ataque principal' }).locator('.attack-rider');
+        const damage = await box(rider.locator('.attack-fact[data-stat="damage"]'));
+        const count = await box(rider.locator('.attack-fact[data-stat="count"]'));
 
+        await expect(page.getByRole('listitem', { name: 'Projéteis extras' })).toHaveCount(0);
         expect([count.y < bottom(damage), count.x >= right(damage)]).toEqual([true, true]);
     });
 

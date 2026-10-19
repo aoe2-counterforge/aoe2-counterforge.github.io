@@ -247,9 +247,9 @@ function AttackCardItem({ card }: { card: AttackCard }) {
  * and extra projectiles.
  *
  * A badge heading each card names the attack and the armour it goes through, so the figures
- * below are numbers only. The extra attacks stay apart from the main one because each flies as a
- * missile of its own, and folding them into the unit's numbers would count an arrow volley as if
- * the shooter swung it; extra missiles that only fly with a charge hang inside the charged card.
+ * below are numbers only. Extra missiles hang inside the card of the shot they fly with, the main
+ * attack's or the charged one's, with their own damage beside their count rather than added into
+ * the shot's, since each one hits with a damage list of its own.
  *
  * @param props.stats - The stat line to read, base or upgraded.
  * @param props.compareWith - What the technologies are measured against.

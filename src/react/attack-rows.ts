@@ -143,44 +143,50 @@ function riderOf({ volley }: AttackRow): Strike | null {
 
 /**
  * Lays every attack of a unit out as cards of one shape: the main attack first, then each charged
- * attack and set of extra projectiles that fires on its own.
+ * attack and any extra projectiles left without a shot to fly with.
  *
  * Giving the main attack the same card as the others is what lets a reader compare them at a
- * glance; a unit that cannot attack gets no main card. Extra missiles that only fly inside a
- * charged volley ride on the charged attack's card, so the volley reads as one attack.
+ * glance; a unit that cannot attack gets no main card. Extra missiles ride on the card of the shot
+ * they leave with: the ones every shot carries on the main attack, the ones only a charged volley
+ * carries on the charged attack, so each card is one shot.
  *
  * @param input - The stat line and special attacks to lay out, base or upgraded.
  * @returns The cards, in the order they are shown.
  */
 export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsInput): AttackCard[] {
-    const main: AttackCard[] =
-        stats.attack.displayValue > 0
-            ? [
-                  {
-                      role: 'main',
-                      strike: { attack: stats.attack, before: compareWith?.attack, count: null },
-                      rider: null,
-                      cadence:
-                          stats.reloadTime > 0
-                              ? { kind: 'reload', seconds: stats.reloadTime, before: compareWith?.reloadTime }
-                              : null,
-                      range: stats.range,
-                      rangeBefore: compareWith?.range,
-                      hasMinimumRange: stats.minRange > 0,
-                  },
-              ]
-            : [];
+    const rows = attackRows(base, upgraded);
+    const hasMain = stats.attack.displayValue > 0;
+    // The file fires a unit's missiles per shot: the first with the shooter's own attack, the rest as its secondary missile.
+    const everyShot = hasMain ? rows.find((row) => row.role === 'secondary' && (row.attack.count ?? 0) > 0) : undefined;
+    const main: AttackCard[] = hasMain
+        ? [
+              {
+                  role: 'main',
+                  strike: { attack: stats.attack, before: compareWith?.attack, count: null },
+                  rider: everyShot ? strikeOf(everyShot) : null,
+                  cadence:
+                      stats.reloadTime > 0
+                          ? { kind: 'reload', seconds: stats.reloadTime, before: compareWith?.reloadTime }
+                          : null,
+                  range: stats.range,
+                  rangeBefore: compareWith?.range,
+                  hasMinimumRange: stats.minRange > 0,
+              },
+          ]
+        : [];
 
     return [
         ...main,
-        ...attackRows(base, upgraded).map((row) => ({
-            role: row.role,
-            strike: strikeOf(row),
-            rider: riderOf(row),
-            cadence: cadenceOf(row.attack),
-            range: row.attack.range,
-            rangeBefore: row.before?.range,
-            hasMinimumRange: false,
-        })),
+        ...rows
+            .filter((row) => row !== everyShot)
+            .map((row) => ({
+                role: row.role,
+                strike: strikeOf(row),
+                rider: riderOf(row),
+                cadence: cadenceOf(row.attack),
+                range: row.attack.range,
+                rangeBefore: row.before?.range,
+                hasMinimumRange: false,
+            })),
     ];
 }

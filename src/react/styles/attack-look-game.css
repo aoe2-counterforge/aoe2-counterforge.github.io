@@ -239,9 +239,9 @@
     font-size: 0.9375rem;
 }
 
-/* ---------- the volley inside a charged card ---------- */
+/* ---------- the extra missiles inside their shot's card ---------- */
 
-/* The volley's missiles sit in a recess framed like the card, under the charged attack's own figures. */
+/* The extra missiles sit in a recess framed like the card, under their shot's own figures. */
 [data-look='game'] .attack-rider {
     margin-top: var(--space-1);
     background: rgb(0 0 0 / 20%);

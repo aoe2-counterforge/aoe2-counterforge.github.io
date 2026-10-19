@@ -94,7 +94,7 @@ describe('AttackCards', () => {
     it('names each card by the attack it shows', () => {
         render(<AttackCards stats={bow} base={[javelin, arrows]} />);
 
-        expect(cardNames()).toEqual(['Main attack', 'Charged attack', 'Extra projectiles']);
+        expect(cardNames()).toEqual(['Main attack', 'Charged attack']);
     });
 
     it('states the damage type beside the name of the attack', () => {
@@ -118,10 +118,13 @@ describe('AttackCards', () => {
         expect(spoken('Charged attack')).toContain('CadenceEach attack');
     });
 
-    it('counts the extra projectiles each shot carries where another attack states its rhythm', () => {
+    it('hangs the extra projectiles every shot carries inside the main card', () => {
         render(<AttackCards stats={bow} base={[arrows]} />);
 
-        expect(spoken('Extra projectiles')).toMatch(/^Extra projectilesPierceDamage3Missiles2 missiles per shotRange4$/);
+        expect([cardNames(), spoken('Main attack')]).toEqual([
+            ['Main attack'],
+            expect.stringMatching(/Damage3Extra projectiles2 missiles per shot/),
+        ]);
     });
 
     it('hangs the extra missiles of a charged volley inside the charged card', () => {

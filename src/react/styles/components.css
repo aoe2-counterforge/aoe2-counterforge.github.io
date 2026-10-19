@@ -2152,7 +2152,7 @@ details[open] > summary::after {
     line-height: 1.25;
 }
 
-/* Missiles that only fly with the charge hang inside its card, so the volley reads as one attack. */
+/* Extra missiles hang inside the card of the shot they fly with, so each card reads as one shot. */
 .attack-rider {
     display: flex;
     flex-direction: column;
