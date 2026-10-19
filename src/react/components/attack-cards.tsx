@@ -1,10 +1,10 @@
-import { useId, type ReactNode } from 'react';
+import { useId, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ProjectileRole } from '../../domain/enums/projectile-role.ts';
 import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { attackCards, type AttackCard, type CardCadence, type MissileCount, type Strike } from '../attack-rows.ts';
-import { short } from '../format.ts';
+import { iconUrl, short } from '../format.ts';
 import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
 
@@ -32,6 +32,36 @@ const ROLE_NAMES: Record<ProjectileRole, string> = {
     secondary: 'unit.attacks.secondary',
 };
 
+/** The looks the cards can be shown in while one is chosen, by the letter the address asks for. */
+const LOOKS = { b: 'hero', a: 'forge', c: 'game' } as const;
+
+type LookLetter = keyof typeof LOOKS;
+
+const DEFAULT_LOOK: LookLetter = 'b';
+
+function askedLook(): LookLetter {
+    const asked = new URLSearchParams(window.location.search).get('cards');
+
+    return asked !== null && asked in LOOKS ? (asked as LookLetter) : DEFAULT_LOOK;
+}
+
+function onHistory(change: () => void): () => void {
+    window.addEventListener('popstate', change);
+
+    return () => {
+        window.removeEventListener('popstate', change);
+    };
+}
+
+/** The game's own stat icons, which only the look modelled on its stat panel paints. */
+const GAME_ART = {
+    '--art-melee': `url(${iconUrl('ui/stat-melee.png')})`,
+    '--art-pierce': `url(${iconUrl('ui/stat-pierce.png')})`,
+    '--art-reload': `url(${iconUrl('ui/stat-reload.png')})`,
+    '--art-range': `url(${iconUrl('ui/stat-range.png')})`,
+    '--art-recharge': `url(${iconUrl('ui/stat-recharge.png')})`,
+} as CSSProperties;
+
 function useSeconds(): (value: number) => string {
     const { t } = useTranslation();
 
@@ -39,22 +69,34 @@ function useSeconds(): (value: number) => string {
     return (value) => t('unit.attacks.seconds', { value: short(value >= 10 ? Math.round(value) : value) });
 }
 
+type FactKind = 'damage' | 'reload' | 'recharge' | 'cadence' | 'range' | 'count' | 'type';
+
 interface FactProps {
+    kind: FactKind;
     icon: IconName;
     tint?: string;
+    /** The armour the figure goes through, for a figure painted in its damage's colour. */
+    type?: DamageType | null;
     label: string;
+    /** A line some looks print under the figure, already said elsewhere on the card. */
+    note?: string;
     children: ReactNode;
 }
 
 /** One figure on a card, labelled the way the stat tiles above label theirs. */
-function Fact({ icon, tint, label, children }: FactProps) {
+function Fact({ kind, icon, tint, type, label, note, children }: FactProps) {
     return (
-        <div className="attack-fact">
+        <div className="attack-fact" data-stat={kind} data-type={type ?? undefined}>
             <div className="stat__label">
                 <Icon name={icon} className={tint} />
                 <span className="stat__name">{label}</span>
             </div>
             <div className="stat__value">{children}</div>
+            {note ? (
+                <span className="attack-fact__note" aria-hidden="true">
+                    {note}
+                </span>
+            ) : null}
         </div>
     );
 }
@@ -66,20 +108,20 @@ function CadenceFact({ cadence }: { cadence: CardCadence }) {
     switch (cadence.kind) {
         case 'reload':
             return (
-                <Fact icon="reload" label={t('unit.attacks.reload')}>
+                <Fact kind="reload" icon="reload" label={t('unit.attacks.reload')}>
                     {seconds(cadence.seconds)}
                     <Gain value={cadence.before === undefined ? 0 : cadence.seconds - cadence.before} inverted />
                 </Fact>
             );
         case 'recharge':
             return (
-                <Fact icon="recharge" label={t('unit.attacks.recharge')}>
+                <Fact kind="recharge" icon="recharge" label={t('unit.attacks.recharge')}>
                     {seconds(cadence.seconds)}
                 </Fact>
             );
         default:
             return (
-                <Fact icon="repeat" label={t('unit.attacks.cadence')}>
+                <Fact kind="cadence" icon="repeat" label={t('unit.attacks.cadence')}>
                     <span className="attack-fact__word">{t(`unit.attacks.${cadence.kind}`)}</span>
                 </Fact>
             );
@@ -92,7 +134,7 @@ function CountFact({ count, label }: { count: MissileCount; label: string }) {
     const shown = count.kind === 'upTo' ? t('unit.attacks.upToShort', { count: count.amount }) : `×${String(count.amount)}`;
 
     return (
-        <Fact icon="projectiles" label={label}>
+        <Fact kind="count" icon="projectiles" label={label}>
             <span aria-hidden="true">{shown}</span>
             <span className="visually-hidden">{full}</span>
         </Fact>
@@ -102,10 +144,17 @@ function CountFact({ count, label }: { count: MissileCount; label: string }) {
 function DamageFact({ strike }: { strike: Strike }) {
     const { t } = useTranslation();
     const damage = strike.attack.displayValue;
+    const type = strike.attack.damageType();
 
     return (
-        <Fact icon="damage" label={t('unit.attacks.damage')}>
-            {short(damage)}
+        <Fact
+            kind="damage"
+            icon="damage"
+            type={type}
+            label={t('unit.attacks.damage')}
+            note={type ? t(`armourClasses.base-${type}`) : undefined}
+        >
+            <span className="attack-fact__figure">{short(damage)}</span>
             <Gain value={strike.before === undefined ? 0 : damage - strike.before.displayValue} />
         </Fact>
     );
@@ -116,13 +165,13 @@ function TypeFact({ type }: { type: DamageType }) {
     const { t } = useTranslation();
 
     return (
-        <Fact icon={type} tint={`glyph--${type}`} label={t('unit.attacks.type')}>
+        <Fact kind="type" icon={type} tint={`glyph--${type}`} type={type} label={t('unit.attacks.type')}>
             <span className={`attack-fact__type attack-fact__type--${type}`}>{t(`armourClasses.base-${type}`)}</span>
         </Fact>
     );
 }
 
-/** What the attack is and which armour it goes through, as one badge on the card's top edge. */
+/** What the attack is and which armour it goes through, as one badge heading the card. */
 function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageType | null; nameId: string }) {
     const { t } = useTranslation();
 
@@ -137,7 +186,7 @@ function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageT
             {type ? (
                 <span className={`attack-badge__type attack-badge__type--${type}`}>
                     <Icon name={type} />
-                    {t(`armourClasses.base-${type}`)}
+                    <span className="attack-badge__word">{t(`armourClasses.base-${type}`)}</span>
                 </span>
             ) : null}
         </p>
@@ -160,14 +209,19 @@ function AttackCardItem({ card }: { card: AttackCard }) {
     const cadence = card.cadence?.kind === 'eachShot' && strike.count ? null : card.cadence;
 
     return (
-        <li className={`attack-card attack-card--${card.role}`} aria-labelledby={nameId}>
+        <li className={`attack-card attack-card--${card.role}`} data-type={type ?? undefined} aria-labelledby={nameId}>
+            {type ? (
+                <span className="attack-card__emblem" aria-hidden="true">
+                    <Icon name={type} />
+                </span>
+            ) : null}
             <RoleBadge role={card.role} type={type} nameId={nameId} />
             <div className="attack-card__facts">
                 <DamageFact strike={strike} />
                 {cadence ? <CadenceFact cadence={cadence} /> : null}
                 {strike.count ? <CountFact count={strike.count} label={t('unit.attacks.count')} /> : null}
                 {card.range > 0 ? (
-                    <Fact icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
+                    <Fact kind="range" icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
                         {short(card.range)}
                         <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
                     </Fact>
@@ -192,7 +246,7 @@ function AttackCardItem({ card }: { card: AttackCard }) {
  * Every attack a unit makes, as one compact card each: the main attack, then any charged attack
  * and extra projectiles.
  *
- * A badge on each card's edge names the attack and the armour it goes through, so the figures
+ * A badge heading each card names the attack and the armour it goes through, so the figures
  * below are numbers only. The extra attacks stay apart from the main one because each flies as a
  * missile of its own, and folding them into the unit's numbers would count an arrow volley as if
  * the shooter swung it; extra missiles that only fly with a charge hang inside the charged card.
@@ -205,11 +259,13 @@ function AttackCardItem({ card }: { card: AttackCard }) {
 export function AttackCards({ stats, compareWith, base, upgraded }: AttackCardsProps) {
     const { t } = useTranslation();
     const titleId = useId();
+    // A prerendered page carries the default look; the one the address asks for follows on the client.
+    const look = useSyncExternalStore(onHistory, askedLook, () => DEFAULT_LOOK);
     const cards = attackCards({ stats, compareWith, base, upgraded });
     if (cards.length === 0) return null;
 
     return (
-        <section className="attack-section" aria-labelledby={titleId}>
+        <section className="attack-section" data-look={LOOKS[look]} style={GAME_ART} aria-labelledby={titleId}>
             <h3 id={titleId} className="attack-section__title">
                 {t('unit.attacks.title')}
             </h3>

@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { render, screen } from '@testing-library/react';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createI18n } from '../../../src/i18n/index.ts';
 import { AttackProfile } from '../../../src/domain/values/attack-profile.ts';
 import { SpecialAttack } from '../../../src/domain/values/special-attack.ts';
@@ -11,6 +11,10 @@ import { makeStats } from '../../fixtures/unit-builder.ts';
 
 beforeAll(() => {
     createI18n('en');
+});
+
+afterEach(() => {
+    window.history.replaceState(null, '', '/');
 });
 
 const bow = makeStats({ attacks: { 'base-pierce': 5, spearman: 3 }, range: 4, reloadTime: 2 });
@@ -57,6 +61,14 @@ function card(name: string): HTMLElement {
     return screen.getByRole('listitem', { name });
 }
 
+/** What a screen reader reads out of a card, leaving out the captions printed for the eye only. */
+function spoken(name: string): string {
+    const copy = card(name).cloneNode(true) as HTMLElement;
+    for (const hidden of copy.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
+
+    return copy.textContent;
+}
+
 /** The cards are the only list items with a name; the bonus chips inside them have none. */
 function cardNames(): (string | null)[] {
     return screen.getAllByRole('listitem', { name: /\S/ }).map((item) => {
@@ -76,7 +88,7 @@ describe('AttackCards', () => {
     it('labels every figure of the main attack the way the stat tiles do', () => {
         render(<AttackCards stats={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage5Reload2 sRange4.*\+3Spearmen/);
+        expect(spoken('Main attack')).toMatch(/Damage5Reload2 sRange4.*\+3Spearmen/);
     });
 
     it('names each card by the attack it shows', () => {
@@ -88,7 +100,7 @@ describe('AttackCards', () => {
     it('states the damage type beside the name of the attack', () => {
         render(<AttackCards stats={bow} base={[torch]} />);
 
-        expect([card('Main attack').textContent, card('Charged attack').textContent]).toEqual([
+        expect([spoken('Main attack'), spoken('Charged attack')]).toEqual([
             expect.stringMatching(/^Main attackPierceDamage/),
             expect.stringMatching(/^Charged attackMeleeDamage/),
         ]);
@@ -97,34 +109,34 @@ describe('AttackCards', () => {
     it('tells a charged attack by the time it takes to recharge', () => {
         render(<AttackCards stats={bow} base={[javelin]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6Recharge15 sRange6.*\+3Archers/);
+        expect(spoken('Charged attack')).toMatch(/Damage6Recharge15 sRange6.*\+3Archers/);
     });
 
     it('says a charge that refills at once goes off with each attack', () => {
         render(<AttackCards stats={bow} base={[torch]} />);
 
-        expect(card('Charged attack').textContent).toContain('CadenceEach attack');
+        expect(spoken('Charged attack')).toContain('CadenceEach attack');
     });
 
     it('counts the extra projectiles each shot carries where another attack states its rhythm', () => {
         render(<AttackCards stats={bow} base={[arrows]} />);
 
-        expect(card('Extra projectiles').textContent).toMatch(/^Extra projectilesPierceDamage3Missiles×22 missiles per shotRange4$/);
+        expect(spoken('Extra projectiles')).toMatch(/^Extra projectilesPierceDamage3Missiles2 missiles per shotRange4$/);
     });
 
     it('hangs the extra missiles of a charged volley inside the charged card', () => {
         render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
 
-        expect([cardNames(), card('Charged attack').textContent]).toEqual([
+        expect([cardNames(), spoken('Charged attack')]).toEqual([
             ['Main attack', 'Charged attack'],
-            expect.stringMatching(/Damage6Recharge15 sRange6.*Damage1Extra projectilesup to ×5up to 5 missiles/),
+            expect.stringMatching(/Damage6Recharge15 sRange6.*Damage1Extra projectilesup to 5 missiles/),
         ]);
     });
 
     it('states the damage type of a volley once when all its missiles share it', () => {
         render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
 
-        expect(card('Charged attack').textContent?.match(/Pierce/g)).toHaveLength(1);
+        expect(spoken('Charged attack').match(/Pierce/g)).toHaveLength(1);
     });
 
     it('gives the volley missiles their own type when it differs from the charged one', () => {
@@ -140,7 +152,7 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={bow} base={[javelin, blades]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/^Charged attackPierce.*Damage2TypeMelee/);
+        expect(spoken('Charged attack')).toMatch(/^Charged attackPierce.*Damage2TypeMelee/);
     });
 
     it('prints nothing for an attack with no bonus damage', () => {
@@ -154,6 +166,22 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={upgraded} compareWith={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage7\+2Reload2 sRange5\+1/);
+        expect(spoken('Main attack')).toMatch(/Damage7\+2Reload2 sRange5\+1/);
+    });
+
+    it('wears the hero look unless the address asks for another', () => {
+        window.history.replaceState(null, '', '/?cards=z');
+
+        render(<AttackCards stats={bow} base={[]} />);
+
+        expect(screen.getByRole('region', { name: 'Attacks' }).dataset.look).toBe('hero');
+    });
+
+    it('wears the look the address asks for', () => {
+        window.history.replaceState(null, '', '/?cards=c');
+
+        render(<AttackCards stats={bow} base={[]} />);
+
+        expect(screen.getByRole('region', { name: 'Attacks' }).dataset.look).toBe('game');
     });
 });

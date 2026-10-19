@@ -5,3 +5,6 @@
 @import './react/styles/components.css';
 @import './react/styles/palette.css';
 @import './react/styles/forge.css';
+@import './react/styles/attack-look-forge.css';
+@import './react/styles/attack-look-hero.css';
+@import './react/styles/attack-look-game.css';

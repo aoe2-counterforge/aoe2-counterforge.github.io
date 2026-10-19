@@ -2014,6 +2014,7 @@ details[open] > summary::after {
 
 .attack-section {
     margin-top: var(--space-4);
+    container: attack-section / inline-size;
 }
 
 .attack-section__title {
@@ -2029,58 +2030,55 @@ details[open] > summary::after {
 /*
  * One column on a phone; side by side as soon as two cards fit, so a wide page compares them in one
  * glance. Cards sharing a row stretch to one height while their figures stay at the top, level with
- * each other. The rows leave room for the badge each card wears on its top edge.
+ * each other. How a card looks is up to the look the section wears; this is only its frame.
  */
 .attack-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-    gap: var(--space-4) var(--space-2);
-    margin: var(--space-4) 0 0;
+    gap: var(--space-3);
+    margin: var(--space-3) 0 0;
     padding: 0;
     list-style: none;
 }
 
+/* Each card knows the colour of its attack and of the armour it goes through, so every look can paint with them. */
 .attack-card {
     --role: var(--gold);
+    --type: var(--text);
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
     min-width: 0;
-    padding: calc(var(--space-3) + 0.125rem) var(--space-3) var(--space-3);
+    padding: var(--space-3);
     container: attack-card / inline-size;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    isolation: isolate;
 }
 
-/* The charged attack fires on a rhythm of its own, so it carries the forge's colour. */
 .attack-card--charge {
     --role: var(--charge);
 }
 
-/*
- * The badge sits on the card's top edge like the tab of a folder, so it names the card without a row
- * of its own: the attack in the card's colour, then the armour it goes through in that damage's colour.
- */
+.attack-card[data-type='melee'],
+.attack-fact[data-type='melee'] {
+    --type: var(--melee);
+}
+
+.attack-card[data-type='pierce'],
+.attack-fact[data-type='pierce'] {
+    --type: var(--even);
+}
+
+.attack-card__emblem,
+.attack-fact__note {
+    display: none;
+}
+
 .attack-badge {
-    position: absolute;
-    top: 0;
-    left: var(--space-2);
     display: flex;
-    max-width: calc(100% - var(--space-4));
+    align-items: center;
+    min-width: 0;
     margin: 0;
-    overflow: hidden;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    line-height: 1.6;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--role);
-    background: color-mix(in srgb, var(--role) 14%, var(--surface-2));
-    border: 1px solid color-mix(in srgb, var(--role) 50%, transparent);
-    border-radius: 999px;
-    transform: translateY(-50%);
 }
 
 .attack-badge__role,
@@ -2089,8 +2087,16 @@ details[open] > summary::after {
     align-items: center;
     gap: 0.3rem;
     min-width: 0;
-    padding: 0 0.5rem;
     white-space: nowrap;
+}
+
+.attack-badge__role {
+    color: var(--role);
+}
+
+.attack-badge__type {
+    flex: none;
+    color: var(--type);
 }
 
 .attack-badge .glyph {
@@ -2106,75 +2112,12 @@ details[open] > summary::after {
     text-overflow: ellipsis;
 }
 
-.attack-badge__type {
-    flex: none;
-    background: var(--surface-2);
-    border-left: 1px solid color-mix(in srgb, var(--role) 50%, transparent);
-}
-
-.attack-badge__type--melee {
-    color: var(--melee);
-}
-
-.attack-badge__type--pierce {
-    color: var(--even);
-}
-
 /* Labels, figures and gains are the stat tiles' own, so a card reads like a row of tiles. */
 .attack-card__facts {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-4);
     min-width: 0;
-}
-
-/*
- * A phone has no room for every figure on one line, and wrapping would leave them ragged; the figures
- * fall into three even columns instead, so each sits over the same figure of the card above. The last
- * one takes the rest of its row, so its label wraps no more than it must.
- */
-@container attack-card (max-width: 28rem) {
-    .attack-card__facts {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: var(--space-2);
-    }
-
-    /* Two words of a Romance language on each side are as much as the narrowest phone holds at full spacing. */
-    .attack-badge {
-        letter-spacing: 0.03em;
-    }
-
-    .attack-badge__role,
-    .attack-badge__type {
-        gap: 0.25rem;
-        padding: 0 0.375rem;
-    }
-
-    .attack-card__facts > :nth-child(3n + 1):last-child {
-        grid-column: span 3;
-    }
-
-    .attack-card__facts > :nth-child(3n + 2):last-child {
-        grid-column: span 2;
-    }
-
-    /* A long word, such as a German label on the narrowest phones, breaks rather than run into the next column. */
-    .attack-card .attack-fact .stat__label,
-    .attack-card .attack-fact__word {
-        white-space: normal;
-        overflow-wrap: break-word;
-        hyphens: auto;
-    }
-
-    .attack-card .attack-fact .stat__label {
-        letter-spacing: 0.02em;
-    }
-
-    .attack-fact__type {
-        white-space: normal;
-        line-height: 1.15;
-    }
 }
 
 /* A label that wraps pushes its figure down, so every figure sits at the foot of its cell and a row stays level. */
@@ -2209,15 +2152,93 @@ details[open] > summary::after {
     line-height: 1.25;
 }
 
-/* Missiles that only fly with the charge hang off it, inset under a rule in its colour, so the volley reads as one attack. */
+/* Missiles that only fly with the charge hang inside its card, so the volley reads as one attack. */
 .attack-rider {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    min-width: 0;
     padding: var(--space-2) var(--space-3);
-    background: color-mix(in srgb, var(--role) 6%, transparent);
-    border-left: 2px solid color-mix(in srgb, var(--role) 55%, transparent);
-    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/*
+ * A phone has no room for every figure on one line, and wrapping would leave them ragged; the figures
+ * fall into three columns instead. The columns are the list's own, shared by every card through
+ * subgrids, so each figure sits over the same figure of the card above, and each column is as wide as
+ * its longest label wants: "Alcance máx." stays on one line and "Schaden" never breaks inside the word.
+ */
+@container attack-section (max-width: 28rem) {
+    .attack-cards {
+        grid-template-columns: repeat(3, auto);
+        gap: var(--space-3) var(--space-2);
+    }
+
+    /* A card that sizes its own columns would ignore the figures inside it, so it stops being a container here. */
+    .attack-card {
+        container-type: normal;
+    }
+
+    .attack-card,
+    .attack-rider,
+    .attack-card__facts {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
+        align-content: start;
+        row-gap: var(--space-2);
+    }
+
+    .attack-card > *,
+    .attack-rider > * {
+        grid-column: 1 / -1;
+    }
+
+    /* Only the figures size the columns: a row of chips laid end to end would otherwise widen all three alike. */
+    .attack-card .attack-badge,
+    .attack-card .bonus-chips {
+        contain: inline-size;
+    }
+
+    .attack-card__facts > .attack-fact {
+        grid-column: auto;
+        min-width: auto;
+    }
+
+    .attack-card__facts > :nth-child(3n + 1):last-child {
+        grid-column: span 3;
+    }
+
+    .attack-card__facts > :nth-child(3n + 2):last-child {
+        grid-column: span 2;
+    }
+
+    .attack-card .attack-fact .stat__label,
+    .attack-card .attack-fact__word {
+        white-space: normal;
+    }
+
+    /* A phrase such as "A cada ataque" wraps inside its column instead of widening it at the reach's expense. */
+    .attack-card .attack-fact__word {
+        flex: 1 1 0;
+        min-width: 0;
+        contain: inline-size;
+    }
+
+    /* Three labels such as "Dano", "Recarga" and "Alcance máx." only share the narrowest phone at this size. */
+    .attack-card .attack-fact .stat__label {
+        font-size: 0.65rem;
+        letter-spacing: 0.02em;
+    }
+
+    .attack-card .attack-fact .stat__label .glyph {
+        width: 1.3em;
+        height: 1.3em;
+    }
+
+    .attack-fact__type {
+        white-space: normal;
+        line-height: 1.15;
+    }
 }
 
 .bonus-chips {

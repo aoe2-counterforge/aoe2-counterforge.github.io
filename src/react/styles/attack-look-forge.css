@@ -1,0 +1,290 @@
+/*
+ * The forge look: every card is a steel plate headed by a brushed band lettered in bronze, with the
+ * damage type struck as a seal riveted onto the band's end. A charged attack's band is heated from
+ * its edge, and the heat breathes.
+ */
+
+[data-look='forge'] .attack-card {
+    /* The bronze the name is lettered in: dark at the ends, lit in the middle, crossed by a glint. */
+    --letter-deep: #b98b3a;
+    --letter-lit: #f0cd85;
+    --letter-glint: rgb(255 248 225 / 95%);
+    --band: linear-gradient(180deg, #2b3642 0%, #1f2832 55%, #19212a 100%);
+    --band-edge: color-mix(in srgb, var(--gold) 55%, transparent);
+    --brush: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.09'/%3E%3C/svg%3E");
+    --seal-ring: conic-gradient(from 210deg, #6b4a1c, #f4d79c 18%, #9a6b28 36%, #e6bb6b 58%, #5e3f15 78%, #c9974a 92%, #6b4a1c);
+    --seal-core: radial-gradient(circle at 38% 30%, #3b4856 0%, #1a222b 62%, #10161c 100%);
+    --seal-shadow: 0 2px 6px rgb(0 0 0 / 55%), 0 0 0 1px rgb(0 0 0 / 40%);
+    --heat-from: rgb(255 120 40 / 42%);
+    padding: 0 var(--space-3) var(--space-3);
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 8px calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        linear-gradient(180deg, transparent 40%, var(--plate-tint)),
+        var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--emboss);
+}
+
+[data-look='forge'] .attack-card--charge {
+    --letter-deep: #e0742a;
+    --letter-lit: #ffc58a;
+    --letter-glint: rgb(255 240 215 / 95%);
+    --band-edge: color-mix(in srgb, var(--charge) 85%, transparent);
+    border-color: color-mix(in srgb, var(--charge) 32%, var(--border));
+    background:
+        radial-gradient(120% 70% at 0% 0%, color-mix(in srgb, var(--charge) 9%, transparent), transparent 70%),
+        radial-gradient(circle at 8px calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        linear-gradient(180deg, transparent 40%, var(--plate-tint)),
+        var(--surface-2);
+}
+
+/* By day the plates are pale brushed steel and the bronze is darker, so the lettering keeps its contrast. */
+:root[data-theme='light'] [data-look='forge'] .attack-card {
+    --letter-deep: #6e4100;
+    --letter-lit: #a86a08;
+    --letter-glint: rgb(255 240 200 / 95%);
+    --band: linear-gradient(180deg, #ffffff 0%, #e9eef2 50%, #d9e0e6 100%);
+    --brush: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='0.12'/%3E%3C/svg%3E");
+    --seal-ring: conic-gradient(from 210deg, #a3712a, #fff1cf 18%, #b98234 36%, #f0cf8f 58%, #94621f 78%, #dcae62 92%, #a3712a);
+    --seal-core: radial-gradient(circle at 38% 30%, #ffffff 0%, #eef2f5 55%, #d6dde4 100%);
+    --seal-shadow: 0 2px 5px rgb(20 35 55 / 25%), 0 0 0 1px rgb(110 70 10 / 25%);
+    --heat-from: rgb(250 143 25 / 30%);
+    background:
+        radial-gradient(circle at 8px calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-card--charge {
+    --letter-deep: #8a3a00;
+    --letter-lit: #c75f0a;
+    background:
+        radial-gradient(120% 70% at 0% 0%, rgb(250 143 25 / 10%), transparent 70%),
+        radial-gradient(circle at 8px calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), var(--rivet) 1.5px, transparent 2px),
+        linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+
+/* ---------- the band ---------- */
+
+[data-look='forge'] .attack-badge {
+    position: relative;
+    gap: var(--space-2);
+    justify-content: space-between;
+    min-height: 2.25rem;
+    margin: 0 calc(var(--space-3) * -1) var(--space-1);
+    /* Room for the seal at the band's end. */
+    padding: 0 3.25rem 0 var(--space-3);
+    background: var(--brush) 0 0 / 300px 60px, var(--band);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 8%),
+        inset 0 -1px 0 var(--band-edge),
+        0 1px 0 rgb(0 0 0 / 35%);
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-badge {
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 95%),
+        inset 0 -1px 0 var(--band-edge),
+        0 1px 2px rgb(20 35 55 / 10%);
+}
+
+/* A charged band is heated from its leading end: the steel glows there and the bronze edge burns. */
+[data-look='forge'] .attack-card--charge .attack-badge {
+    background:
+        var(--brush) 0 0 / 300px 60px,
+        radial-gradient(90% 160% at 0% 100%, var(--heat-from), transparent 70%),
+        var(--band);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 8%),
+        inset 0 -2px 0 var(--band-edge),
+        0 1px 8px -1px color-mix(in srgb, var(--charge) 55%, transparent);
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-card--charge .attack-badge {
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 95%),
+        inset 0 -2px 0 var(--band-edge),
+        0 1px 6px -1px rgb(250 143 25 / 45%);
+}
+
+/* The heat under a charged band breathes, as the hearth in the banner does. */
+[data-look='forge'] .attack-card--charge .attack-badge::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -0.5rem;
+    height: 0.5rem;
+    pointer-events: none;
+    background: radial-gradient(70% 100% at 25% 0%, color-mix(in srgb, var(--charge) 30%, transparent), transparent 75%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-look='forge'] .attack-card--charge .attack-badge::after {
+        animation: hearth 3.6s ease-in-out infinite;
+    }
+}
+
+[data-look='forge'] .attack-badge__role {
+    gap: 0.4rem;
+}
+
+[data-look='forge'] .attack-badge__role .glyph {
+    width: 1.05rem;
+    height: 1.05rem;
+    color: var(--letter-lit);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--role) 45%, transparent));
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-badge__role .glyph {
+    color: var(--role);
+    filter: none;
+}
+
+/* The name is lettered in metal, as the unit's name in the banner is, and the same glint crosses it. */
+[data-look='forge'] .attack-badge__name {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    color: transparent;
+    background:
+        linear-gradient(100deg, transparent 44%, var(--letter-glint) 50%, transparent 56%) 0 0 / 300% 100% no-repeat,
+        linear-gradient(100deg, var(--letter-deep) 0%, var(--letter-lit) 50%, var(--letter-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-look='forge'] .attack-badge__name {
+        animation: glint 6s ease-in-out infinite;
+    }
+}
+
+[data-look='forge'] .attack-badge__type {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* The seal carries the glyph, so the band only names the type. */
+[data-look='forge'] .attack-badge__type .glyph {
+    display: none;
+}
+
+/* ---------- the seal ---------- */
+
+[data-look='forge'] .attack-card__emblem {
+    position: absolute;
+    top: 0.25rem;
+    right: var(--space-3);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.375rem;
+    height: 2.375rem;
+    color: var(--type);
+    background: var(--seal-core) padding-box, var(--seal-ring) border-box;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    box-shadow: var(--seal-shadow), inset 0 1px 1px rgb(255 255 255 / 14%);
+}
+
+[data-look='forge'] .attack-card__emblem .glyph {
+    width: 1.2rem;
+    height: 1.2rem;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--type) 55%, transparent));
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-card__emblem .glyph {
+    filter: none;
+}
+
+/* ---------- the figures ---------- */
+
+[data-look='forge'] .attack-fact .stat__value {
+    font-size: 1.25rem;
+}
+
+[data-look='forge'] .attack-fact[data-stat='damage'] .stat__value {
+    color: var(--type);
+}
+
+/* Columns are parted by a line engraved into the plate, drawn in the gap so it costs a label no room. */
+[data-look='forge'] .attack-card__facts {
+    column-gap: var(--space-4);
+}
+
+[data-look='forge'] .attack-fact {
+    position: relative;
+}
+
+[data-look='forge'] .attack-card__facts > .attack-fact + .attack-fact::before {
+    content: '';
+    position: absolute;
+    inset: 0.125rem auto 0.125rem calc(var(--space-2) * -1 - 1px);
+    width: 1px;
+    background: var(--border);
+    box-shadow: 1px 0 0 rgb(255 255 255 / 3%);
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-card__facts > .attack-fact + .attack-fact::before {
+    box-shadow: 1px 0 0 rgb(255 255 255 / 85%);
+}
+
+/*
+ * On a phone the band is too short for a long name and its type side by side, so the type goes under
+ * the name like a line struck beneath a title, and the seal grows to hold both lines.
+ */
+@container attack-section (max-width: 28rem) {
+    [data-look='forge'] .attack-badge {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0;
+        min-height: 3rem;
+        padding-block: 0.3rem;
+    }
+
+    [data-look='forge'] .attack-badge__name {
+        line-height: 1.35;
+    }
+
+    [data-look='forge'] .attack-badge__type {
+        padding-left: 1.45rem;
+        font-size: 0.625rem;
+        line-height: 1.4;
+    }
+
+    [data-look='forge'] .attack-card__emblem {
+        top: 0.5rem;
+        width: 2.625rem;
+        height: 2.625rem;
+    }
+
+    [data-look='forge'] .attack-card__facts > :nth-child(3n + 1)::before {
+        display: none;
+    }
+}
+
+/* ---------- the volley inside a charged card ---------- */
+
+/* The extra missiles sit in a plate recessed into the charged one, joined to it by a seam of heat. */
+[data-look='forge'] .attack-rider {
+    margin-top: var(--space-1);
+    background: color-mix(in srgb, var(--bg) 40%, var(--surface-2));
+    border: 1px solid var(--border);
+    border-top: 2px solid color-mix(in srgb, var(--charge) 60%, transparent);
+    border-radius: var(--radius);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / 30%);
+}
+
+:root[data-theme='light'] [data-look='forge'] .attack-rider {
+    background: color-mix(in srgb, var(--surface-3) 55%, var(--surface-2));
+    box-shadow: inset 0 2px 4px rgb(20 35 55 / 10%);
+}
