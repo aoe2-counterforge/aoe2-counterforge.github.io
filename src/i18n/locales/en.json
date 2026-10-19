@@ -85,8 +85,6 @@
             "eachAttack": "Each attack",
             "eachShot": "Each shot",
             "seconds": "{{value}} s",
-            "missiles_one": "{{count}} missile",
-            "missiles_other": "{{count}} missiles",
             "perShot_one": "{{count}} missile per shot",
             "perShot_other": "{{count}} missiles per shot",
             "upTo_one": "up to {{count}} missile",

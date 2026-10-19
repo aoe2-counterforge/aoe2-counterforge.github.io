@@ -83,12 +83,12 @@ export function attackRows(base: readonly SpecialAttack[], upgraded?: readonly S
 
 /** How many missiles one line of damage stands for. */
 export interface MissileCount {
-    /** One missile, so many with each shot, or as many as a volley may carry at most. */
-    kind: 'missiles' | 'perShot' | 'upTo';
+    /** So many with each shot, or as many as a volley may carry at most. */
+    kind: 'perShot' | 'upTo';
     amount: number;
 }
 
-/** One line of damage on an attack card, with the classes it hits harder or softer. */
+/** The damage of one attack or missile, with the classes it hits harder or softer. */
 export interface Strike {
     attack: AttackProfile;
     /** The same damage before technologies, when the card shows an upgraded one. */
@@ -102,7 +102,10 @@ export type CardCadence = Cadence | { kind: 'reload'; seconds: number; before: n
 /** Everything one attack card shows. */
 export interface AttackCard {
     role: ProjectileRole;
-    strikes: Strike[];
+    /** The blow or missile the attack is named for. */
+    strike: Strike;
+    /** The extra missiles that only fly along with this attack, which belong to it rather than stand apart. */
+    rider: Strike | null;
     cadence: CardCadence | null;
     /** Zero for a blow that needs no reach, which the card then leaves out. */
     range: number;
@@ -122,23 +125,20 @@ export interface AttackCardsInput {
     upgraded?: readonly SpecialAttack[];
 }
 
-function strikesOf(row: AttackRow): Strike[] {
-    const own: Strike = { attack: row.attack.attack, before: row.before?.attack, count: null };
-
-    if (row.volley) {
-        return [
-            { ...own, count: { kind: 'missiles', amount: 1 } },
-            {
-                attack: row.volley.attack.attack,
-                before: row.volley.before?.attack,
-                count: { kind: 'upTo', amount: row.volley.most },
-            },
-        ];
-    }
-
+function strikeOf(row: AttackRow): Strike {
     const perShot = row.attack.count ?? 0;
 
-    return [row.role === 'secondary' && perShot > 0 ? { ...own, count: { kind: 'perShot', amount: perShot } } : own];
+    return {
+        attack: row.attack.attack,
+        before: row.before?.attack,
+        count: row.role === 'secondary' && perShot > 0 ? { kind: 'perShot', amount: perShot } : null,
+    };
+}
+
+function riderOf({ volley }: AttackRow): Strike | null {
+    if (!volley) return null;
+
+    return { attack: volley.attack.attack, before: volley.before?.attack, count: { kind: 'upTo', amount: volley.most } };
 }
 
 /**
@@ -146,7 +146,8 @@ function strikesOf(row: AttackRow): Strike[] {
  * attack and set of extra projectiles that fires on its own.
  *
  * Giving the main attack the same card as the others is what lets a reader compare them at a
- * glance; a unit that cannot attack gets no main card.
+ * glance; a unit that cannot attack gets no main card. Extra missiles that only fly inside a
+ * charged volley ride on the charged attack's card, so the volley reads as one attack.
  *
  * @param input - The stat line and special attacks to lay out, base or upgraded.
  * @returns The cards, in the order they are shown.
@@ -157,7 +158,8 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
             ? [
                   {
                       role: 'main',
-                      strikes: [{ attack: stats.attack, before: compareWith?.attack, count: null }],
+                      strike: { attack: stats.attack, before: compareWith?.attack, count: null },
+                      rider: null,
                       cadence:
                           stats.reloadTime > 0
                               ? { kind: 'reload', seconds: stats.reloadTime, before: compareWith?.reloadTime }
@@ -173,7 +175,8 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
         ...main,
         ...attackRows(base, upgraded).map((row) => ({
             role: row.role,
-            strikes: strikesOf(row),
+            strike: strikeOf(row),
+            rider: riderOf(row),
             cadence: cadenceOf(row.attack),
             range: row.attack.range,
             rangeBefore: row.before?.range,

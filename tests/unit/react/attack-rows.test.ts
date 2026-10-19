@@ -91,19 +91,25 @@ describe('attackCards', () => {
         expect(cards).toEqual([]);
     });
 
-    it('counts the missiles each strike stands for', () => {
+    it('hangs the extra missiles of a charged volley on the charged card, as many as may fly', () => {
         const cards = attackCards({ stats: makeStats(), base: [secondary(0, 5), charged(0.033)] });
 
-        expect(cards[1]?.strikes.map((strike) => strike.count)).toEqual([
-            { kind: 'missiles', amount: 1 },
-            { kind: 'upTo', amount: 5 },
+        expect(cards.map((card) => [card.role, card.strike.count, card.rider?.count])).toEqual([
+            ['main', null, undefined],
+            ['charge', null, { kind: 'upTo', amount: 5 }],
         ]);
+    });
+
+    it('keeps the damage of the volley missiles apart from the charged one', () => {
+        const cards = attackCards({ stats: makeStats(), base: [secondary(0, 5), charged(0.033)] });
+
+        expect([cards[1]?.strike.attack.displayValue, cards[1]?.rider?.attack.displayValue]).toEqual([5, 1]);
     });
 
     it('says how many extra projectiles fly with each shot', () => {
         const cards = attackCards({ stats: makeStats(), base: [secondary(3, 3)] });
 
-        expect(cards[1]?.strikes.map((strike) => strike.count)).toEqual([{ kind: 'perShot', amount: 3 }]);
+        expect([cards[1]?.strike.count, cards[1]?.rider]).toEqual([{ kind: 'perShot', amount: 3 }, null]);
     });
 
     it('keeps the stat line before technologies beside the upgraded one', () => {

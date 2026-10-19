@@ -54,11 +54,16 @@ const volleyArrows = new SpecialAttack({
 });
 
 function card(name: string): HTMLElement {
-    const glyph = screen.getByRole('img', { name });
-    const item = glyph.closest('li');
-    if (!item) throw new Error(`no card holds ${name}`);
+    return screen.getByRole('listitem', { name });
+}
 
-    return item;
+/** The cards are the only list items with a name; the bonus chips inside them have none. */
+function cardNames(): (string | null)[] {
+    return screen.getAllByRole('listitem', { name: /\S/ }).map((item) => {
+        const id = item.getAttribute('aria-labelledby');
+
+        return id ? (document.getElementById(id)?.textContent ?? null) : null;
+    });
 }
 
 describe('AttackCards', () => {
@@ -71,23 +76,28 @@ describe('AttackCards', () => {
     it('labels every figure of the main attack the way the stat tiles do', () => {
         render(<AttackCards stats={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage5TypePierceReload2 sRange4.*\+3Spearmen/);
+        expect(card('Main attack').textContent).toMatch(/Damage5Reload2 sRange4.*\+3Spearmen/);
     });
 
-    it('names each card by its role glyph rather than a printed heading', () => {
+    it('names each card by the attack it shows', () => {
         render(<AttackCards stats={bow} base={[javelin, arrows]} />);
 
-        expect(screen.getAllByRole('img').map((glyph) => glyph.getAttribute('aria-label'))).toEqual([
-            'Main attack',
-            'Charged attack',
-            'Extra projectiles',
+        expect(cardNames()).toEqual(['Main attack', 'Charged attack', 'Extra projectiles']);
+    });
+
+    it('states the damage type beside the name of the attack', () => {
+        render(<AttackCards stats={bow} base={[torch]} />);
+
+        expect([card('Main attack').textContent, card('Charged attack').textContent]).toEqual([
+            expect.stringMatching(/^Main attackPierceDamage/),
+            expect.stringMatching(/^Charged attackMeleeDamage/),
         ]);
     });
 
     it('tells a charged attack by the time it takes to recharge', () => {
         render(<AttackCards stats={bow} base={[javelin]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6TypePierceRecharge15 sRange6.*\+3Archers/);
+        expect(card('Charged attack').textContent).toMatch(/Damage6Recharge15 sRange6.*\+3Archers/);
     });
 
     it('says a charge that refills at once goes off with each attack', () => {
@@ -99,22 +109,25 @@ describe('AttackCards', () => {
     it('says extra projectiles fly with each shot, and how many', () => {
         render(<AttackCards stats={bow} base={[arrows]} />);
 
-        expect(card('Extra projectiles').textContent).toMatch(/Missiles×22 missiles per shot.*CadenceEach shot/);
+        expect(card('Extra projectiles').textContent).toMatch(/CadenceEach shotRange4Missiles×22 missiles per shot/);
     });
 
-    it('gives the main missile and the extra ones of a charged volley a line each', () => {
+    it('hangs the extra missiles of a charged volley inside the charged card', () => {
         render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6Missiles×11 missile.*Damage1Missilesup to ×5up to 5 missiles/);
+        expect([cardNames(), card('Charged attack').textContent]).toEqual([
+            ['Main attack', 'Charged attack'],
+            expect.stringMatching(/Damage6Recharge15 sRange6.*Damage1Extra projectilesup to ×5up to 5 missiles/),
+        ]);
     });
 
     it('states the damage type of a volley once when all its missiles share it', () => {
         render(<AttackCards stats={bow} base={[javelin, volleyArrows]} />);
 
-        expect(card('Charged attack').textContent?.match(/Type/g)).toHaveLength(1);
+        expect(card('Charged attack').textContent?.match(/Pierce/g)).toHaveLength(1);
     });
 
-    it('gives each missile its own type when a volley mixes them', () => {
+    it('gives the volley missiles their own type when it differs from the charged one', () => {
         const blades = new SpecialAttack({
             role: 'secondary',
             projectile: 512,
@@ -127,7 +140,7 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={bow} base={[javelin, blades]} />);
 
-        expect(card('Charged attack').textContent).toMatch(/Damage6TypePierce.*Damage2TypeMelee/);
+        expect(card('Charged attack').textContent).toMatch(/^Charged attackPierce.*Damage2TypeMelee/);
     });
 
     it('prints nothing for an attack with no bonus damage', () => {
@@ -141,6 +154,6 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={upgraded} compareWith={bow} base={[]} />);
 
-        expect(card('Main attack').textContent).toMatch(/Damage7\+2TypePierce.*Range5\+1/);
+        expect(card('Main attack').textContent).toMatch(/Damage7\+2Reload2 sRange5\+1/);
     });
 });

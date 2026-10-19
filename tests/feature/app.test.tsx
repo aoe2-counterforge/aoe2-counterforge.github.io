@@ -447,7 +447,7 @@ describe('App', () => {
         window.history.pushState(null, '', '/pt-br/unit/hearth-troop');
         render(<App locale="pt-BR" />);
 
-        expect(await screen.findByRole('img', { name: 'Ataque de carga' })).toBeDefined();
+        expect(await screen.findByRole('listitem', { name: 'Ataque de carga' })).toBeDefined();
     });
 
     it('leaves out the extra attacks of a unit that has none to fire', async () => {
@@ -456,9 +456,9 @@ describe('App', () => {
         await screen.findByRole('heading', { level: 1, name: 'Arqueiro' });
 
         expect([
-            screen.getByRole('img', { name: 'Ataque principal' }),
-            screen.queryByRole('img', { name: 'Ataque de carga' }),
-            screen.queryByRole('img', { name: 'Projéteis extras' }),
+            screen.getByRole('listitem', { name: 'Ataque principal' }),
+            screen.queryByRole('listitem', { name: 'Ataque de carga' }),
+            screen.queryByRole('listitem', { name: 'Projéteis extras' }),
         ].map(Boolean)).toEqual([true, false, false]);
     });
 

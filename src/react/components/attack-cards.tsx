@@ -86,20 +86,19 @@ function CadenceFact({ cadence }: { cadence: CardCadence }) {
     }
 }
 
-function CountFact({ count }: { count: MissileCount }) {
+function CountFact({ count, label }: { count: MissileCount; label: string }) {
     const { t } = useTranslation();
     const full = t(`unit.attacks.${count.kind}`, { count: count.amount });
     const shown = count.kind === 'upTo' ? t('unit.attacks.upToShort', { count: count.amount }) : `×${String(count.amount)}`;
 
     return (
-        <Fact icon="projectiles" label={t('unit.attacks.count')}>
+        <Fact icon="projectiles" label={label}>
             <span aria-hidden="true">{shown}</span>
             <span className="visually-hidden">{full}</span>
         </Fact>
     );
 }
 
-/** The damage of one strike, which heads its card or its line. */
 function DamageFact({ strike }: { strike: Strike }) {
     const { t } = useTranslation();
     const damage = strike.attack.displayValue;
@@ -112,7 +111,7 @@ function DamageFact({ strike }: { strike: Strike }) {
     );
 }
 
-/** Which armour a strike goes through, as a figure of its own so it never reads as part of the number. */
+/** Which armour a strike goes through, for the rare missile that differs from the attack it rides with. */
 function TypeFact({ type }: { type: DamageType }) {
     const { t } = useTranslation();
 
@@ -123,72 +122,64 @@ function TypeFact({ type }: { type: DamageType }) {
     );
 }
 
-/** The damage type every strike of a card shares, which the card then states once. */
-function sharedType(strikes: readonly Strike[]): DamageType | null {
-    const types = new Set(strikes.map((strike) => strike.attack.damageType()));
-    const [type] = types;
+/** What the attack is and which armour it goes through, as one badge on the card's top edge. */
+function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageType | null; nameId: string }) {
+    const { t } = useTranslation();
 
-    return types.size === 1 && type ? type : null;
+    return (
+        <p className="attack-badge">
+            <span className="attack-badge__role">
+                <Icon name={ROLE_GLYPHS[role]} />
+                <span id={nameId} className="attack-badge__name">
+                    {t(ROLE_NAMES[role])}
+                </span>
+            </span>
+            {type ? (
+                <span className={`attack-badge__type attack-badge__type--${type}`}>
+                    <Icon name={type} />
+                    {t(`armourClasses.base-${type}`)}
+                </span>
+            ) : null}
+        </p>
+    );
 }
 
 /**
- * A card with one strike lists everything beside its role glyph; a volley keeps reach and rhythm
- * there and gives each of its missiles a line of its own, since they share the first and not the second.
+ * The figures run damage, rhythm, reach, so that on a phone, where they fall into three columns,
+ * each sits over the same figure of the card above.
  */
 function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
-    const name = t(ROLE_NAMES[card.role]);
-    const [only] = card.strikes.length === 1 ? card.strikes : [];
-    const type = sharedType(card.strikes);
-    const others = [only?.count, card.cadence, card.range > 0].filter(Boolean).length;
-    // A phone cannot fit damage, type and two more figures beside the glyph, so such a card falls into even columns.
-    const stacked = only !== undefined && others > 1;
+    const nameId = useId();
+    const { strike, rider } = card;
+    const type = strike.attack.damageType();
+    const riderType = rider?.attack.damageType();
 
     return (
-        <li className={`attack-card attack-card--${card.role}${stacked ? ' attack-card--stacked' : ''}`}>
-            <div className="attack-card__body">
-                <span className="attack-card__role" role="img" aria-label={name} title={name}>
-                    <Icon name={ROLE_GLYPHS[card.role]} />
-                </span>
-                <div className="attack-card__head">
-                    {only || type ? (
-                        <div className="attack-card__lead">
-                            {only ? <DamageFact strike={only} /> : null}
-                            {type ? <TypeFact type={type} /> : null}
-                        </div>
-                    ) : null}
-                    {others > 0 ? (
-                        <div className="attack-card__facts">
-                            {only?.count ? <CountFact count={only.count} /> : null}
-                            {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
-                            {card.range > 0 ? (
-                                <Fact icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
-                                    {short(card.range)}
-                                    <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
-                                </Fact>
-                            ) : null}
-                        </div>
-                    ) : null}
-                </div>
-                {only ? (
-                    <BonusChips attack={only.attack} compareWith={only.before} />
-                ) : (
-                    card.strikes.map((strike, index) => {
-                        const own = type === null ? strike.attack.damageType() : null;
-
-                        return (
-                            <div key={index} className="attack-strike">
-                                <div className="attack-strike__facts">
-                                    <DamageFact strike={strike} />
-                                    {own ? <TypeFact type={own} /> : null}
-                                    {strike.count ? <CountFact count={strike.count} /> : null}
-                                </div>
-                                <BonusChips attack={strike.attack} compareWith={strike.before} />
-                            </div>
-                        );
-                    })
-                )}
+        <li className={`attack-card attack-card--${card.role}`} aria-labelledby={nameId}>
+            <RoleBadge role={card.role} type={type} nameId={nameId} />
+            <div className="attack-card__facts">
+                <DamageFact strike={strike} />
+                {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
+                {card.range > 0 ? (
+                    <Fact icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
+                        {short(card.range)}
+                        <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
+                    </Fact>
+                ) : null}
+                {strike.count ? <CountFact count={strike.count} label={t('unit.attacks.count')} /> : null}
             </div>
+            <BonusChips attack={strike.attack} compareWith={strike.before} />
+            {rider?.count ? (
+                <div className="attack-rider">
+                    <div className="attack-card__facts">
+                        <DamageFact strike={rider} />
+                        {riderType && riderType !== type ? <TypeFact type={riderType} /> : null}
+                        <CountFact count={rider.count} label={t('unit.attacks.secondary')} />
+                    </div>
+                    <BonusChips attack={rider.attack} compareWith={rider.before} />
+                </div>
+            ) : null}
         </li>
     );
 }
@@ -197,10 +188,10 @@ function AttackCardItem({ card }: { card: AttackCard }) {
  * Every attack a unit makes, as one compact card each: the main attack, then any charged attack
  * and extra projectiles.
  *
- * A glyph tells the cards apart instead of a printed name, so that a phone spends its width on the
- * numbers; the name is still there for a screen reader and in a tooltip. The extra attacks stay
- * apart from the main one because each flies as a missile of its own, and folding them into the
- * unit's numbers would count an arrow volley as if the shooter swung it.
+ * A badge on each card's edge names the attack and the armour it goes through, so the figures
+ * below are numbers only. The extra attacks stay apart from the main one because each flies as a
+ * missile of its own, and folding them into the unit's numbers would count an arrow volley as if
+ * the shooter swung it; extra missiles that only fly with a charge hang inside the charged card.
  *
  * @param props.stats - The stat line to read, base or upgraded.
  * @param props.compareWith - What the technologies are measured against.
