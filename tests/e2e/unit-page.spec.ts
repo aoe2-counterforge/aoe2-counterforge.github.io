@@ -57,3 +57,27 @@ test.describe('the banner of a unit', () => {
         await expect(page.getByRole('heading', { level: 1, name: 'Halberdier' })).toBeVisible();
     });
 });
+
+test.describe('the attack cards of a unit', () => {
+    test('keeps the longest badge, name and damage type whole, inside its card', async ({ page }) => {
+        await page.goto('es/unit/mangonel');
+
+        const card = page.getByRole('listitem', { name: 'Ataque principal' });
+        const edge = await box(card);
+        const type = await box(card.locator('.attack-badge__type'));
+        const name = card.locator('.attack-badge__name');
+
+        expect(right(type)).toBeLessThanOrEqual(right(edge));
+        expect(await name.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    });
+
+    test('hangs the missiles of a charged volley inside the charged card', async ({ page }) => {
+        await page.goto('en/unit/xianbei-raider');
+
+        const charged = await box(page.getByRole('listitem', { name: 'Charged attack' }));
+        const rider = await box(page.locator('.attack-rider'));
+
+        await expect(page.getByRole('listitem', { name: 'Extra projectiles' })).toHaveCount(0);
+        expect([rider.y > charged.y, bottom(rider) <= bottom(charged)]).toEqual([true, true]);
+    });
+});
