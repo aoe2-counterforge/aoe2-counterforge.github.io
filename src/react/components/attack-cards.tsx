@@ -147,6 +147,9 @@ function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageT
 /**
  * The figures run damage, rhythm, reach, so that on a phone, where they fall into three columns,
  * each sits over the same figure of the card above.
+ *
+ * Missiles that fly with every shot need no rhythm of their own beside their count: the count
+ * already says how many each shot carries, and it takes the rhythm's place in the row.
  */
 function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
@@ -154,20 +157,21 @@ function AttackCardItem({ card }: { card: AttackCard }) {
     const { strike, rider } = card;
     const type = strike.attack.damageType();
     const riderType = rider?.attack.damageType();
+    const cadence = card.cadence?.kind === 'eachShot' && strike.count ? null : card.cadence;
 
     return (
         <li className={`attack-card attack-card--${card.role}`} aria-labelledby={nameId}>
             <RoleBadge role={card.role} type={type} nameId={nameId} />
             <div className="attack-card__facts">
                 <DamageFact strike={strike} />
-                {card.cadence ? <CadenceFact cadence={card.cadence} /> : null}
+                {cadence ? <CadenceFact cadence={cadence} /> : null}
+                {strike.count ? <CountFact count={strike.count} label={t('unit.attacks.count')} /> : null}
                 {card.range > 0 ? (
                     <Fact icon="range" label={t(card.hasMinimumRange ? 'stats.maxRange' : 'stats.range')}>
                         {short(card.range)}
                         <Gain value={card.rangeBefore === undefined ? 0 : card.range - card.rangeBefore} />
                     </Fact>
                 ) : null}
-                {strike.count ? <CountFact count={strike.count} label={t('unit.attacks.count')} /> : null}
             </div>
             <BonusChips attack={strike.attack} compareWith={strike.before} />
             {rider?.count ? (

@@ -106,10 +106,10 @@ describe('AttackCards', () => {
         expect(card('Charged attack').textContent).toContain('CadenceEach attack');
     });
 
-    it('says extra projectiles fly with each shot, and how many', () => {
+    it('counts the extra projectiles each shot carries where another attack states its rhythm', () => {
         render(<AttackCards stats={bow} base={[arrows]} />);
 
-        expect(card('Extra projectiles').textContent).toMatch(/CadenceEach shotRange4Missiles×22 missiles per shot/);
+        expect(card('Extra projectiles').textContent).toMatch(/^Extra projectilesPierceDamage3Missiles×22 missiles per shotRange4$/);
     });
 
     it('hangs the extra missiles of a charged volley inside the charged card', () => {
