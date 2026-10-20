@@ -85,6 +85,7 @@ const MODELLED = new Set([
     'blastWidth',
     'trainTime',
     'projectiles',
+    'maxProjectiles',
     'regeneration',
     'ballistics',
     'bonusDamageResistance',
@@ -125,6 +126,9 @@ const DAMAGE = new Set(['attack', 'armour']);
 /** How far a charged attack reaches beyond the unit's own range. */
 const CHARGE_REACH = 'chargeEvent';
 
+/** The most missiles the unit fires at once, which only a charged attack or its volley spends. */
+const MOST_MISSILES = 'maxProjectiles';
+
 /** The flag of the ballistics field that makes a shot pass through what it hits. */
 const PASS_THROUGH = 2;
 
@@ -147,6 +151,7 @@ const NO_CHANGE = new Map<string, number>([
     ['reloadTime', 0],
     ['blastWidth', 0],
     ['projectiles', 0],
+    ['missiles', 0],
     ['regeneration', 0],
     ['population', 0],
     ['damageReflection', 0],
@@ -228,6 +233,7 @@ function canonical(delta: StatDelta): string {
         delta.populationMultiplier,
         delta.faithMultiplier,
         delta.damageReflection,
+        delta.missiles,
     ].map((value) => String(value ?? ''));
 
     const costs = Object.entries(delta.costMultipliers ?? {})
@@ -491,12 +497,31 @@ export class UpgradeService {
      */
     private landingOf(unit: Unit | null, effect: TechEffect): Landing {
         const role = effect.projectile;
+        if (role === null && effect.attribute === MOST_MISSILES) return this.volleyLanding(unit);
         if (role === null) {
             return effect.attribute === CHARGE_REACH && unit?.activeSpecialAttack('charge') ? 'charge' : 'unit';
         }
         if (role === 'main') return DAMAGE.has(effect.attribute) ? null : 'unit';
 
         return unit?.activeSpecialAttack(role) ? role : null;
+    }
+
+    /**
+     * Where a change to the most missiles a unit fires at once lands.
+     *
+     * The ordinary shot never reaches that most; a charged attack does. A charge that fires its own
+     * missile as many times as it can takes the change on the charged attack, and a charged volley
+     * on the secondary missiles it carries. Anything else, such as a skirmisher given room for a
+     * javelin it does not throw, changes nothing the guide shows.
+     *
+     * @param unit - The unit the change reaches, or null for a building.
+     * @returns The special attack the change lands on, or null.
+     */
+    private volleyLanding(unit: Unit | null): Landing {
+        const kind = unit?.activeSpecialAttack('charge')?.charge?.kind;
+        if (kind === 'missiles') return 'charge';
+
+        return kind === 'volley' && unit?.activeSpecialAttack('secondary')?.fliesOnlyInVolley() ? 'secondary' : null;
     }
 
     /**
@@ -720,6 +745,7 @@ export class UpgradeService {
             if (effect.attribute === 'reloadTime') delta.reloadTime = (delta.reloadTime ?? 0) + effect.value;
             if (effect.attribute === 'blastWidth') delta.blastWidth = (delta.blastWidth ?? 0) + effect.value;
             if (effect.attribute === 'projectiles') delta.projectiles = (delta.projectiles ?? 0) + effect.value;
+            if (effect.attribute === MOST_MISSILES) delta.missiles = (delta.missiles ?? 0) + effect.value;
             if (effect.attribute === 'regeneration') delta.regeneration = (delta.regeneration ?? 0) + effect.value;
             if (effect.attribute === 'population') delta.population = (delta.population ?? 0) + effect.value;
             if (effect.attribute === 'damageReflection') {
@@ -819,6 +845,7 @@ export class UpgradeService {
             patch.reloadTime = (patch.reloadTime ?? 0) + (delta.reloadTime ?? 0);
             patch.reloadTimeMultiplier = (patch.reloadTimeMultiplier ?? 1) * (delta.reloadTimeMultiplier ?? 1);
             patch.blastWidth = (patch.blastWidth ?? 0) + (delta.blastWidth ?? 0);
+            patch.projectiles = (patch.projectiles ?? 0) + (delta.projectiles ?? 0);
             // Two bonuses that both soften bonus damage do not stack; the better one stands.
             patch.bonusDamageResistance = Math.max(
                 patch.bonusDamageResistance ?? 0,
@@ -859,6 +886,7 @@ export class UpgradeService {
             attack: changes.flatMap((change) => change.attack ?? []),
             attackMultipliers: changes.flatMap((change) => change.attackMultipliers ?? []),
             range: reach,
+            missiles: changes.reduce((sum, change) => sum + (change.missiles ?? 0), 0),
         };
     }
 }

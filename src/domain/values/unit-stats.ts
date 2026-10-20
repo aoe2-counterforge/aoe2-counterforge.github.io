@@ -15,8 +15,10 @@ export interface UnitStatsConfig {
     ignoresArmour: boolean;
     /** Missiles a single shot puts in the air beyond the first. */
     extraProjectiles: number;
-    /** What each of those hits with, which is not what the shooter hits with. */
+    /** What each of those hits with, when it is not what the shooter hits with. */
     secondaryAttack: AttackProfile;
+    /** Whether the extra missiles are copies of the main one, hitting with the shooter's own attack. */
+    extrasRepeatMain?: boolean;
     /** Whether this unit's armour holds against attacks that go through it. */
     resistsArmourIgnore: boolean;
     range: number;
@@ -55,6 +57,8 @@ export interface UnitStatsPatch {
     minRangeCeiling?: number;
     /** True once a technology has taught the unit's attacks to go through armour. */
     ignoresArmour?: boolean;
+    /** Missiles added to each shot of a unit whose extra missiles are copies of its main one. */
+    projectiles?: number;
     attack?: readonly ClassAmount[];
     attackMultipliers?: readonly ClassAmount[];
     armour?: readonly ClassAmount[];
@@ -103,8 +107,14 @@ export class UnitStats {
         return this.config.extraProjectiles;
     }
 
+    /** What each extra missile hits with: the unit's own attack when they are copies of its main missile. */
     public get secondaryAttack(): AttackProfile {
-        return this.config.secondaryAttack;
+        return this.config.extrasRepeatMain ? this.config.attack : this.config.secondaryAttack;
+    }
+
+    /** Whether the extra missiles are copies of the main one. */
+    public get extrasRepeatMain(): boolean {
+        return this.config.extrasRepeatMain === true;
     }
 
     public get ignoresArmour(): boolean {
@@ -199,6 +209,9 @@ export class UnitStats {
     public patched(patch: UnitStatsPatch): UnitStats {
         return new UnitStats({
             ...this.config,
+            // Only copies of the main missile are counted on the stat line; a secondary missile's count is its own.
+            extraProjectiles:
+                this.config.extraProjectiles + (this.config.extrasRepeatMain ? (patch.projectiles ?? 0) : 0),
             hp: Math.round(this.config.hp * (patch.hpMultiplier ?? 1)) + (patch.hp ?? 0),
             range: this.config.range + (patch.range ?? 0),
             accuracy: Math.min(100, Math.max(patch.accuracyFloor ?? 0, this.config.accuracy) + (patch.accuracy ?? 0)),

@@ -26,3 +26,29 @@ describe('UnitStats hit chance', () => {
         expect(stats.toRecord().accuracy).toBe(100);
     });
 });
+
+describe('UnitStats extra missiles copied from the main one', () => {
+    it('hits with the unit attack, upgrades included', () => {
+        const stats = makeStats({ attacks: { 'base-pierce': 9 }, extraProjectiles: 2, extrasRepeatMain: true });
+
+        const upgraded = stats.patched({ attack: [{ armourClass: 'base-pierce', amount: 1 }] });
+
+        expect(upgraded.secondaryAttack.pierce).toBe(10);
+    });
+
+    it('adds the missiles a technology gives each shot', () => {
+        const stats = makeStats({ extraProjectiles: 2, extrasRepeatMain: true });
+
+        const upgraded = stats.patched({ projectiles: 2 });
+
+        expect(upgraded.extraProjectiles).toBe(4);
+    });
+
+    it('leaves the count of secondary missiles to the special attack that carries them', () => {
+        const stats = makeStats({ extraProjectiles: 2, secondaryAttacks: { 'base-pierce': 3 } });
+
+        const upgraded = stats.patched({ projectiles: 1 });
+
+        expect([upgraded.extraProjectiles, upgraded.secondaryAttack.pierce]).toEqual([2, 3]);
+    });
+});

@@ -3,21 +3,22 @@ import type { SpecialAttackRecord } from '../../../../src/data/records.ts';
 import { CatalogAssembler } from '../../../../src/services/game-catalog/catalog-assembler.ts';
 import { unitRecord } from '../../../fixtures/records.ts';
 
-function secondary(count: number, classes: readonly string[] = ['base-pierce']): SpecialAttackRecord {
+function secondary(count: number, maxCount = count): SpecialAttackRecord {
     return {
         role: 'secondary',
         projectile: 510,
-        attacks: classes.map((armourClass) => ({ class: armourClass, amount: 3 })),
+        attacks: [{ class: 'base-pierce', amount: 3 }],
         range: 4,
         count,
+        maxCount,
     };
 }
 
-function charged(capacity: number, classes: readonly string[] = ['base-pierce']): SpecialAttackRecord {
+function charged(capacity: number): SpecialAttackRecord {
     return {
         role: 'charge',
         projectile: 900,
-        attacks: classes.map((armourClass) => ({ class: armourClass, amount: 5 })),
+        attacks: [{ class: 'base-pierce', amount: 5 }],
         range: 5,
         charge: { capacity, rechargeRate: 0.25 },
     };
@@ -43,13 +44,13 @@ describe('Unit active special attacks', () => {
     });
 
     it('keeps a secondary missile that is the arrows of the unit charged volley', () => {
-        const active = roles([secondary(0, ['spearman', 'base-pierce']), charged(1, ['base-pierce', 'spearman'])]);
+        const active = roles([secondary(0, 5), charged(1)]);
 
         expect(active).toEqual(['secondary', 'charge']);
     });
 
-    it('leaves out an idle secondary beside a charge whose missile hits other classes', () => {
-        const active = roles([secondary(0, ['all-buildings', 'base-melee']), charged(1, ['base-pierce', 'ship'])]);
+    it('leaves out an idle secondary beside a charge that fires none of it', () => {
+        const active = roles([secondary(0), charged(1)]);
 
         expect(active).toEqual(['charge']);
     });
@@ -61,7 +62,7 @@ describe('Unit active special attacks', () => {
     });
 
     it('does not count an idle secondary as part of a volley that cannot fire', () => {
-        const active = roles([secondary(0), charged(0)]);
+        const active = roles([secondary(0, 5), charged(0)]);
 
         expect(active).toEqual([]);
     });

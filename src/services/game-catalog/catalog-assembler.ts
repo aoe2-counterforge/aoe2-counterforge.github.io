@@ -3,16 +3,19 @@ import { Technology } from '../../domain/entities/technology.ts';
 import { Unit, type UnitUpgradeInfo } from '../../domain/entities/unit.ts';
 import { toAgeId } from '../../domain/enums/age.ts';
 import { isArmourClass } from '../../domain/enums/armour-class.ts';
+import { isChargeTarget } from '../../domain/enums/charge-target.ts';
 import { isProjectileRole } from '../../domain/enums/projectile-role.ts';
 import { isUnitCategory } from '../../domain/enums/unit-category.ts';
 import { ArmourProfile } from '../../domain/values/armour-profile.ts';
 import { AttackProfile } from '../../domain/values/attack-profile.ts';
+import { ChargeAbility } from '../../domain/values/charge-ability.ts';
 import type { ClassAmount } from '../../domain/values/class-amount.ts';
 import { ResourceCost } from '../../domain/values/resource-cost.ts';
-import { SpecialAttack } from '../../domain/values/special-attack.ts';
+import { SpecialAttack, type ChargeConfig } from '../../domain/values/special-attack.ts';
 import { TechEffect } from '../../domain/values/tech-effect.ts';
 import { UnitStats } from '../../domain/values/unit-stats.ts';
 import type {
+    ChargeRecord,
     CivilizationRecord,
     ClassAmountRecord,
     CostRecord,
@@ -50,6 +53,7 @@ export class CatalogAssembler {
                 bonusDamageResistance: record.bonusDamageResistance,
                 extraProjectiles: record.extraProjectiles,
                 secondaryAttack: new AttackProfile({ entries: this.toClassAmounts(record.secondaryAttacks) }),
+                extrasRepeatMain: record.extrasRepeatMain,
                 ignoresArmour: record.ignoresArmour,
                 resistsArmourIgnore: record.resistsArmourIgnore,
                 range: record.range,
@@ -61,6 +65,7 @@ export class CatalogAssembler {
                 lineOfSight: record.lineOfSight,
             }),
             specialAttacks: this.toSpecialAttacks(record.specialAttacks),
+            chargeAbility: record.chargeAbility === null ? null : new ChargeAbility(record.chargeAbility),
             line: record.line,
             inTechTree: record.inTechTree,
             upgradesFrom: record.upgradesFrom,
@@ -131,10 +136,20 @@ export class CatalogAssembler {
                     range: record.range,
                     count: record.count ?? null,
                     maxCount: record.maxCount ?? null,
-                    charge: record.charge ?? null,
+                    charge: record.charge ? this.toCharge(record.charge) : null,
+                    slows: record.slows ?? null,
                 }),
             ];
         });
+    }
+
+    private toCharge(record: ChargeRecord): ChargeConfig {
+        return {
+            capacity: record.capacity,
+            rechargeRate: record.rechargeRate,
+            kind: record.kind ?? null,
+            targets: record.targets ? record.targets.filter(isChargeTarget) : null,
+        };
     }
 
     private toUpgradeInfo(record: UnitRecord): UnitUpgradeInfo | null {

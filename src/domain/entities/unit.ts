@@ -1,6 +1,7 @@
 import type { AgeId } from '../enums/age.ts';
 import type { ProjectileRole } from '../enums/projectile-role.ts';
 import type { UnitCategory } from '../enums/unit-category.ts';
+import type { ChargeAbility } from '../values/charge-ability.ts';
 import type { ResourceCost } from '../values/resource-cost.ts';
 import type { SpecialAttack } from '../values/special-attack.ts';
 import type { UnitStats } from '../values/unit-stats.ts';
@@ -28,6 +29,8 @@ export interface UnitConfig {
     stats: UnitStats;
     /** Secondary missiles and charged attacks, each with damage of its own. */
     specialAttacks: readonly SpecialAttack[];
+    /** A charge the unit spends on its own blows or its own defence, when it has one. */
+    chargeAbility?: ChargeAbility | null;
     line: string;
     upgradesFrom: string | null;
     upgradesTo: readonly string[];
@@ -111,6 +114,11 @@ export class Unit {
         return this.config.specialAttacks;
     }
 
+    /** A charge the unit spends on its own blows or its own defence, or null when it has none. */
+    public get chargeAbility(): ChargeAbility | null {
+        return this.config.chargeAbility ?? null;
+    }
+
     /**
      * The special attack a missile role carries.
      *
@@ -155,7 +163,7 @@ export class Unit {
 
         const volley = this.specialAttack('charge');
 
-        return volley !== null && this.fires(volley) && attack.hitsSameClassesAs(volley);
+        return volley !== null && this.fires(volley) && attack.fliesOnlyInVolley();
     }
 
     public get line(): string {

@@ -26,6 +26,8 @@ export interface StatDelta {
     trainTimeMultiplier?: number;
     blastWidth?: number;
     projectiles?: number;
+    /** On a charged attack, the charged missiles it adds; on secondary missiles, the ones a charged volley adds. */
+    missiles?: number;
     /** Hit points the unit gets back on its own, as the game counts them. */
     regeneration?: number;
     /**

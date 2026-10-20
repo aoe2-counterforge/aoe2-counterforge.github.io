@@ -107,3 +107,35 @@ describe('SpecialAttack replicating the unit attack', () => {
         expect(thrown.attack.isEmpty()).toBe(true);
     });
 });
+
+describe('SpecialAttack targets and missiles', () => {
+    const arrows = (targets: ChargeConfig['targets']) =>
+        new SpecialAttack({
+            role: 'charge',
+            projectile: 1936,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-pierce', amount: 5 }] }),
+            range: 10,
+            count: 10,
+            charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets },
+        });
+
+    it('splits the targets into the groups the charge is used against and the ones it leaves', () => {
+        const attack = arrows(['infantry', 'cavalry', 'archer', 'cavalry-archer', 'monk', 'villager', 'ship']);
+
+        expect(attack.targetGroups()).toEqual({ within: ['land', 'ship'], without: ['siege', 'building'] });
+    });
+
+    it('has no target groups when it is used against every target', () => {
+        const attack = arrows(null);
+
+        expect(attack.targetGroups()).toBeNull();
+    });
+
+    it('adds the missiles a technology gives the charged attack', () => {
+        const attack = arrows(null);
+
+        const upgraded = attack.patched({ missiles: 3 });
+
+        expect(upgraded.count).toBe(13);
+    });
+});

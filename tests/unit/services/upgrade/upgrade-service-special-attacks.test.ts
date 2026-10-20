@@ -44,7 +44,14 @@ function buildService() {
                 range: 4,
                 attacks: { 'base-pierce': 5 },
                 specialAttacks: [
-                    { role: 'secondary', projectile: 901, attacks: [{ class: 'base-pierce', amount: 1 }], range: 4, count: 0 },
+                    {
+                        role: 'secondary',
+                        projectile: 901,
+                        attacks: [{ class: 'base-pierce', amount: 1 }],
+                        range: 4,
+                        count: 0,
+                        maxCount: 5,
+                    },
                     charged(4, 5),
                 ],
             }),

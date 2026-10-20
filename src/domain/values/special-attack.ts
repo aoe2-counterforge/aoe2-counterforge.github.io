@@ -1,3 +1,4 @@
+import { groupTargets, type ChargeTarget, type TargetGroup } from '../enums/charge-target.ts';
 import type { ProjectileRole } from '../enums/projectile-role.ts';
 import type { AttackProfile } from './attack-profile.ts';
 import type { ClassAmount } from './class-amount.ts';
@@ -8,6 +9,17 @@ export interface ChargeConfig {
     capacity: number;
     /** Charge regained per second. */
     rechargeRate: number;
+    /** What the charged attack fires: its own missile as often as it can, or one with a volley behind. */
+    kind?: 'missiles' | 'volley' | null;
+    /** The kinds of target the charge is used against, or null when it is used against every one. */
+    targets?: readonly ChargeTarget[] | null;
+}
+
+/** How a missile slows what it hits. */
+export interface Slow {
+    /** The share of its speed the target loses. */
+    share: number;
+    seconds: number;
 }
 
 export interface SpecialAttackConfig {
@@ -16,7 +28,7 @@ export interface SpecialAttackConfig {
     projectile: number;
     attack: AttackProfile;
     range: number;
-    /** For secondary missiles, how many fly with each shot; null for any other role. */
+    /** For secondary missiles, how many fly with each shot; for a charged attack, how many charged missiles it fires. */
     count: number | null;
     /** For secondary missiles, the most that fly in one volley, charged or not; null for any other role. */
     maxCount?: number | null;
@@ -24,6 +36,8 @@ export interface SpecialAttackConfig {
     charge: ChargeConfig | null;
     /** Whether the attack throws the damage of the unit's own attack rather than a list of its own. */
     replicatesMain?: boolean;
+    /** How the missile slows what it hits, when it does. */
+    slows?: Slow | null;
 }
 
 /** What a set of technologies does to a special attack. */
@@ -31,6 +45,8 @@ export interface SpecialAttackPatch {
     attack?: readonly ClassAmount[];
     attackMultipliers?: readonly ClassAmount[];
     range?: number;
+    /** Missiles added to the most a charged attack, or the volley it carries, fires at once. */
+    missiles?: number;
 }
 
 /**
@@ -80,6 +96,38 @@ export class SpecialAttack {
         return this.config.replicatesMain === true;
     }
 
+    /** How its missile slows what it hits, or null when it does not. */
+    public get slows(): Slow | null {
+        return this.config.slows ?? null;
+    }
+
+    /**
+     * Whether its missiles fly only inside a charged volley rather than with the ordinary shot.
+     *
+     * The Xianbei Raider fires no secondary arrow with a plain shot and five behind its charged one.
+     *
+     * @returns True for secondary missiles a volley can carry beyond what each shot does.
+     */
+    public fliesOnlyInVolley(): boolean {
+        return this.config.role === 'secondary' && (this.config.maxCount ?? 0) > (this.config.count ?? 0);
+    }
+
+    /**
+     * The groups of target a charged attack is used against and the ones it leaves to the unit's
+     * own attack.
+     *
+     * @returns Both lists, or null when the charge is used against every target or the game's
+     *          list of targets splits a group, which no group name could then describe.
+     */
+    public targetGroups(): { within: TargetGroup[]; without: TargetGroup[] } | null {
+        const targets = this.config.charge?.targets;
+        if (!targets) return null;
+
+        const groups = groupTargets(targets);
+
+        return groups && groups.without.length > 0 ? groups : null;
+    }
+
     /**
      * Seconds a spent charge takes to fill up again.
      *
@@ -91,23 +139,6 @@ export class SpecialAttack {
         if (charge === null || charge.capacity <= 0 || charge.rechargeRate <= 0) return null;
 
         return charge.capacity / charge.rechargeRate;
-    }
-
-    /**
-     * Whether the other attack names exactly the damage classes this one does.
-     *
-     * A secondary missile that carries the same damage list as the unit's charged one is the
-     * charged volley's own arrows, which is how the Xianbei Raider's flies even though it fires
-     * none with an ordinary shot.
-     *
-     * @param other - The attack to compare with.
-     * @returns True when both carry the same set of damage classes.
-     */
-    public hitsSameClassesAs(other: SpecialAttack): boolean {
-        const mine = new Set(this.config.attack.entries().map((entry) => entry.armourClass));
-        const theirs = new Set(other.attack.entries().map((entry) => entry.armourClass));
-
-        return mine.size === theirs.size && [...mine].every((armourClass) => theirs.has(armourClass));
     }
 
     /**
@@ -139,12 +170,18 @@ export class SpecialAttack {
      * @returns A new special attack; the receiver is left untouched.
      */
     public patched(patch: SpecialAttackPatch): SpecialAttack {
+        const missiles = patch.missiles ?? 0;
+        const charged = this.config.role === 'charge' && this.config.count !== null;
+        const volley = this.config.role === 'secondary' && this.config.maxCount !== undefined && this.config.maxCount !== null;
+
         return new SpecialAttack({
             ...this.config,
             attack: this.replicatesMain
                 ? this.config.attack
                 : this.config.attack.scaled(patch.attackMultipliers ?? []).plus(patch.attack ?? []),
             range: this.config.range + (patch.range ?? 0),
+            count: charged ? (this.config.count ?? 0) + missiles : this.config.count,
+            maxCount: volley ? (this.config.maxCount ?? 0) + missiles : this.config.maxCount,
         });
     }
 }

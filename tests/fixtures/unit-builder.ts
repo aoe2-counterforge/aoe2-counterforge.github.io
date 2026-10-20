@@ -13,6 +13,7 @@ export interface StatsOverrides {
     bonusDamageResistance?: number;
     extraProjectiles?: number;
     secondaryAttacks?: Record<string, number>;
+    extrasRepeatMain?: boolean;
     ignoresArmour?: boolean;
     resistsArmourIgnore?: boolean;
     hp?: number;
@@ -63,6 +64,7 @@ export function makeStats(overrides: StatsOverrides = {}): UnitStats {
         bonusDamageResistance: overrides.bonusDamageResistance ?? 0,
         extraProjectiles: overrides.extraProjectiles ?? 0,
         secondaryAttack: new AttackProfile({ entries: toEntries(overrides.secondaryAttacks ?? {}) }),
+        extrasRepeatMain: overrides.extrasRepeatMain ?? false,
         ignoresArmour: overrides.ignoresArmour ?? false,
         resistsArmourIgnore: overrides.resistsArmourIgnore ?? false,
         attack: new AttackProfile({ entries: toEntries(overrides.attacks ?? { 'base-melee': 10 }) }),
