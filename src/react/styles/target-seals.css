@@ -20,22 +20,21 @@
     box-shadow: inset 0 3px 5px -3px rgb(20 35 55 / 18%);
 }
 
+/* The seals line up from the left edge, as the figures under them do, each as wide as its caption. */
 .attack-targets__list {
-    display: grid;
-    /* On a wide card the seals keep to the width a phone gives them and stand in the middle, not strung across it. */
-    grid-template-columns: repeat(4, minmax(0, 5.5rem));
-    justify-content: center;
+    display: flex;
+    gap: var(--space-5);
     align-items: start;
     margin: 0;
     padding: 0;
 }
 
+/* On the narrowest phones a seal gives way by breaking its caption where a word may break, never mid-word. */
 .target-seal {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.1rem;
-    min-width: 0;
     list-style: none;
 }
 
@@ -63,8 +62,6 @@
     line-height: 1.2;
     text-align: center;
     color: var(--text-muted);
-    hyphens: auto;
-    overflow-wrap: anywhere;
 }
 
 /* A target the attack is never used against: the same seal, seen through. */
@@ -85,7 +82,20 @@
 @container attack-section (max-width: 28rem) {
     .attack-card .attack-targets {
         contain: inline-size;
-        /* The longest caption, Landeinheiten, needs the room the card's padding would take. */
-        padding-inline: var(--space-1);
+    }
+}
+
+/* Under a 360px phone the German captions only fit on one row with the seals drawn closer. */
+@container attack-section (max-width: 18rem) {
+    .attack-targets__list {
+        gap: var(--space-3);
+    }
+}
+
+/* On a phone as narrow as a folded one, a caption that still does not fit takes its seal to a second row. */
+@container attack-section (max-width: 14.5rem) {
+    .attack-targets__list {
+        flex-wrap: wrap;
+        row-gap: var(--space-2);
     }
 }
