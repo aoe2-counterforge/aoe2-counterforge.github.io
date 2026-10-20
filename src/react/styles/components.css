@@ -2250,6 +2250,29 @@ details[open] > summary::after {
     }
 }
 
+/* Under a 360px phone three columns of German labels no longer fit, so the figures fall into two. */
+@container attack-section (max-width: 18rem) {
+    .attack-cards {
+        grid-template-columns: repeat(2, auto);
+    }
+
+    .attack-card__facts > :nth-child(3n + 1):last-child,
+    .attack-card__facts > :nth-child(3n + 2):last-child {
+        grid-column: auto;
+    }
+
+    .attack-card__facts > :nth-child(2n + 1):last-child {
+        grid-column: span 2;
+    }
+}
+
+/* On a phone as narrow as a folded one, the plate of extra missiles gives its figures the room of its edges. */
+@container attack-section (max-width: 14.5rem) {
+    .attack-rider {
+        padding-inline: var(--space-2);
+    }
+}
+
 .bonus-chips {
     display: flex;
     flex-wrap: wrap;

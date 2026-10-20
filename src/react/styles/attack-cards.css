@@ -239,8 +239,8 @@
     box-shadow: 1px 0 0 rgb(255 255 255 / 85%);
 }
 
-@container attack-section (max-width: 28rem) {
-    /* On a phone the type's word would have to drop under the name, so the seal alone shows it there. */
+/* Below a 425px phone the type's word no longer fits beside every name, so the seal alone shows it there. */
+@container attack-section (max-width: 22.4rem) {
     .attack-section .attack-badge__type {
         position: absolute;
         width: 1px;
@@ -249,7 +249,35 @@
         clip-path: inset(50%);
     }
 
+    /* With the word gone the band only has to clear the seal, and a long name takes a second line rather than lose its end. */
+    .attack-section .attack-badge {
+        padding-block: 0.3rem;
+        padding-right: calc(var(--seal-size) + var(--space-3) + var(--space-2));
+    }
+
+    .attack-section .attack-badge__name {
+        line-height: 1.3;
+        white-space: normal;
+    }
+}
+
+@container attack-section (max-width: 28rem) {
+    /* The card turns into a grid here; out of its columns, the seal keeps to the card's edge as on a wide card. */
+    .attack-section .attack-card__emblem {
+        grid-column: auto;
+    }
+
     .attack-section .attack-card__facts > :nth-child(3n + 1)::before {
+        display: none;
+    }
+}
+
+@container attack-section (max-width: 18rem) {
+    .attack-section .attack-card__facts > :nth-child(3n + 1)::before {
+        display: block;
+    }
+
+    .attack-section .attack-card__facts > :nth-child(2n + 1)::before {
         display: none;
     }
 }

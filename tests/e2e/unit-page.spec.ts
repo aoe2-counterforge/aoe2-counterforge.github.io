@@ -71,15 +71,55 @@ test.describe('the attack cards of a unit', () => {
         expect(await name.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     });
 
-    test('names the damage type beside its seal where the band has room, and leaves the seal alone on a phone', async ({
-        page,
-        isMobile,
-    }) => {
+    test('names the damage type beside its seal down to a 425px phone', async ({ page }) => {
+        await page.setViewportSize({ width: 425, height: 900 });
         await page.goto('en/unit/lou-chuan');
 
         const type = await box(page.getByRole('listitem', { name: 'Main attack' }).locator('.attack-badge__type'));
 
-        expect(type.width > 1).toBe(!isMobile);
+        expect(type.width).toBeGreaterThan(1);
+    });
+
+    test('leaves the seal alone to show the damage type on a narrower phone', async ({ page }) => {
+        await page.setViewportSize({ width: 424, height: 900 });
+        await page.goto('en/unit/lou-chuan');
+
+        const type = await box(page.getByRole('listitem', { name: 'Main attack' }).locator('.attack-badge__type'));
+
+        expect(type.width).toBeLessThanOrEqual(1);
+    });
+
+    test('shrinks the cards with the page down to a folded phone, nothing inside them cut off', async ({ page }) => {
+        await page.setViewportSize({ width: 280, height: 900 });
+        await page.goto('de/unit/xianbei-raider');
+
+        const list = await box(page.locator('.attack-cards'));
+        const cards = page.locator('.attack-card');
+        const edges = await cards.evaluateAll((items) => items.map((card) => card.getBoundingClientRect().right));
+        const sticking = await cards.evaluateAll((items) =>
+            items.flatMap((card) =>
+                [...card.querySelectorAll('*')].filter(
+                    (element) =>
+                        !element.closest('.attack-card__emblem') &&
+                        element.getBoundingClientRect().right > card.getBoundingClientRect().right + 0.5,
+                ),
+            ).length,
+        );
+
+        expect([Math.max(...edges) <= right(list) + 0.5, sticking]).toEqual([true, 0]);
+    });
+
+    test('lines the target seals up from the left, under the first figure, an even gap apart', async ({ page }) => {
+        await page.goto('en/unit/lou-chuan');
+
+        const card = page.getByRole('listitem', { name: 'Main attack' });
+        const seals = await card
+            .locator('.target-seal')
+            .evaluateAll((items) => items.map((seal) => [seal.getBoundingClientRect().left, seal.getBoundingClientRect().right]));
+        const damage = await box(card.locator('.attack-fact[data-stat="damage"]'));
+        const gaps = seals.slice(1).map(([left], index) => Math.round((left ?? 0) - (seals[index]?.[1] ?? 0)));
+
+        expect([Math.abs((seals[0]?.[0] ?? 0) - damage.x) < 1, new Set(gaps).size]).toEqual([true, 1]);
     });
 
     test('runs the body on right under the band, the damage seal hanging over it clear of the targets', async ({ page }) => {
