@@ -93,7 +93,32 @@
             "perShot_other": "{{count}} proyectiles por disparo",
             "upTo_one": "hasta {{count}} proyectil",
             "upTo_other": "hasta {{count}} proyectiles",
-            "upToShort": "hasta ×{{count}}"
+            "upToShort": "hasta ×{{count}}",
+            "targets": {
+                "land": "unidades terrestres",
+                "ship": "barcos",
+                "siege": "asedio",
+                "building": "edificios"
+            },
+            "against": "Contra {{targets}}",
+            "never": "Nunca contra {{targets}}",
+            "replacesShot": "Sustituye un disparo normal",
+            "slows": "Ralentiza al objetivo un {{share}}% durante {{seconds}}",
+            "abilities": {
+                "blow": "Golpe cargado",
+                "blast": "Golpe en área",
+                "dodge": "Esquiva",
+                "block": "Bloqueo"
+            },
+            "abilityNotes": {
+                "blow": "Se suma a un golpe",
+                "blast": "Se suma a un golpe; las unidades alrededor del objetivo reciben el {{share}}%",
+                "dodge": "Esquiva proyectiles y recupera uno cada vez",
+                "block": "No recibe daño de un golpe cuerpo a cuerpo"
+            },
+            "dodges": "Esquivas",
+            "regain": "Recupera",
+            "area": "Área"
         }
     },
     "stats": {
@@ -298,12 +323,16 @@
                 "charge": {
                     "attack": "{{value}} de ataque de carga{{against}}",
                     "attackPercent": "{{value}}% de ataque de carga{{against}}",
-                    "range": "{{value}} de alcance del ataque de carga"
+                    "range": "{{value}} de alcance del ataque de carga",
+                    "missiles_one": "{{value}} proyectil de carga",
+                    "missiles_other": "{{value}} proyectiles de carga"
                 },
                 "secondary": {
                     "attack": "{{value}} de ataque de los proyectiles extra{{against}}",
                     "attackPercent": "{{value}}% de ataque de los proyectiles extra{{against}}",
-                    "aftereffect": "Sus proyectiles extra dejan un efecto duradero"
+                    "aftereffect": "Sus proyectiles extra dejan un efecto duradero",
+                    "missiles_one": "{{value}} proyectil en la ráfaga de carga",
+                    "missiles_other": "{{value}} proyectiles en la ráfaga de carga"
                 }
             }
         },

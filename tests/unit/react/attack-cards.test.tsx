@@ -5,6 +5,7 @@ import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createI18n } from '../../../src/i18n/index.ts';
 import { AttackProfile } from '../../../src/domain/values/attack-profile.ts';
+import { ChargeAbility } from '../../../src/domain/values/charge-ability.ts';
 import { SpecialAttack } from '../../../src/domain/values/special-attack.ts';
 import { AttackCards } from '../../../src/react/components/attack-cards.tsx';
 import { makeStats } from '../../fixtures/unit-builder.ts';
@@ -170,5 +171,53 @@ describe('AttackCards', () => {
         render(<AttackCards stats={upgraded} compareWith={bow} base={[]} />);
 
         expect(spoken('Main attack')).toMatch(/Damage7\+2Reload2 sRange5\+1/);
+    });
+});
+
+describe('AttackCards abilities and targets', () => {
+    const sword = makeStats({ attacks: { 'base-melee': 9 }, reloadTime: 2 });
+
+    it('gives a charged blast a card with its bonus, recharge, reach and share', () => {
+        const ability = new ChargeAbility({
+            kind: 'blast',
+            capacity: 12,
+            rechargeRate: 0.5,
+            blast: { radius: 0.75, share: 0.5 },
+        });
+
+        render(<AttackCards stats={sword} base={[]} ability={ability} />);
+
+        const text = screen.getByRole('listitem', { name: 'Charged blast' }).textContent ?? '';
+        expect(['Damage+12', 'Recharge24 s', 'Area0.75', 'take 50%'].map((part) => text.includes(part))).toEqual([
+            true,
+            true,
+            true,
+            true,
+        ]);
+    });
+
+    it('counts the missiles a dodge holds and the time to win one back', () => {
+        const ability = new ChargeAbility({ kind: 'dodge', capacity: 5, rechargeRate: 0.25 });
+
+        render(<AttackCards stats={sword} base={[]} ability={ability} />);
+
+        const text = screen.getByRole('listitem', { name: 'Dodge' }).textContent ?? '';
+        expect(['Dodges5', 'Regain4 s'].map((part) => text.includes(part))).toEqual([true, true]);
+    });
+
+    it('names the targets a charge spent on every attack leaves to the main attack', () => {
+        const fire = new SpecialAttack({
+            role: 'charge',
+            projectile: 2713,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-melee', amount: 8 }] }),
+            range: 3,
+            count: 1,
+            charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets: ['ship', 'building'] },
+        });
+
+        render(<AttackCards stats={sword} base={[fire]} />);
+
+        const lines = screen.getAllByText(/^Against /).map((line) => line.textContent);
+        expect(lines).toEqual(['Against land units and siege', 'Against ships and buildings']);
     });
 });

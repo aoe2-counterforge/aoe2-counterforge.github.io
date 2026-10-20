@@ -93,7 +93,32 @@
             "perShot_other": "{{count}} Geschosse pro Schuss",
             "upTo_one": "bis zu {{count}} Geschoss",
             "upTo_other": "bis zu {{count}} Geschosse",
-            "upToShort": "bis zu ×{{count}}"
+            "upToShort": "bis zu ×{{count}}",
+            "targets": {
+                "land": "Land\u00adeinheiten",
+                "ship": "Schiffe",
+                "siege": "Belagerungs\u00adwaffen",
+                "building": "Gebäude"
+            },
+            "against": "Gegen {{targets}}",
+            "never": "Nie gegen {{targets}}",
+            "replacesShot": "Ersetzt einen normalen Schuss",
+            "slows": "Verlangsamt das Ziel {{seconds}} lang um {{share}} %",
+            "abilities": {
+                "blow": "Aufgeladener Hieb",
+                "blast": "Flächen\u00adhieb",
+                "dodge": "Ausweichen",
+                "block": "Abwehr"
+            },
+            "abilityNotes": {
+                "blow": "Kommt zu einem Treffer hinzu",
+                "blast": "Kommt zu einem Treffer hinzu; Einheiten um das Ziel erleiden {{share}} %",
+                "dodge": "Weicht Geschossen aus und gewinnt sie einzeln zurück",
+                "block": "Nimmt von einem Nahkampfhieb keinen Schaden"
+            },
+            "dodges": "Ausweichen",
+            "regain": "Erholung",
+            "area": "Fläche"
         }
     },
     "stats": {
@@ -298,12 +323,16 @@
                 "charge": {
                     "attack": "{{value}} Ladungsangriff{{against}}",
                     "attackPercent": "{{value}}% Ladungsangriff{{against}}",
-                    "range": "{{value}} Reichweite des Ladungsangriffs"
+                    "range": "{{value}} Reichweite des Ladungsangriffs",
+                    "missiles_one": "{{value}} Ladungsgeschoss",
+                    "missiles_other": "{{value}} Ladungsgeschosse"
                 },
                 "secondary": {
                     "attack": "{{value}} Angriff der Zusatzgeschosse{{against}}",
                     "attackPercent": "{{value}}% Angriff der Zusatzgeschosse{{against}}",
-                    "aftereffect": "Seine Zusatzgeschosse wirken nach"
+                    "aftereffect": "Seine Zusatzgeschosse wirken nach",
+                    "missiles_one": "{{value}} Geschoss in der Ladungssalve",
+                    "missiles_other": "{{value}} Geschosse in der Ladungssalve"
                 }
             }
         },

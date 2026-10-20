@@ -1,10 +1,19 @@
 import { useId, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TargetGroup } from '../../domain/enums/charge-target.ts';
 import type { ProjectileRole } from '../../domain/enums/projectile-role.ts';
+import type { ChargeAbility, ChargeAbilityKind } from '../../domain/values/charge-ability.ts';
 import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
-import { attackCards, type AttackCard, type CardCadence, type MissileCount, type Strike } from '../attack-rows.ts';
-import { short } from '../format.ts';
+import {
+    attackCards,
+    type AttackCard,
+    type CardCadence,
+    type MissileCount,
+    type Strike,
+    type TargetNote,
+} from '../attack-rows.ts';
+import { precise, short } from '../format.ts';
 import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
 
@@ -17,6 +26,8 @@ export interface AttackCardsProps {
     base: readonly SpecialAttack[];
     /** The same attacks with technologies applied, when the reader asked for them. */
     upgraded?: readonly SpecialAttack[];
+    /** A charge the unit spends on its own blows or its own defence, shown as a card of its own. */
+    ability?: ChargeAbility | null;
 }
 
 /** The game's attack stat is a sword whatever the unit wields, so the main attack keeps it. */
@@ -137,16 +148,23 @@ function TypeFact({ type }: { type: DamageType }) {
     );
 }
 
+interface RoleBadgeProps {
+    glyph: IconName;
+    name: string;
+    type: DamageType | null;
+    nameId: string;
+}
+
 /** What the attack is and which armour it goes through, as one badge heading the card. */
-function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageType | null; nameId: string }) {
+function RoleBadge({ glyph, name, type, nameId }: RoleBadgeProps) {
     const { t } = useTranslation();
 
     return (
         <p className="attack-badge">
             <span className="attack-badge__role">
-                <Icon name={ROLE_GLYPHS[role]} />
+                <Icon name={glyph} />
                 <span id={nameId} className="attack-badge__name">
-                    {t(ROLE_NAMES[role])}
+                    {name}
                 </span>
             </span>
             {type ? (
@@ -160,6 +178,101 @@ function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageT
 }
 
 /**
+ * Which targets an attack is used against, or never used against, named by group in the reader's language.
+ *
+ * @param props.note - The groups and whether the attack is for them or kept from them.
+ */
+function TargetLine({ note }: { note: TargetNote }) {
+    const { t, i18n } = useTranslation();
+    const list = new Intl.ListFormat(i18n.language, { type: note.kind === 'against' ? 'conjunction' : 'disjunction' });
+    const targets = list.format(note.groups.map((group: TargetGroup) => t(`unit.attacks.targets.${group}`)));
+
+    return (
+        <p className="attack-note attack-note--targets" data-targets={note.kind}>
+            {t(`unit.attacks.${note.kind}`, { targets })}
+        </p>
+    );
+}
+
+/** The glyph each ability is drawn with: the charge's bolt for a charged blow, the burst for one that spreads. */
+const ABILITY_GLYPHS: Record<ChargeAbilityKind, IconName> = {
+    blow: 'charge',
+    blast: 'blast',
+    dodge: 'dodge',
+    block: 'block',
+};
+
+/** A dodge answers missiles and a block answers blows, so each is sealed with the armour it stands in for. */
+const ABILITY_SEALS: Record<ChargeAbilityKind, DamageType> = {
+    blow: 'melee',
+    blast: 'melee',
+    dodge: 'pierce',
+    block: 'melee',
+};
+
+/**
+ * A charge the unit spends on its own blows or its own defence, as a card of the same family.
+ *
+ * A charged blow is damage, so it reads like an attack: its bonus beside its recharge. A dodge
+ * counts missiles and the time to win one back; a block only needs its recharge.
+ *
+ * @param props.ability - The ability, as the game data gives it.
+ */
+function AbilityCardItem({ ability }: { ability: ChargeAbility }) {
+    const { t } = useTranslation();
+    const seconds = useSeconds();
+    const nameId = useId();
+    const strikes = ability.kind === 'blow' || ability.kind === 'blast';
+    const seal = ABILITY_SEALS[ability.kind];
+
+    return (
+        <li
+            className={`attack-card attack-card--charge attack-card--ability attack-card--${ability.kind}`}
+            data-type={seal}
+            data-ability={ability.kind}
+            aria-labelledby={nameId}
+        >
+            <span className="attack-card__emblem" aria-hidden="true">
+                <Icon name={TYPE_GLYPHS[seal]} />
+            </span>
+            <RoleBadge
+                glyph={ABILITY_GLYPHS[ability.kind]}
+                name={t(`unit.attacks.abilities.${ability.kind}`)}
+                type={strikes ? seal : null}
+                nameId={nameId}
+            />
+            <div className="attack-card__facts">
+                {strikes ? (
+                    <Fact kind="damage" icon="damage" type="melee" label={t('unit.attacks.damage')}>
+                        +{short(ability.amount)}
+                    </Fact>
+                ) : null}
+                {ability.kind === 'dodge' ? (
+                    <Fact kind="count" icon="projectiles" label={t('unit.attacks.dodges')}>
+                        {short(ability.amount)}
+                    </Fact>
+                ) : null}
+                <Fact
+                    kind="recharge"
+                    icon="recharge"
+                    label={t(ability.kind === 'dodge' ? 'unit.attacks.regain' : 'unit.attacks.recharge')}
+                >
+                    {seconds(ability.cycleTime())}
+                </Fact>
+                {ability.blast ? (
+                    <Fact kind="range" icon="blast" label={t('unit.attacks.area')}>
+                        {precise(ability.blast.radius)}
+                    </Fact>
+                ) : null}
+            </div>
+            <p className="attack-note">
+                {t(`unit.attacks.abilityNotes.${ability.kind}`, { share: short((ability.blast?.share ?? 0) * 100) })}
+            </p>
+        </li>
+    );
+}
+
+/**
  * The figures run damage, rhythm, reach, so that on a phone, where they fall into three columns,
  * each sits over the same figure of the card above.
  *
@@ -168,6 +281,7 @@ function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageT
  */
 function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
+    const seconds = useSeconds();
     const nameId = useId();
     const { strike, rider } = card;
     const type = strike.attack.damageType();
@@ -181,7 +295,8 @@ function AttackCardItem({ card }: { card: AttackCard }) {
                     <Icon name={TYPE_GLYPHS[type]} />
                 </span>
             ) : null}
-            <RoleBadge role={card.role} type={type} nameId={nameId} />
+            <RoleBadge glyph={ROLE_GLYPHS[card.role]} name={t(ROLE_NAMES[card.role])} type={type} nameId={nameId} />
+            {card.targets ? <TargetLine note={card.targets} /> : null}
             <div className="attack-card__facts">
                 <DamageFact strike={strike} />
                 {cadence ? <CadenceFact cadence={cadence} /> : null}
@@ -194,6 +309,12 @@ function AttackCardItem({ card }: { card: AttackCard }) {
                 ) : null}
             </div>
             <BonusChips attack={strike.attack} compareWith={strike.before} />
+            {card.replacesShot ? <p className="attack-note">{t('unit.attacks.replacesShot')}</p> : null}
+            {card.slows ? (
+                <p className="attack-note">
+                    {t('unit.attacks.slows', { share: short(card.slows.share * 100), seconds: seconds(card.slows.seconds) })}
+                </p>
+            ) : null}
             {rider?.count ? (
                 <div className="attack-rider">
                     <div className="attack-card__facts">
@@ -221,12 +342,13 @@ function AttackCardItem({ card }: { card: AttackCard }) {
  * @param props.compareWith - What the technologies are measured against.
  * @param props.base - The unit's active special attacks as it stands.
  * @param props.upgraded - The same attacks with technologies applied, when asked for.
+ * @param props.ability - A charge spent on the unit's own blows or defence, which gets a card after the attacks.
  */
-export function AttackCards({ stats, compareWith, base, upgraded }: AttackCardsProps) {
+export function AttackCards({ stats, compareWith, base, upgraded, ability }: AttackCardsProps) {
     const { t } = useTranslation();
     const titleId = useId();
     const cards = attackCards({ stats, compareWith, base, upgraded });
-    if (cards.length === 0) return null;
+    if (cards.length === 0 && !ability) return null;
 
     return (
         <section className="attack-section" aria-labelledby={titleId}>
@@ -237,6 +359,7 @@ export function AttackCards({ stats, compareWith, base, upgraded }: AttackCardsP
                 {cards.map((card) => (
                     <AttackCardItem key={card.role} card={card} />
                 ))}
+                {ability ? <AbilityCardItem ability={ability} /> : null}
             </ul>
         </section>
     );

@@ -132,3 +132,60 @@ describe('attackCards', () => {
         expect(cards.map((card) => card.hasMinimumRange)).toEqual([true, false]);
     });
 });
+
+describe('attackCards targets and missiles', () => {
+    const LAND = ['infantry', 'cavalry', 'archer', 'cavalry-archer', 'monk', 'villager'] as const;
+
+    function arrows(rechargeRate: number, count = 10): SpecialAttack {
+        return new SpecialAttack({
+            role: 'charge',
+            projectile: 1936,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-pierce', amount: 5 }] }),
+            range: 10,
+            count,
+            charge: { capacity: 1, rechargeRate, kind: 'missiles', targets: [...LAND, 'ship'] },
+        });
+    }
+
+    const trebuchet = makeStats({ attacks: { 'base-melee': 25 }, range: 13, reloadTime: 5.5 });
+
+    it('splits the targets between the main card and a charge spent on every attack', () => {
+        const cards = attackCards({ stats: trebuchet, base: [arrows(100000)] });
+
+        expect(cards.map((card) => card.targets)).toEqual([
+            { kind: 'against', groups: ['siege', 'building'] },
+            { kind: 'against', groups: ['land', 'ship'] },
+        ]);
+    });
+
+    it('only says which targets a charge that takes its time is never used against', () => {
+        const cards = attackCards({ stats: trebuchet, base: [arrows(0.067, 1)] });
+
+        expect(cards.map((card) => card.targets)).toEqual([null, { kind: 'never', groups: ['siege', 'building'] }]);
+    });
+
+    it('counts the charged missiles when the charge fires more than one', () => {
+        const cards = attackCards({ stats: trebuchet, base: [arrows(100000)] });
+
+        expect(cards[1]?.strike.count).toEqual({ kind: 'perShot', amount: 10 });
+    });
+
+    it('says a charge that takes its time replaces one of a shooter ordinary shots', () => {
+        const cards = attackCards({ stats: trebuchet, base: [arrows(0.17, 1)] });
+
+        expect(cards.map((card) => card.replacesShot)).toEqual([false, true]);
+    });
+
+    it('counts copies of the main missile on the main card', () => {
+        const stats = makeStats({
+            attacks: { 'base-pierce': 9 },
+            range: 6,
+            extraProjectiles: 2,
+            extrasRepeatMain: true,
+        });
+
+        const cards = attackCards({ stats, base: [] });
+
+        expect(cards[0]?.strike.count).toEqual({ kind: 'perShot', amount: 3 });
+    });
+});

@@ -73,6 +73,7 @@ export function UnitOverviewPanel({ unit, upgradedStats, upgradedSpecialAttacks 
                     compareWith={mode === 'base' ? undefined : unit.stats}
                     base={unit.activeSpecialAttacks}
                     upgraded={mode === 'base' ? undefined : upgradedSpecialAttacks}
+                    ability={unit.chargeAbility}
                 />
                 {classes.length > 0 ? (
                     <section className="attack-section">

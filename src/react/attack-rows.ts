@@ -1,6 +1,7 @@
+import type { TargetGroup } from '../domain/enums/charge-target.ts';
 import type { ProjectileRole } from '../domain/enums/projectile-role.ts';
 import type { AttackProfile } from '../domain/values/attack-profile.ts';
-import type { SpecialAttack } from '../domain/values/special-attack.ts';
+import type { Slow, SpecialAttack } from '../domain/values/special-attack.ts';
 import type { UnitStats } from '../domain/values/unit-stats.ts';
 
 /** A charge that refills in less than this reads as ready again at once. */
@@ -65,7 +66,7 @@ export function attackRows(base: readonly SpecialAttack[], upgraded?: readonly S
     const earlier = (attack: SpecialAttack) =>
         upgraded ? base.find((entry) => entry.role === attack.role) : undefined;
     const hasCharge = shown.some((attack) => attack.role === 'charge');
-    const inVolley = (attack: SpecialAttack) => hasCharge && attack.role === 'secondary' && (attack.count ?? 0) === 0;
+    const inVolley = (attack: SpecialAttack) => hasCharge && attack.fliesOnlyInVolley();
     const extra = shown.find(inVolley);
 
     return shown
@@ -96,6 +97,18 @@ export interface Strike {
     count: MissileCount | null;
 }
 
+/**
+ * Which targets an attack card's attack is used against, named by group.
+ *
+ * A charge that refills at once is spent on every attack at the targets it names, so the card says
+ * which they are and the main attack's card says which are left to it. A charge that takes its
+ * time only says which targets it is never used against.
+ */
+export interface TargetNote {
+    kind: 'against' | 'never';
+    groups: readonly TargetGroup[];
+}
+
 /** How often an attack card's attack comes off, the main one's reload included. */
 export type CardCadence = Cadence | { kind: 'reload'; seconds: number; before: number | undefined };
 
@@ -112,6 +125,12 @@ export interface AttackCard {
     rangeBefore: number | undefined;
     /** Whether the attack cannot reach closer in either, so its range is the far end of a band. */
     hasMinimumRange: boolean;
+    /** Which targets it is used against, when the game tells a charge to pick them. */
+    targets: TargetNote | null;
+    /** Whether a charged attack takes the place of one of the unit's ordinary shots. */
+    replacesShot: boolean;
+    /** How its missile slows what it hits, when it does. */
+    slows: Slow | null;
 }
 
 export interface AttackCardsInput {
@@ -127,11 +146,13 @@ export interface AttackCardsInput {
 
 function strikeOf(row: AttackRow): Strike {
     const perShot = row.attack.count ?? 0;
+    // A charged attack names its count only when it fires more than the one missile.
+    const counted = row.role === 'secondary' ? perShot > 0 : row.role === 'charge' && perShot > 1;
 
     return {
         attack: row.attack.attack,
         before: row.before?.attack,
-        count: row.role === 'secondary' && perShot > 0 ? { kind: 'perShot', amount: perShot } : null,
+        count: counted ? { kind: 'perShot', amount: perShot } : null,
     };
 }
 
@@ -148,7 +169,12 @@ function riderOf({ volley }: AttackRow): Strike | null {
  * Giving the main attack the same card as the others is what lets a reader compare them at a
  * glance; a unit that cannot attack gets no main card. Extra missiles ride on the card of the shot
  * they leave with: the ones every shot carries on the main attack, the ones only a charged volley
- * carries on the charged attack, so each card is one shot.
+ * carries on the charged attack, so each card is one shot. Copies of the main missile are no
+ * separate attack at all, only a count on the main card.
+ *
+ * A charge that refills at once and names its targets splits the unit's attacks between them: the
+ * Lou Chuan looses its arrows at units and ships and its trebuchet shot at the rest, so each card
+ * says which targets it is for.
  *
  * @param input - The stat line and special attacks to lay out, base or upgraded.
  * @returns The cards, in the order they are shown.
@@ -158,11 +184,19 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
     const hasMain = stats.attack.displayValue > 0;
     // The file fires a unit's missiles per shot: the first with the shooter's own attack, the rest as its secondary missile.
     const everyShot = hasMain ? rows.find((row) => row.role === 'secondary' && (row.attack.count ?? 0) > 0) : undefined;
+    const charge = rows.find((row) => row.role === 'charge')?.attack;
+    const groups = charge?.targetGroups() ?? null;
+    const instant = charge !== undefined && cadenceOf(charge)?.kind === 'eachAttack';
+    const copies = stats.extrasRepeatMain ? stats.extraProjectiles : 0;
     const main: AttackCard[] = hasMain
         ? [
               {
                   role: 'main',
-                  strike: { attack: stats.attack, before: compareWith?.attack, count: null },
+                  strike: {
+                      attack: stats.attack,
+                      before: compareWith?.attack,
+                      count: copies > 0 ? { kind: 'perShot', amount: copies + 1 } : null,
+                  },
                   rider: everyShot ? strikeOf(everyShot) : null,
                   cadence:
                       stats.reloadTime > 0
@@ -171,6 +205,9 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
                   range: stats.range,
                   rangeBefore: compareWith?.range,
                   hasMinimumRange: stats.minRange > 0,
+                  targets: groups && instant ? { kind: 'against', groups: groups.without } : null,
+                  replacesShot: false,
+                  slows: null,
               },
           ]
         : [];
@@ -179,14 +216,27 @@ export function attackCards({ stats, compareWith, base, upgraded }: AttackCardsI
         ...main,
         ...rows
             .filter((row) => row !== everyShot)
-            .map((row) => ({
-                role: row.role,
-                strike: strikeOf(row),
-                rider: riderOf(row),
-                cadence: cadenceOf(row.attack),
-                range: row.attack.range,
-                rangeBefore: row.before?.range,
-                hasMinimumRange: false,
-            })),
+            .map((row): AttackCard => {
+                const cadence = cadenceOf(row.attack);
+                const charged = row.role === 'charge';
+
+                return {
+                    role: row.role,
+                    strike: strikeOf(row),
+                    rider: riderOf(row),
+                    cadence,
+                    range: row.attack.range,
+                    rangeBefore: row.before?.range,
+                    hasMinimumRange: false,
+                    targets:
+                        charged && groups
+                            ? instant
+                                ? { kind: 'against', groups: groups.within }
+                                : { kind: 'never', groups: groups.without }
+                            : null,
+                    replacesShot: charged && hasMain && stats.isRanged() && cadence?.kind === 'recharge',
+                    slows: row.attack.slows,
+                };
+            }),
     ];
 }

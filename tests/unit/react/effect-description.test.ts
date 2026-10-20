@@ -195,6 +195,12 @@ describe('describeEffect special attacks', () => {
         expect(labels).toEqual(['+25% charged attack vs Ships', '+2 charged attack']);
     });
 
+    it('counts the missiles a technology adds to a charged attack and to its volley', () => {
+        const labels = describeEffect({ special: { charge: { missiles: 3 }, secondary: { missiles: 1 } } }, t);
+
+        expect(labels).toEqual(['+1 missile in the charged volley', '+3 charged missiles']);
+    });
+
     it('says the extra projectiles leave a lingering effect', () => {
         const labels = describeEffect({ special: { secondary: { aftereffect: true } } }, t);
 

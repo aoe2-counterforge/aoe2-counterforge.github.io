@@ -192,6 +192,9 @@ export function describeSpecial(special: SpecialDeltas | undefined, t: TFunction
         labels.push(...scaledLabels(change.attackMultipliers, `${base}.attackPercent`, t));
         labels.push(...addedLabels(change.attack, `${base}.attack`, t));
         if (change.range !== undefined) labels.push(t(`${base}.range`, { value: delta(change.range) }));
+        if (change.missiles !== undefined) {
+            labels.push(t(`${base}.missiles`, { value: delta(change.missiles), count: Math.abs(change.missiles) }));
+        }
         if (change.aftereffect) labels.push(t(`${base}.aftereffect`));
     }
 
@@ -240,6 +243,7 @@ function divided(change: StatDelta, ages: number): StatDelta {
         lineOfSight: share(change.lineOfSight),
         speed: share(change.speed),
         projectiles: share(change.projectiles),
+        missiles: share(change.missiles),
         blastWidth: share(change.blastWidth),
         regeneration: share(change.regeneration),
         reloadTime: share(change.reloadTime),

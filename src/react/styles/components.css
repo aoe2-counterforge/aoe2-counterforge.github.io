@@ -2147,6 +2147,19 @@ details[open] > summary::after {
     line-height: 1.25;
 }
 
+/* A line of words on a card: which targets the attack picks, or what else it does that no figure says. */
+.attack-note {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--text-muted);
+}
+
+.attack-note--targets {
+    font-weight: 600;
+    color: var(--text);
+}
+
 /* Extra missiles hang inside the card of the shot they fly with, so each card reads as one shot. */
 .attack-rider {
     display: flex;
@@ -2190,7 +2203,8 @@ details[open] > summary::after {
 
     /* Only the figures size the columns: a row of chips laid end to end would otherwise widen all three alike. */
     .attack-card .attack-badge,
-    .attack-card .bonus-chips {
+    .attack-card .bonus-chips,
+    .attack-card .attack-note {
         contain: inline-size;
     }
 

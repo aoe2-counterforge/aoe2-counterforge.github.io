@@ -93,7 +93,32 @@
             "perShot_other": "{{count}} missiles per shot",
             "upTo_one": "up to {{count}} missile",
             "upTo_other": "up to {{count}} missiles",
-            "upToShort": "up to ×{{count}}"
+            "upToShort": "up to ×{{count}}",
+            "targets": {
+                "land": "land units",
+                "ship": "ships",
+                "siege": "siege",
+                "building": "buildings"
+            },
+            "against": "Against {{targets}}",
+            "never": "Never against {{targets}}",
+            "replacesShot": "Replaces a regular shot",
+            "slows": "Slows the target by {{share}}% for {{seconds}}",
+            "abilities": {
+                "blow": "Charged blow",
+                "blast": "Charged blast",
+                "dodge": "Dodge",
+                "block": "Block"
+            },
+            "abilityNotes": {
+                "blow": "Added to one hit",
+                "blast": "Added to one hit; units around the target take {{share}}%",
+                "dodge": "Dodges missiles, winning one back at a time",
+                "block": "Takes no damage from one melee blow"
+            },
+            "dodges": "Dodges",
+            "regain": "Regain",
+            "area": "Area"
         }
     },
     "stats": {
@@ -298,12 +323,16 @@
                 "charge": {
                     "attack": "{{value}} charged attack{{against}}",
                     "attackPercent": "{{value}}% charged attack{{against}}",
-                    "range": "{{value}} charged attack range"
+                    "range": "{{value}} charged attack range",
+                    "missiles_one": "{{value}} charged missile",
+                    "missiles_other": "{{value}} charged missiles"
                 },
                 "secondary": {
                     "attack": "{{value}} extra projectile attack{{against}}",
                     "attackPercent": "{{value}}% extra projectile attack{{against}}",
-                    "aftereffect": "Its extra projectiles leave a lingering effect"
+                    "aftereffect": "Its extra projectiles leave a lingering effect",
+                    "missiles_one": "{{value}} missile in the charged volley",
+                    "missiles_other": "{{value}} missiles in the charged volley"
                 }
             }
         },

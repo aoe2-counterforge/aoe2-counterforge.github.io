@@ -93,7 +93,32 @@
             "perShot_other": "{{count}} projectiles par tir",
             "upTo_one": "jusqu'à {{count}} projectile",
             "upTo_other": "jusqu'à {{count}} projectiles",
-            "upToShort": "jusqu'à ×{{count}}"
+            "upToShort": "jusqu'à ×{{count}}",
+            "targets": {
+                "land": "les unités terrestres",
+                "ship": "les navires",
+                "siege": "les engins de siège",
+                "building": "les bâtiments"
+            },
+            "against": "Contre {{targets}}",
+            "never": "Jamais contre {{targets}}",
+            "replacesShot": "Remplace un tir normal",
+            "slows": "Ralentit la cible de {{share}} % pendant {{seconds}}",
+            "abilities": {
+                "blow": "Coup chargé",
+                "blast": "Coup de zone",
+                "dodge": "Esquive",
+                "block": "Parade"
+            },
+            "abilityNotes": {
+                "blow": "S'ajoute à un coup",
+                "blast": "S'ajoute à un coup ; les unités autour de la cible subissent {{share}} %",
+                "dodge": "Esquive les projectiles et en regagne un à la fois",
+                "block": "Ne subit aucun dégât d'un coup de mêlée"
+            },
+            "dodges": "Esquives",
+            "regain": "Regain",
+            "area": "Zone"
         }
     },
     "stats": {
@@ -298,12 +323,16 @@
                 "charge": {
                     "attack": "{{value}} d'attaque chargée{{against}}",
                     "attackPercent": "{{value}}% d'attaque chargée{{against}}",
-                    "range": "{{value}} de portée de l'attaque chargée"
+                    "range": "{{value}} de portée de l'attaque chargée",
+                    "missiles_one": "{{value}} projectile chargé",
+                    "missiles_other": "{{value}} projectiles chargés"
                 },
                 "secondary": {
                     "attack": "{{value}} d'attaque des projectiles supplémentaires{{against}}",
                     "attackPercent": "{{value}}% d'attaque des projectiles supplémentaires{{against}}",
-                    "aftereffect": "Ses projectiles supplémentaires laissent un effet durable"
+                    "aftereffect": "Ses projectiles supplémentaires laissent un effet durable",
+                    "missiles_one": "{{value}} projectile dans la salve chargée",
+                    "missiles_other": "{{value}} projectiles dans la salve chargée"
                 }
             }
         },
