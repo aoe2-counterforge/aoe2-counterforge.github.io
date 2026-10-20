@@ -96,7 +96,7 @@ const idOf = (key: string) => unitByKey(key)?.id;
 const effects: TechEffectRecord[] = dataset.technologies[0]?.effects ?? [];
 
 describe('DatasetBuilder special attacks', () => {
-    it('reads a charged attack off the charged missile, reaching the range plus the charge event', () => {
+    it('reads a charged attack off the charged missile', () => {
         const attacks = unitByKey('fire-archer')?.specialAttacks;
 
         expect(attacks).toEqual([
@@ -104,7 +104,7 @@ describe('DatasetBuilder special attacks', () => {
                 role: 'charge',
                 projectile: 90,
                 attacks: [{ class: 'base-pierce', amount: 5 }],
-                range: 5,
+                range: 9,
                 charge: { capacity: 20, rechargeRate: 2 },
             },
         ]);

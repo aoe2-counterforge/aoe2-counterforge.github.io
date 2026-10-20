@@ -1,5 +1,6 @@
 import type { ArmourClass } from '../../src/domain/enums/armour-class.ts';
 import type {
+    ChargeAbilityRecord,
     CivilizationRecord,
     ClassAmountRecord,
     CostRecord,
@@ -39,6 +40,9 @@ export interface UnitRecordOverrides {
     inTechTree?: boolean;
     uniqueTo?: string | null;
     specialAttacks?: SpecialAttackRecord[];
+    extraProjectiles?: number;
+    extrasRepeatMain?: boolean;
+    chargeAbility?: ChargeAbilityRecord | null;
 }
 
 /**
@@ -66,9 +70,11 @@ export function unitRecord(overrides: UnitRecordOverrides): UnitRecord {
         hp: overrides.hp ?? 100,
         baseArmour: 10000,
         bonusDamageResistance: 0,
-        extraProjectiles: 0,
+        extraProjectiles: overrides.extraProjectiles ?? 0,
         secondaryAttacks: [],
+        extrasRepeatMain: overrides.extrasRepeatMain ?? false,
         specialAttacks: overrides.specialAttacks ?? [],
+        chargeAbility: overrides.chargeAbility ?? null,
         ignoresArmour: false,
         resistsArmourIgnore: false,
         attacks: toClassAmounts(overrides.attacks ?? { 'base-melee': 10 }),

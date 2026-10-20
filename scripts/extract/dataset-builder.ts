@@ -1,5 +1,8 @@
 import type {
     CarryUpgradeRecord,
+    ChargeAbilityKindRecord,
+    ChargeAbilityRecord,
+    ChargeTargetRecord,
     CivilizationRecord,
     CivilizationTextRecord,
     ClassAmountRecord,
@@ -8,6 +11,7 @@ import type {
     FarmUpgradeRecord,
     GatherUpgradeRecord,
     ProjectileRoleRecord,
+    SlowRecord,
     SpecialAttackRecord,
     TechEffectRecord,
     TechnologyRecord,
@@ -186,6 +190,7 @@ const ATTRIBUTES: Record<number, string> = {
     104: 'costWood',
     105: 'costGold',
     106: 'costStone',
+    107: 'maxProjectiles',
     109: 'regeneration',
     110: 'population',
     118: 'damageReflection',
@@ -194,6 +199,51 @@ const ATTRIBUTES: Record<number, string> = {
 
 /** The attribute that counts the missiles a unit puts in the air with each shot. */
 const PROJECTILES_ATTRIBUTE = 102;
+
+/**
+ * What each charge type of the file does, for the ones the guide reads.
+ *
+ * The meanings are the ones the community's scenario guide gives the field (ugc.aoe2.rocks,
+ * attribute 62), each checked against blows and shots measured in the game: a charged blow adds
+ * the charge to one hit, an area one also lands on the units around the target, agility dodges
+ * missiles, the next blocks a melee blow, and the last two fire the charged missile.
+ */
+const CHARGE_TYPES: Record<number, ChargeAbilityKindRecord | 'missiles' | 'volley'> = {
+    1: 'blow',
+    3: 'blast',
+    4: 'dodge',
+    5: 'block',
+    6: 'missiles',
+    7: 'volley',
+};
+
+/**
+ * The bits of the charge target field, as the Advanced Genie Editor labels its checkboxes.
+ *
+ * Shots measured in the game agree with them: a Lou Chuan, whose field leaves out siege and
+ * buildings, never looses its arrows at a Mangonel or a House.
+ */
+const CHARGE_TARGET_BITS: readonly (readonly [number, ChargeTargetRecord])[] = [
+    [1, 'infantry'],
+    [2, 'cavalry'],
+    [4, 'archer'],
+    [8, 'cavalry-archer'],
+    [16, 'monk'],
+    [32, 'villager'],
+    [64, 'ship'],
+    [128, 'siege'],
+    [256, 'building'],
+];
+
+/**
+ * The task a missile carries to change what it hits for a while, and how it says so.
+ *
+ * The scenario guide (ugc.aoe2.rocks, task 157, "stinger") reads its fields: the first work value
+ * is the change, the second how long it lasts, a work range of one aims it at the target, the
+ * search wait time names the attribute, and the lowest bit of the combat level flag multiplies
+ * rather than adds. The missile needs the stinger bit of its combat ability for any of it to work.
+ */
+const STINGER = { action: 157, onTarget: 1, multiplies: 1, enabled: 128, speedAttribute: 5 } as const;
 
 /** Effect command that swaps a unit for another, and the one that makes a number of units appear. */
 const UPGRADE_COMMAND = 3;
@@ -1393,21 +1443,98 @@ export class DatasetBuilder {
      *
      * A Chu Ko Nu looses one arrow of its own and two more behind it, and the file says so twice:
      * the unit counts its missiles, and the record of the second missile carries an attack list
-     * that is not the shooter's. Only that pairing counts as a volley — a siege weapon also
-     * declares several projectiles, but those are the pieces of one blast, and its second missile
-     * carries no damage of its own.
+     * that is not the shooter's. A unit that counts several missiles but names no second one fires
+     * copies of its main missile, each hitting with the unit's own attack: the Turtle Ship was
+     * measured landing three hits of its full attack with every shot. A second missile without
+     * damage is different again — the Mangonel's pieces of one blast, which its own attack covers.
      *
      * @param unit - The shooter, as the file describes it.
      * @returns How many extra missiles fly, and what each one hits with.
      */
-    private volleyOf(unit: GenieUnit): { extraProjectiles: number; secondaryAttacks: ClassAmountRecord[] } {
-        const secondary = this.referenceUnits().get(unit.secondaryProjectileUnit);
-        const attacks = secondary?.attacks ?? [];
+    private volleyOf(unit: GenieUnit): {
+        extraProjectiles: number;
+        secondaryAttacks: ClassAmountRecord[];
+        extrasRepeatMain: boolean;
+    } {
         const extras = Math.max(0, Math.round(unit.totalProjectiles) - 1);
+        if (extras === 0) return { extraProjectiles: 0, secondaryAttacks: [], extrasRepeatMain: false };
 
-        if (extras === 0 || attacks.length === 0) return { extraProjectiles: 0, secondaryAttacks: [] };
+        const secondary = this.referenceUnits().get(unit.secondaryProjectileUnit);
+        if (!secondary) return { extraProjectiles: extras, secondaryAttacks: [], extrasRepeatMain: true };
+        if (secondary.attacks.length === 0) return { extraProjectiles: 0, secondaryAttacks: [], extrasRepeatMain: false };
 
-        return { extraProjectiles: extras, secondaryAttacks: this.classList(attacks) };
+        return { extraProjectiles: extras, secondaryAttacks: this.classList(secondary.attacks), extrasRepeatMain: false };
+    }
+
+    /**
+     * The kinds of target a charge is used against, read off the bits of its target field.
+     *
+     * @param mask - The charge target field; minus one stands for every target.
+     * @returns The kinds it names, or undefined when it restricts nothing: every bit set, or none.
+     */
+    private chargeTargets(mask: number): ChargeTargetRecord[] | undefined {
+        if (mask < 0) return undefined;
+
+        const targets = CHARGE_TARGET_BITS.filter(([bit]) => (mask & bit) !== 0).map(([, target]) => target);
+
+        return targets.length === 0 || targets.length === CHARGE_TARGET_BITS.length ? undefined : targets;
+    }
+
+    /**
+     * How a missile slows what it hits, from the stinger task the file gives it.
+     *
+     * The Bolas Rider's charged bolas carries one that multiplies the target's speed by 0.85 for
+     * ten seconds; a stinger on another attribute, or one that adds rather than multiplies, is not a
+     * slow the guide can put in words.
+     *
+     * @param missile - The missile, as the file describes it.
+     * @returns The share of speed lost and for how long, or undefined when it slows nothing.
+     */
+    private slowOf(missile: GenieUnit): SlowRecord | undefined {
+        if ((missile.combatAbility & STINGER.enabled) === 0) return undefined;
+
+        const task = missile.tasks.find(
+            (entry) =>
+                entry.actionType === STINGER.action &&
+                entry.workRange === STINGER.onTarget &&
+                entry.searchWaitTime === STINGER.speedAttribute &&
+                (entry.combatLevelFlag & STINGER.multiplies) !== 0 &&
+                entry.workValue1 < 0 &&
+                entry.workValue2 > 0,
+        );
+
+        return task ? { share: this.round(-task.workValue1), seconds: this.round(task.workValue2) } : undefined;
+    }
+
+    /**
+     * A charge the unit spends on its own blows or its own defence rather than on a missile.
+     *
+     * Every figure is the file's: the charge a blow adds, or the missiles a dodge holds, is the
+     * capacity, and it comes back at the recharge rate. Measured in the game, the Coustillier's
+     * blow lands 20 harder every 40 seconds, the Urumi's 12 harder every 24 with half of it on the
+     * units beside the target, the Shrivamsha dodges five arrows and one more every 4 seconds, and
+     * the Iron Pagoda shrugs off one blow every 40. The Urumi's reach and half share are its blast
+     * width and its area damage, which the scenario guide (attribute 115) describes as the share of
+     * the blast the units not targeted take.
+     *
+     * @param unit - The unit, as the file describes it.
+     * @returns The ability, or null when the unit holds no such charge.
+     */
+    private chargeAbilityOf(unit: GenieUnit): ChargeAbilityRecord | null {
+        const kind = CHARGE_TYPES[unit.chargeType];
+        if (kind === undefined || kind === 'missiles' || kind === 'volley') return null;
+        if (unit.maxCharge <= 0 || unit.rechargeRate <= 0) return null;
+
+        const ability: ChargeAbilityRecord = {
+            kind,
+            capacity: this.round(unit.maxCharge),
+            rechargeRate: this.round(unit.rechargeRate),
+        };
+        if (kind === 'blast' && unit.blastWidth > 0 && unit.blastDamage > 0) {
+            ability.blast = { radius: this.round(unit.blastWidth), share: this.round(unit.blastDamage) };
+        }
+
+        return ability;
     }
 
     /**
@@ -1420,11 +1547,21 @@ export class DatasetBuilder {
      * out: it hits with the shooter's own attack, and where the file gives it damage of its own,
      * the same change is written on the unit too.
      *
-     * A charged attack reaches the unit's maximum range plus its charge event. That is read, not
-     * assumed: the Fire Archer and the Lou Chuan reach 9 and 13, carry -4 and -3, and the game
-     * displays 5 and 10; the Blacksmith arrow technologies raise the Hearth Troop's event exactly
-     * where they raise other archers' range; and Siege Engineers lowers the Lou Chuan's by one
-     * while raising its range by one, so its arrows stay where they were.
+     * The charge type says what a charged attack fires. Type 6 fires the most missiles the unit
+     * can, all of them the charged one, and nothing of its secondary: the Lou Chuan looses ten
+     * arrows, and the Fire Archer three. Type 7 fires one charged missile and as many secondary
+     * ones as the most it can fire exceeds its ordinary count: five behind the Xianbei Raider's
+     * charged arrow, none behind the Turtle Ship's heavy shot.
+     *
+     * A charged attack reaches the unit's maximum range plus its charge event, which the scenario
+     * guide (ugc.aoe2.rocks, attribute 61) calls the charged attack's range modifier for those two
+     * types. Measured in the game, the Lou Chuan's arrows reach 13 − 3, the Hearth Troop's javelin
+     * 0 + 6, the Fire Lancer's shot 4 and the Jomsviking's torch 3; Siege Engineers lowers the Lou
+     * Chuan's event by one while raising its range by one, so its arrows stay where they were. The
+     * Fire Archer does not fit: its event of −4 would keep its volley within 5 tiles, yet it was
+     * measured firing volleys from 8 and 9, and the Elite from 10. It is the one unit holding more
+     * than a single charge (20 against 1), so the event is read as an offset only for a unit holding
+     * at most one. That rule fits every unit measured and rests on that single exception.
      *
      * @param unit - The shooter, as the file describes it.
      * @returns Its secondary and charged attacks, in that order.
@@ -1432,35 +1569,47 @@ export class DatasetBuilder {
     private specialAttacksOf(unit: GenieUnit): SpecialAttackRecord[] {
         const units = this.referenceUnits();
         const attacks: SpecialAttackRecord[] = [];
+        const kind = CHARGE_TYPES[unit.chargeType];
+        const total = Math.round(unit.totalProjectiles);
+        const most = Math.round(unit.maxTotalProjectiles);
 
         const secondary = units.get(unit.secondaryProjectileUnit);
         const damage = secondary ? this.classList(secondary.attacks) : [];
         const raisers = this.projectileRaisers();
-        // The Xianbei Raider fires one arrow a shot and up to six in its charged volley.
-        const volley = Math.max(Math.round(unit.totalProjectiles), Math.round(unit.maxTotalProjectiles));
-        const flies =
-            volley > 1 ||
-            raisers.units.has(unit.id) ||
-            raisers.classes.has(unit.classId);
+        const perShot = Math.max(0, total - 1);
+        // A type 7 charge adds secondary missiles to its own; a type 6 one never fires the secondary.
+        const inVolley =
+            kind === 'volley' ? Math.max(0, most - total) : kind === 'missiles' ? perShot : Math.max(total, most) - 1;
+        const flies = perShot > 0 || inVolley > 0 || raisers.units.has(unit.id) || raisers.classes.has(unit.classId);
         if (secondary && flies && damage.some((entry) => entry.amount > 0)) {
             attacks.push({
                 role: 'secondary',
                 projectile: secondary.id,
                 attacks: damage,
                 range: this.round(unit.maxRange),
-                count: Math.max(0, Math.round(unit.totalProjectiles) - 1),
-                maxCount: volley - 1,
+                count: perShot,
+                maxCount: Math.max(perShot, inVolley),
             });
         }
 
         const charged = units.get(unit.chargeProjectileUnit);
         if (charged) {
+            const offset = unit.maxCharge > 1 ? 0 : unit.chargeEvent;
+            const targets = this.chargeTargets(unit.chargeTarget);
+            const slows = this.slowOf(charged);
             attacks.push({
                 role: 'charge',
                 projectile: charged.id,
                 attacks: this.classList(charged.attacks),
-                range: this.round(unit.maxRange + unit.chargeEvent),
-                charge: { capacity: this.round(unit.maxCharge), rechargeRate: this.round(unit.rechargeRate) },
+                range: this.round(unit.maxRange + offset),
+                ...(kind === 'missiles' ? { count: Math.max(1, most) } : kind === 'volley' ? { count: 1 } : {}),
+                charge: {
+                    capacity: this.round(unit.maxCharge),
+                    rechargeRate: this.round(unit.rechargeRate),
+                    ...(kind === 'missiles' || kind === 'volley' ? { kind } : {}),
+                    ...(targets ? { targets } : {}),
+                },
+                ...(slows ? { slows } : {}),
             });
         }
 
@@ -1503,11 +1652,13 @@ export class DatasetBuilder {
             bonusDamageResistance: this.round(unit.bonusDamageResistance),
             ...this.volleyOf(unit),
             specialAttacks: this.specialAttacksOf(unit),
+            chargeAbility: this.chargeAbilityOf(unit),
             ignoresArmour: (unit.combatAbility & IGNORES_ARMOUR) !== 0,
             resistsArmourIgnore: (unit.combatAbility & RESISTS_ARMOUR_IGNORE) !== 0,
             attacks,
             armours,
-            range: this.round(unit.displayedRange),
+            // The displayed range is the interface's: the Lou Chuan shows 10 and its trebuchet was measured reaching 13.
+            range: this.round(unit.maxRange),
             minRange: this.round(unit.minRange),
             reloadTime: this.round(unit.reloadTime),
             accuracy: unit.accuracyPercent,
@@ -1554,7 +1705,7 @@ export class DatasetBuilder {
         if (classes.has('spearman')) tags.push('spearman');
         if (classes.has('skirmisher')) tags.push('skirmisher');
         if (classes.has('unique-unit')) tags.push('unique-unit');
-        tags.push(input.unit.displayedRange >= 2 ? 'ranged' : 'melee');
+        tags.push(input.unit.maxRange >= 2 ? 'ranged' : 'melee');
         if (input.unit.blastWidth > 0) tags.push('blast');
         if (input.node['Node Type'] === 'UnitUpgrade') tags.push('upgrade');
         if (input.node['Node Type'] === 'RegionalUnit') tags.push('regional');
