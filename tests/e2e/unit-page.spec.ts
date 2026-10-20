@@ -109,6 +109,33 @@ test.describe('the attack cards of a unit', () => {
         expect([count.y < bottom(damage), count.x >= right(damage)]).toEqual([true, true]);
     });
 
+    test('splits the Lou Chuan between its trebuchet shot and its arrows, each naming its targets', async ({ page }) => {
+        await page.goto('en/unit/lou-chuan');
+
+        const main = page.getByRole('listitem', { name: 'Main attack' });
+        const charged = page.getByRole('listitem', { name: 'Charged attack' });
+
+        await expect(main.locator('.attack-note--targets')).toHaveText('Against siege and buildings');
+        await expect(main.locator('.attack-fact[data-stat="range"] .stat__value')).toHaveText('13');
+        await expect(charged.locator('.attack-note--targets')).toHaveText('Against land units and ships');
+        await expect(charged.locator('.attack-fact[data-stat="count"] .visually-hidden')).toHaveText('10 missiles per shot');
+        await expect(charged.locator('.attack-fact[data-stat="range"] .stat__value')).toHaveText('10');
+    });
+
+    test('keeps the longest ability name whole inside its card on the narrowest phone', async ({ page, isMobile }) => {
+        test.skip(!isMobile, 'The phone layout only.');
+        await page.setViewportSize({ width: 360, height: 800 });
+        await page.goto('de/unit/coustillier');
+
+        const card = page.getByRole('listitem', { name: 'Aufgeladener Hieb' });
+        const edge = await box(card);
+        const note = await box(card.locator('.attack-note'));
+        const name = card.locator('.attack-badge__name');
+
+        expect(right(note)).toBeLessThanOrEqual(right(edge));
+        expect(await name.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    });
+
     test('starts the figures of every card on the same line on a phone', async ({ page, isMobile }) => {
         test.skip(!isMobile, 'The phone layout only.');
         await page.goto('es/unit/hearth-troop');
