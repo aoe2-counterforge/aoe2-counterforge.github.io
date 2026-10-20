@@ -33,10 +33,13 @@ if (!root) throw new Error('Set AOE2_GAME_ROOT in .env, or in the environment, t
 const extractor = new IconExtractor({ install: new GameInstall({ root }), outputDirectory: OUT });
 
 const units = await extractor.renderUnits(pictures(read<UnitRecord[]>('units.json')));
+/** The game's picture of a house stands for every building a charge may be kept from. */
+const TARGET_BUILDINGS = [34];
+const buildings = await extractor.renderBuildings(TARGET_BUILDINGS);
 const technologies = await extractor.renderTechnologies(pictures(read<TechnologyRecord[]>('technologies.json')));
 const emblems = await extractor.renderEmblems(read<CivilizationRecord[]>('civilizations.json').map((civ) => civ.icon));
 const pieces = await extractor.renderInterface();
 
 process.stdout.write(
-    `icons: ${units} units, ${technologies} technologies, ${emblems} civilizations, ${pieces} interface\n`,
+    `icons: ${units} units, ${buildings} buildings,${technologies} technologies, ${emblems} civilizations, ${pieces} interface\n`,
 );

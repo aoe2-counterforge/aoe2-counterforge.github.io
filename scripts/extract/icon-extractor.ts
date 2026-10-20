@@ -14,6 +14,7 @@ export interface IconExtractorConfig {
 
 const CONVERTER = 'Tools_Builds/texconv.exe';
 const UNIT_TEXTURES = 'widgetui/textures/ingame/units';
+const BUILDING_TEXTURES = 'widgetui/textures/ingame/buildings';
 const TECH_TEXTURES = 'widgetui/textures/ingame/tech';
 const EMBLEMS = 'widgetui/textures/menu/civs';
 const PANELS = 'widgetui/textures/ingame/panels';
@@ -101,6 +102,20 @@ export class IconExtractor {
         return this.emit({
             sources: this.indexedSources(UNIT_TEXTURES, indices, 'Unit'),
             target: 'Unit',
+            prepare: (image) => this.toIcon(image, ICON_SIZE),
+        });
+    }
+
+    /**
+     * Writes the picture of every building the guide shows as a kind of target.
+     *
+     * @param indices - The number each building texture's file name opens with.
+     * @returns How many icons were written.
+     */
+    public async renderBuildings(indices: readonly number[]): Promise<number> {
+        return this.emit({
+            sources: this.indexedSources(BUILDING_TEXTURES, indices, 'Building'),
+            target: 'Building',
             prepare: (image) => this.toIcon(image, ICON_SIZE),
         });
     }
