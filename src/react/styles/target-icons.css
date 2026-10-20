@@ -1,0 +1,197 @@
+/*
+ * The targets of a charged attack, drawn instead of written: a label says whether the row is what the
+ * attack goes against or what it never touches, and a row of icons names the kinds. What an attack
+ * never touches is the same icons, greyed and struck through.
+ */
+
+.attack-targets {
+    --halo: color-mix(in srgb, var(--surface-2) 88%, transparent);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    min-width: 0;
+}
+
+.attack-targets__label {
+    flex: none;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--good);
+}
+
+.attack-targets[data-targets='never'] .attack-targets__label {
+    color: var(--bad);
+}
+
+.attack-targets__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.3rem 0.4rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.target-group {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.0625rem;
+    padding: 0.125rem;
+    background: color-mix(in srgb, var(--bg) 30%, var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 22%);
+}
+
+:root[data-theme='light'] .target-group {
+    background: color-mix(in srgb, var(--surface-3) 45%, var(--surface));
+    box-shadow: inset 0 1px 2px rgb(20 35 55 / 12%);
+}
+
+.attack-targets[data-targets='against'] .target-group {
+    border-color: color-mix(in srgb, var(--good) 38%, var(--border));
+}
+
+.attack-targets[data-targets='never'] .target-group {
+    border-color: color-mix(in srgb, var(--bad) 45%, var(--border));
+}
+
+.target-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 1.625rem;
+    height: 1.625rem;
+    color: var(--text);
+}
+
+.target-icon .glyph {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.target-icon img {
+    width: 1.5rem;
+    height: 1.5rem;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 1px 2px rgb(0 0 0 / 40%);
+}
+
+/* What an attack never touches: faded, and struck from corner to corner so the meaning needs no reading. */
+.attack-targets[data-targets='never'] .target-icon {
+    color: var(--text-muted);
+}
+
+.attack-targets[data-targets='never'] .target-icon > :not(.visually-hidden) {
+    opacity: 0.7;
+}
+
+.attack-targets[data-targets='never'] .target-icon img {
+    filter: grayscale(0.65);
+}
+
+.attack-targets[data-targets='never'] .target-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0.05rem;
+    pointer-events: none;
+    background:
+        linear-gradient(to top right, transparent calc(50% - 1px), var(--bad) calc(50% - 1px), var(--bad) calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(to top right, transparent calc(50% - 2.4px), var(--halo) calc(50% - 2.4px), var(--halo) calc(50% + 2.4px), transparent calc(50% + 2.4px));
+}
+
+/* ---------- seals: one mark per group, struck like the damage seal, with its name beneath ---------- */
+
+.attack-targets[data-style='seal'] .attack-targets__list {
+    gap: var(--space-2) var(--space-3);
+}
+
+.attack-targets[data-style='seal'] .target-group {
+    flex-direction: column;
+    gap: 0.2rem;
+    max-width: 5.25rem;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+}
+
+.attack-targets[data-style='seal'] .target-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: var(--seal-core) padding-box, var(--seal-ring) border-box;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    box-shadow: var(--seal-shadow);
+}
+
+.attack-targets[data-style='seal'] .target-icon .glyph {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.attack-targets[data-style='seal'][data-targets='never'] .target-icon {
+    background: var(--seal-core) padding-box, linear-gradient(var(--bad), var(--bad)) border-box;
+}
+
+.attack-targets[data-style='seal'][data-targets='never'] .target-icon > :not(.visually-hidden) {
+    opacity: 0.85;
+}
+
+.attack-targets[data-style='seal'][data-targets='never'] .target-icon::after {
+    inset: 0;
+    border-radius: 50%;
+    background:
+        linear-gradient(to top right, transparent calc(50% - 0.75px), var(--bad) calc(50% - 0.75px), var(--bad) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+        linear-gradient(to top right, transparent calc(50% - 2px), var(--halo) calc(50% - 2px), var(--halo) calc(50% + 2px), transparent calc(50% + 2px));
+}
+
+/* The label stands level with the seals, not with the names beneath them. */
+.attack-targets[data-style='seal'] {
+    align-items: flex-start;
+}
+
+.attack-targets[data-style='seal'] .attack-targets__label {
+    line-height: 2.25rem;
+}
+
+/* A seal for several kinds is a capsule: three marks side by side where one mark would stand alone. */
+.attack-targets[data-style='seal'] .target-icon[data-kind='land'] {
+    grid-auto-flow: column;
+    width: auto;
+    padding-inline: 0.45rem;
+    border-radius: 999px;
+}
+
+.attack-targets[data-style='seal'] .target-icon[data-kind='land'] .glyph {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.target-group__name {
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--text-muted);
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+
+.target-group__name::first-letter {
+    text-transform: uppercase;
+}
+
+/* The figures size the phone's columns, so a row of icons laid end to end must not widen them. */
+@container attack-section (max-width: 28rem) {
+    .attack-card .attack-targets {
+        contain: inline-size;
+    }
+}

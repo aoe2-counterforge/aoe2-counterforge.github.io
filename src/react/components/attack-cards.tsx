@@ -16,6 +16,8 @@ import {
 import { precise, short } from '../format.ts';
 import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
+import { useTargetStyle } from '../target-style.ts';
+import { TargetStrip } from './target-icons.tsx';
 
 export interface AttackCardsProps {
     /** The unit's stat line, base or upgraded. */
@@ -283,6 +285,7 @@ function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
     const seconds = useSeconds();
     const nameId = useId();
+    const style = useTargetStyle();
     const { strike, rider } = card;
     const type = strike.attack.damageType();
     const riderType = rider?.attack.damageType();
@@ -296,7 +299,8 @@ function AttackCardItem({ card }: { card: AttackCard }) {
                 </span>
             ) : null}
             <RoleBadge glyph={ROLE_GLYPHS[card.role]} name={t(ROLE_NAMES[card.role])} type={type} nameId={nameId} />
-            {card.targets ? <TargetLine note={card.targets} /> : null}
+            {card.targets && style === 'text' ? <TargetLine note={card.targets} /> : null}
+            {card.targets && style !== 'text' ? <TargetStrip note={card.targets} /> : null}
             <div className="attack-card__facts">
                 <DamageFact strike={strike} />
                 {cadence ? <CadenceFact cadence={cadence} /> : null}

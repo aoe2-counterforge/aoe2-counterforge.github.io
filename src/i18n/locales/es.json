@@ -102,6 +102,19 @@
             },
             "against": "Contra {{targets}}",
             "never": "Nunca contra {{targets}}",
+            "againstLabel": "Contra",
+            "neverLabel": "Nunca contra",
+            "kinds": {
+                "infantry": "Infantería",
+                "cavalry": "Caballería",
+                "archer": "Arqueros",
+                "cavalry-archer": "Arqueros a caballo",
+                "monk": "Monjes",
+                "villager": "Aldeanos",
+                "ship": "Barcos",
+                "siege": "Armas de asedio",
+                "building": "Edificios"
+            },
             "replacesShot": "Sustituye un disparo normal",
             "slows": "Ralentiza al objetivo un {{share}}% durante {{seconds}}",
             "abilities": {

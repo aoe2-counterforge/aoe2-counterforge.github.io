@@ -102,6 +102,19 @@
             },
             "against": "Contre {{targets}}",
             "never": "Jamais contre {{targets}}",
+            "againstLabel": "Contre",
+            "neverLabel": "Jamais contre",
+            "kinds": {
+                "infantry": "Infanterie",
+                "cavalry": "Cavalerie",
+                "archer": "Archers",
+                "cavalry-archer": "Archers à cheval",
+                "monk": "Moines",
+                "villager": "Villageois",
+                "ship": "Navires",
+                "siege": "Engins de siège",
+                "building": "Bâtiments"
+            },
             "replacesShot": "Remplace un tir normal",
             "slows": "Ralentit la cible de {{share}} % pendant {{seconds}}",
             "abilities": {

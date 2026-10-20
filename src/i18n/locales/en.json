@@ -102,6 +102,19 @@
             },
             "against": "Against {{targets}}",
             "never": "Never against {{targets}}",
+            "againstLabel": "Against",
+            "neverLabel": "Never against",
+            "kinds": {
+                "infantry": "Infantry",
+                "cavalry": "Cavalry",
+                "archer": "Archers",
+                "cavalry-archer": "Cavalry archers",
+                "monk": "Monks",
+                "villager": "Villagers",
+                "ship": "Ships",
+                "siege": "Siege weapons",
+                "building": "Buildings"
+            },
             "replacesShot": "Replaces a regular shot",
             "slows": "Slows the target by {{share}}% for {{seconds}}",
             "abilities": {

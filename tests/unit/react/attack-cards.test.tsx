@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createI18n } from '../../../src/i18n/index.ts';
 import { AttackProfile } from '../../../src/domain/values/attack-profile.ts';
@@ -17,6 +17,13 @@ beforeAll(() => {
 afterEach(() => {
     window.history.replaceState(null, '', '/');
 });
+
+/** The name each group of a row of target icons carries for hovering. */
+function namesIn(row: HTMLElement): (string | null | undefined)[] {
+    return within(row)
+        .getAllByRole('listitem')
+        .map((item) => item.querySelector('[title]')?.getAttribute('title'));
+}
 
 const bow = makeStats({ attacks: { 'base-pierce': 5, spearman: 3 }, range: 4, reloadTime: 2 });
 
@@ -215,9 +222,52 @@ describe('AttackCards abilities and targets', () => {
             charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets: ['ship', 'building'] },
         });
 
+        window.history.replaceState(null, '', '/?targets=c');
+
         render(<AttackCards stats={sword} base={[fire]} />);
 
-        const lines = screen.getAllByText(/^Against /).map((line) => line.textContent);
-        expect(lines).toEqual(['Against land units and siege', 'Against ships and buildings']);
+        const rows = screen.getAllByRole('group', { name: 'Against' });
+        expect(rows.map(namesIn)).toEqual([
+            ['land units', 'siege'],
+            ['ships', 'buildings'],
+        ]);
+    });
+
+    it('names the targets a slow charge is never used against, drawn as the kinds they are', () => {
+        const slow = new SpecialAttack({
+            role: 'charge',
+            projectile: 2702,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-pierce', amount: 6 }] }),
+            range: 6,
+            count: null,
+            charge: {
+                capacity: 1,
+                rechargeRate: 0.067,
+                targets: ['infantry', 'cavalry', 'archer', 'cavalry-archer', 'monk', 'villager'],
+            },
+        });
+        window.history.replaceState(null, '', '/?targets=a');
+
+        render(<AttackCards stats={bow} base={[slow]} />);
+
+        const row = screen.getByRole('group', { name: 'Never against' });
+        expect(namesIn(row)).toEqual(['Ships', 'Siege weapons', 'Buildings']);
+    });
+
+    it('names every kind of a group drawn as its parts', () => {
+        const fire = new SpecialAttack({
+            role: 'charge',
+            projectile: 2713,
+            attack: new AttackProfile({ entries: [{ armourClass: 'base-melee', amount: 8 }] }),
+            range: 3,
+            count: 1,
+            charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets: ['ship', 'building'] },
+        });
+        window.history.replaceState(null, '', '/?targets=a');
+
+        render(<AttackCards stats={sword} base={[fire]} />);
+
+        const land = screen.getAllByRole('group', { name: 'Against' })[0];
+        expect(within(land).getAllByRole('listitem')[0]?.querySelectorAll('[title]')).toHaveLength(6);
     });
 });

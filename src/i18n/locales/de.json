@@ -102,6 +102,19 @@
             },
             "against": "Gegen {{targets}}",
             "never": "Nie gegen {{targets}}",
+            "againstLabel": "Gegen",
+            "neverLabel": "Nie gegen",
+            "kinds": {
+                "infantry": "Infanterie",
+                "cavalry": "Kavallerie",
+                "archer": "Bogen­schützen",
+                "cavalry-archer": "Berittene Bogen­schützen",
+                "monk": "Mönche",
+                "villager": "Dorf­bewohner",
+                "ship": "Schiffe",
+                "siege": "Belagerungs­waffen",
+                "building": "Gebäude"
+            },
             "replacesShot": "Ersetzt einen normalen Schuss",
             "slows": "Verlangsamt das Ziel {{seconds}} lang um {{share}} %",
             "abilities": {
