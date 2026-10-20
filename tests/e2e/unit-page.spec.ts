@@ -59,16 +59,27 @@ test.describe('the banner of a unit', () => {
 });
 
 test.describe('the attack cards of a unit', () => {
-    test('keeps the longest attack name whole and its damage seal inside its card', async ({ page }) => {
+    test('keeps the longest badge, name and damage type whole, inside its card', async ({ page }) => {
         await page.goto('es/unit/mangonel');
 
         const card = page.getByRole('listitem', { name: 'Ataque principal' });
         const edge = await box(card);
-        const seal = await box(card.locator('.attack-card__emblem'));
+        const type = await box(card.locator('.attack-badge__type'));
         const name = card.locator('.attack-badge__name');
 
-        expect(right(seal)).toBeLessThanOrEqual(right(edge));
+        expect(right(type)).toBeLessThanOrEqual(right(edge));
         expect(await name.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    });
+
+    test('names the damage type beside its seal where the band has room, and leaves the seal alone on a phone', async ({
+        page,
+        isMobile,
+    }) => {
+        await page.goto('en/unit/lou-chuan');
+
+        const type = await box(page.getByRole('listitem', { name: 'Main attack' }).locator('.attack-badge__type'));
+
+        expect(type.width > 1).toBe(!isMobile);
     });
 
     test('runs the body on right under the band, the damage seal hanging over it clear of the targets', async ({ page }) => {

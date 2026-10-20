@@ -154,11 +154,7 @@ interface RoleBadgeProps {
     nameId: string;
 }
 
-/**
- * What the attack is and which armour it goes through, as one badge heading the card.
- *
- * The seal on the band shows the damage type, so its word is only spoken.
- */
+/** What the attack is and which armour it goes through, as one badge heading the card. */
 function RoleBadge({ glyph, name, type, nameId }: RoleBadgeProps) {
     const { t } = useTranslation();
 
@@ -170,7 +166,12 @@ function RoleBadge({ glyph, name, type, nameId }: RoleBadgeProps) {
                     {name}
                 </span>
             </span>
-            {type ? <span className="visually-hidden">{t(`unit.attacks.types.${type}`)}</span> : null}
+            {type ? (
+                <span className={`attack-badge__type attack-badge__type--${type}`}>
+                    <Icon name={TYPE_GLYPHS[type]} />
+                    <span className="attack-badge__word">{t(`unit.attacks.types.${type}`)}</span>
+                </span>
+            ) : null}
         </p>
     );
 }

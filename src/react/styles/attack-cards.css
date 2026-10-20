@@ -166,6 +166,18 @@
     }
 }
 
+.attack-section .attack-badge__type {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* The seal carries the glyph, so the band only names the type. */
+.attack-section .attack-badge__type .glyph {
+    display: none;
+}
+
 /* ---------- the seal ---------- */
 
 /* The seal hangs past the band onto the card's body, which runs on under it as if it were not there. */
@@ -228,6 +240,15 @@
 }
 
 @container attack-section (max-width: 28rem) {
+    /* On a phone the type's word would have to drop under the name, so the seal alone shows it there. */
+    .attack-section .attack-badge__type {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+
     .attack-section .attack-card__facts > :nth-child(3n + 1)::before {
         display: none;
     }
