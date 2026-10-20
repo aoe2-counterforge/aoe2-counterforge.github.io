@@ -15,6 +15,7 @@
     --seal-ring: conic-gradient(from 210deg, #6b4a1c, #f4d79c 18%, #9a6b28 36%, #e6bb6b 58%, #5e3f15 78%, #c9974a 92%, #6b4a1c);
     --seal-core: radial-gradient(circle at 38% 30%, #3b4856 0%, #1a222b 62%, #10161c 100%);
     --seal-shadow: 0 2px 6px rgb(0 0 0 / 55%), 0 0 0 1px rgb(0 0 0 / 40%);
+    --seal-size: 2.375rem;
     --heat-from: rgb(255 120 40 / 42%);
     padding: 0 var(--space-3) var(--space-3);
     overflow: hidden;
@@ -77,8 +78,8 @@
     justify-content: space-between;
     min-height: 2.25rem;
     margin: 0 calc(var(--space-3) * -1) var(--space-1);
-    /* Room for the seal at the band's end. */
-    padding: 0 3.25rem 0 var(--space-3);
+    /* Room for the seal at the band's end, and as much again as the band's own edge between it and the words. */
+    padding: 0 calc(var(--seal-size) + var(--space-3) * 2) 0 var(--space-3);
     background: var(--brush) 0 0 / 300px 60px, var(--band);
     box-shadow:
         inset 0 1px 0 rgb(255 255 255 / 8%),
@@ -186,8 +187,8 @@
     z-index: 2;
     display: grid;
     place-items: center;
-    width: 2.375rem;
-    height: 2.375rem;
+    width: var(--seal-size);
+    height: var(--seal-size);
     color: var(--type);
     background: var(--seal-core) padding-box, var(--seal-ring) border-box;
     border: 2px solid transparent;
@@ -261,10 +262,12 @@
         line-height: 1.4;
     }
 
+    .attack-section .attack-card {
+        --seal-size: 2.625rem;
+    }
+
     .attack-section .attack-card__emblem {
         top: 0.5rem;
-        width: 2.625rem;
-        height: 2.625rem;
     }
 
     .attack-section .attack-card__facts > :nth-child(3n + 1)::before {
