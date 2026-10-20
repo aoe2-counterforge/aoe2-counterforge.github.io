@@ -79,4 +79,20 @@ export const MEASURED = {
         /** The Long Swordsman's blows came this far apart. */
         attackerReload: 2.07,
     },
+    copiedMissiles: {
+        source: 'extra-missile-copies.csv',
+        /**
+         * Full hits of the unit's own attack each volley landed on a Spearman and the units beside it,
+         * for the units whose every missile was seen. The Longship, Dromon and Hulk scattered too many
+         * to count, though every hit they did land was a full one.
+         */
+        missilesPerShot: {
+            'rocket-cart': 8,
+            'heavy-rocket-cart': 10,
+            'war-chariot': 5,
+            carrack: 3,
+            'organ-gun': 5,
+            'elite-organ-gun': 6,
+        },
+    },
 } as const;

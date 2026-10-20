@@ -58,6 +58,18 @@ describe('the special attacks read from the data, against what the game was meas
         ]).toEqual([measured.missilesPerShot, measured.chargedMissiles, true]);
     });
 
+    it('copies the main missile, full attack and all, for every extra a unit without a secondary missile fires', () => {
+        const measured = MEASURED.copiedMissiles.missilesPerShot;
+
+        const derived = Object.keys(measured).map((key) => {
+            const stats = unit(key).stats;
+
+            return [key, 1 + stats.extraProjectiles, stats.extrasRepeatMain];
+        });
+
+        expect(derived).toEqual(Object.entries(measured).map(([key, count]) => [key, count, true]));
+    });
+
     it('throws the Hearth Troop javelin from 6 tiles and never at a building', () => {
         const measured = MEASURED.hearthTroop;
 
