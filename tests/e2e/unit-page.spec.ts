@@ -126,7 +126,32 @@ test.describe('the attack cards of a unit', () => {
         await expect(charged.locator('.attack-fact[data-stat="range"] .stat__value')).toHaveText('10');
     });
 
-    test('keeps the longest ability name whole inside its card on the narrowest phone', async ({ page, isMobile }) => {
+    test('keeps the four target seals and their longest caption on one line inside the card on the narrowest phone', async ({
+        page,
+        isMobile,
+    }) => {
+        test.skip(!isMobile, 'The phone layout only.');
+        await page.setViewportSize({ width: 360, height: 800 });
+        await page.goto('de/unit/lou-chuan');
+
+        const card = page.getByRole('listitem', { name: 'Hauptangriff' });
+        const edge = await box(card);
+        const row = await box(card.getByRole('group', { name: 'Ziele' }));
+        const names = card.locator('.target-seal__name');
+        const lines = await names.evaluateAll((elements) =>
+            elements.map((element) => {
+                const range = document.createRange();
+                range.selectNodeContents(element);
+
+                return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
+            }),
+        );
+
+        expect(right(row)).toBeLessThanOrEqual(right(edge));
+        expect(lines).toEqual([1, 1, 1, 1]);
+    });
+
+    test('keeps the longest ability name whole inside its card on the narrowest phone',async ({ page, isMobile }) => {
         test.skip(!isMobile, 'The phone layout only.');
         await page.setViewportSize({ width: 360, height: 800 });
         await page.goto('de/unit/coustillier');

@@ -1,4 +1,4 @@
-import { useId, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TARGET_GROUPS, type TargetGroup } from '../../domain/enums/charge-target.ts';
 import type { TargetNote } from '../attack-rows.ts';
@@ -52,14 +52,10 @@ const GLYPHS: Record<TargetGroup, ReactElement> = {
  */
 export function TargetSeals({ note }: { note: TargetNote }) {
     const { t } = useTranslation();
-    const labelId = useId();
     const hit = note.kind === 'against' ? note.groups : TARGET_GROUPS.filter((group) => !note.groups.includes(group));
 
     return (
-        <div className="attack-targets" role="group" aria-labelledby={labelId}>
-            <span id={labelId} className="attack-targets__label">
-                {t('unit.attacks.targetsLabel')}
-            </span>
+        <div className="attack-targets" role="group" aria-label={t('unit.attacks.targetsLabel')}>
             <ul className="attack-targets__list">
                 {TARGET_GROUPS.map((group) => {
                     const targeted = hit.includes(group);
