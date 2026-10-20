@@ -2030,7 +2030,7 @@ details[open] > summary::after {
 /*
  * One column on a phone; side by side as soon as two cards fit, so a wide page compares them in one
  * glance. Cards sharing a row stretch to one height while their figures stay at the top, level with
- * each other. How a card looks is up to the look the section wears; this is only its frame.
+ * each other. This is only the cards' frame; their dress lives in its own stylesheet.
  */
 .attack-cards {
     display: grid;
@@ -2041,7 +2041,7 @@ details[open] > summary::after {
     list-style: none;
 }
 
-/* Each card knows the colour of its attack and of the armour it goes through, so every look can paint with them. */
+/* Each card knows the colour of its attack and of the armour it goes through, so its dress can paint with them. */
 .attack-card {
     --role: var(--gold);
     --type: var(--text);
@@ -2067,11 +2067,6 @@ details[open] > summary::after {
 .attack-card[data-type='pierce'],
 .attack-fact[data-type='pierce'] {
     --type: var(--even);
-}
-
-.attack-card__emblem,
-.attack-fact__note {
-    display: none;
 }
 
 .attack-badge {

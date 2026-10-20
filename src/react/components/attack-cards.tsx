@@ -1,10 +1,10 @@
-import { useId, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ProjectileRole } from '../../domain/enums/projectile-role.ts';
 import type { SpecialAttack } from '../../domain/values/special-attack.ts';
 import type { UnitStats } from '../../domain/values/unit-stats.ts';
 import { attackCards, type AttackCard, type CardCadence, type MissileCount, type Strike } from '../attack-rows.ts';
-import { iconUrl, short } from '../format.ts';
+import { short } from '../format.ts';
 import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
 
@@ -32,36 +32,6 @@ const ROLE_NAMES: Record<ProjectileRole, string> = {
     secondary: 'unit.attacks.secondary',
 };
 
-/** The looks the cards can be shown in while one is chosen, by the letter the address asks for. */
-const LOOKS = { b: 'hero', a: 'forge', c: 'game' } as const;
-
-type LookLetter = keyof typeof LOOKS;
-
-const DEFAULT_LOOK: LookLetter = 'b';
-
-function askedLook(): LookLetter {
-    const asked = new URLSearchParams(window.location.search).get('cards');
-
-    return asked !== null && asked in LOOKS ? (asked as LookLetter) : DEFAULT_LOOK;
-}
-
-function onHistory(change: () => void): () => void {
-    window.addEventListener('popstate', change);
-
-    return () => {
-        window.removeEventListener('popstate', change);
-    };
-}
-
-/** The game's own stat icons, which only the look modelled on its stat panel paints. */
-const GAME_ART = {
-    '--art-melee': `url(${iconUrl('ui/stat-melee.png')})`,
-    '--art-pierce': `url(${iconUrl('ui/stat-pierce.png')})`,
-    '--art-reload': `url(${iconUrl('ui/stat-reload.png')})`,
-    '--art-range': `url(${iconUrl('ui/stat-range.png')})`,
-    '--art-recharge': `url(${iconUrl('ui/stat-recharge.png')})`,
-} as CSSProperties;
-
 function useSeconds(): (value: number) => string {
     const { t } = useTranslation();
 
@@ -78,13 +48,11 @@ interface FactProps {
     /** The armour the figure goes through, for a figure painted in its damage's colour. */
     type?: DamageType | null;
     label: string;
-    /** A line some looks print under the figure, already said elsewhere on the card. */
-    note?: string;
     children: ReactNode;
 }
 
 /** One figure on a card, labelled the way the stat tiles above label theirs. */
-function Fact({ kind, icon, tint, type, label, note, children }: FactProps) {
+function Fact({ kind, icon, tint, type, label, children }: FactProps) {
     return (
         <div className="attack-fact" data-stat={kind} data-type={type ?? undefined}>
             <div className="stat__label">
@@ -92,11 +60,6 @@ function Fact({ kind, icon, tint, type, label, note, children }: FactProps) {
                 <span className="stat__name">{label}</span>
             </div>
             <div className="stat__value">{children}</div>
-            {note ? (
-                <span className="attack-fact__note" aria-hidden="true">
-                    {note}
-                </span>
-            ) : null}
         </div>
     );
 }
@@ -147,14 +110,8 @@ function DamageFact({ strike }: { strike: Strike }) {
     const type = strike.attack.damageType();
 
     return (
-        <Fact
-            kind="damage"
-            icon="damage"
-            type={type}
-            label={t('unit.attacks.damage')}
-            note={type ? t(`armourClasses.base-${type}`) : undefined}
-        >
-            <span className="attack-fact__figure">{short(damage)}</span>
+        <Fact kind="damage" icon="damage" type={type} label={t('unit.attacks.damage')}>
+            {short(damage)}
             <Gain value={strike.before === undefined ? 0 : damage - strike.before.displayValue} />
         </Fact>
     );
@@ -259,13 +216,11 @@ function AttackCardItem({ card }: { card: AttackCard }) {
 export function AttackCards({ stats, compareWith, base, upgraded }: AttackCardsProps) {
     const { t } = useTranslation();
     const titleId = useId();
-    // A prerendered page carries the default look; the one the address asks for follows on the client.
-    const look = useSyncExternalStore(onHistory, askedLook, () => DEFAULT_LOOK);
     const cards = attackCards({ stats, compareWith, base, upgraded });
     if (cards.length === 0) return null;
 
     return (
-        <section className="attack-section" data-look={LOOKS[look]} style={GAME_ART} aria-labelledby={titleId}>
+        <section className="attack-section" aria-labelledby={titleId}>
             <h3 id={titleId} className="attack-section__title">
                 {t('unit.attacks.title')}
             </h3>

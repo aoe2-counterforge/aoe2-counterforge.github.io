@@ -171,20 +171,4 @@ describe('AttackCards', () => {
 
         expect(spoken('Main attack')).toMatch(/Damage7\+2Reload2 sRange5\+1/);
     });
-
-    it('wears the hero look unless the address asks for another', () => {
-        window.history.replaceState(null, '', '/?cards=z');
-
-        render(<AttackCards stats={bow} base={[]} />);
-
-        expect(screen.getByRole('region', { name: 'Attacks' }).dataset.look).toBe('hero');
-    });
-
-    it('wears the look the address asks for', () => {
-        window.history.replaceState(null, '', '/?cards=c');
-
-        render(<AttackCards stats={bow} base={[]} />);
-
-        expect(screen.getByRole('region', { name: 'Attacks' }).dataset.look).toBe('game');
-    });
 });

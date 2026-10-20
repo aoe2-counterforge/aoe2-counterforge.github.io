@@ -19,7 +19,6 @@ const EMBLEMS = 'widgetui/textures/menu/civs';
 const PANELS = 'widgetui/textures/ingame/panels';
 const HUD_ICONS = 'widgetui/textures/ingame/icons';
 const CIV_PANELS = 'widgetui/textures/ingame/panels/WEST';
-const STAT_ICONS = 'widgetui/textures/ingame/staticons';
 
 /**
  * Pieces of the game's own interface the guide reuses.
@@ -37,11 +36,6 @@ const INTERFACE_PIECES = [
     { folder: HUD_ICONS, file: 'resource_wood_transparent.png', name: 'wood.png' },
     { folder: HUD_ICONS, file: 'resource_gold_transparent.png', name: 'gold.png' },
     { folder: HUD_ICONS, file: 'resource_stone_transparent.png', name: 'stone.png' },
-    { folder: STAT_ICONS, file: 'damage.png', name: 'stat-melee.png' },
-    { folder: STAT_ICONS, file: 'pierceAttack.png', name: 'stat-pierce.png' },
-    { folder: STAT_ICONS, file: 'reloadTime.png', name: 'stat-reload.png' },
-    { folder: STAT_ICONS, file: 'range.png', name: 'stat-range.png' },
-    { folder: STAT_ICONS, file: 'powerup_reload.png', name: 'stat-recharge.png' },
 ];
 
 /**
