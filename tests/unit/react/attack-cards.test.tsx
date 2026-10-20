@@ -102,7 +102,7 @@ describe('AttackCards', () => {
 
         expect([spoken('Main attack'), spoken('Charged attack')]).toEqual([
             expect.stringMatching(/^Main attackPierceDamage/),
-            expect.stringMatching(/^Charged attackMeleeDamage/),
+            expect.stringMatching(/^Charged attackStrikeDamage/),
         ]);
     });
 
@@ -155,7 +155,7 @@ describe('AttackCards', () => {
 
         render(<AttackCards stats={bow} base={[javelin, blades]} />);
 
-        expect(spoken('Charged attack')).toMatch(/^Charged attackPierce.*Damage2TypeMelee/);
+        expect(spoken('Charged attack')).toMatch(/^Charged attackPierce.*Damage2TypeStrike/);
     });
 
     it('prints nothing for an attack with no bonus damage', () => {

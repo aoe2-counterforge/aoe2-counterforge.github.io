@@ -78,6 +78,10 @@
             "secondary": "Zusatz­geschosse",
             "damage": "Schaden",
             "type": "Typ",
+            "types": {
+                "melee": "Schlag",
+                "pierce": "Durchschlag"
+            },
             "cadence": "Rhythmus",
             "count": "Geschosse",
             "reload": "Nach\u00adladen",
@@ -96,7 +100,7 @@
         "hp": "LP",
         "attack": "Angriff",
         "meleeArmour": "Nahkampf\u00adrüstung",
-        "pierceArmour": "Fernkampf\u00adrüstung",
+        "pierceArmour": "Durchschlag\u00adpanzerung",
         "range": "Reichweite",
         "minRange": "Min. Reichweite",
         "maxRange": "Max. Reichweite",

@@ -78,6 +78,10 @@
             "secondary": "Projectiles bonus",
             "damage": "Dégâts",
             "type": "Type",
+            "types": {
+                "melee": "Frappe",
+                "pierce": "Perçage"
+            },
             "cadence": "Cadence",
             "count": "Projectiles",
             "reload": "Recharge",

@@ -78,6 +78,10 @@
             "secondary": "Projéteis extras",
             "damage": "Dano",
             "type": "Tipo",
+            "types": {
+                "melee": "Golpe",
+                "pierce": "Perfurante"
+            },
             "cadence": "Cadência",
             "count": "Projéteis",
             "reload": "Recarga",

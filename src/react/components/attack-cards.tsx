@@ -117,13 +117,22 @@ function DamageFact({ strike }: { strike: Strike }) {
     );
 }
 
+/**
+ * A damage type is drawn as the armour it goes through, the shield of the stat tile it answers.
+ * Named by the hit rather than "melee", since a mangonel's stone is melee damage from seven tiles away.
+ */
+const TYPE_GLYPHS: Record<DamageType, IconName> = {
+    melee: 'meleeArmour',
+    pierce: 'pierceArmour',
+};
+
 /** Which armour a strike goes through, for the rare missile that differs from the attack it rides with. */
 function TypeFact({ type }: { type: DamageType }) {
     const { t } = useTranslation();
 
     return (
-        <Fact kind="type" icon={type} tint={`glyph--${type}`} type={type} label={t('unit.attacks.type')}>
-            <span className={`attack-fact__type attack-fact__type--${type}`}>{t(`armourClasses.base-${type}`)}</span>
+        <Fact kind="type" icon={TYPE_GLYPHS[type]} tint={`glyph--${type}`} type={type} label={t('unit.attacks.type')}>
+            <span className={`attack-fact__type attack-fact__type--${type}`}>{t(`unit.attacks.types.${type}`)}</span>
         </Fact>
     );
 }
@@ -142,8 +151,8 @@ function RoleBadge({ role, type, nameId }: { role: ProjectileRole; type: DamageT
             </span>
             {type ? (
                 <span className={`attack-badge__type attack-badge__type--${type}`}>
-                    <Icon name={type} />
-                    <span className="attack-badge__word">{t(`armourClasses.base-${type}`)}</span>
+                    <Icon name={TYPE_GLYPHS[type]} />
+                    <span className="attack-badge__word">{t(`unit.attacks.types.${type}`)}</span>
                 </span>
             ) : null}
         </p>
@@ -169,7 +178,7 @@ function AttackCardItem({ card }: { card: AttackCard }) {
         <li className={`attack-card attack-card--${card.role}`} data-type={type ?? undefined} aria-labelledby={nameId}>
             {type ? (
                 <span className="attack-card__emblem" aria-hidden="true">
-                    <Icon name={type} />
+                    <Icon name={TYPE_GLYPHS[type]} />
                 </span>
             ) : null}
             <RoleBadge role={card.role} type={type} nameId={nameId} />

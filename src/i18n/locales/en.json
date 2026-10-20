@@ -78,6 +78,10 @@
             "secondary": "Extra projectiles",
             "damage": "Damage",
             "type": "Type",
+            "types": {
+                "melee": "Strike",
+                "pierce": "Pierce"
+            },
             "cadence": "Cadence",
             "count": "Missiles",
             "reload": "Reload",
