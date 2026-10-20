@@ -115,13 +115,13 @@ test.describe('the attack cards of a unit', () => {
         const main = page.getByRole('listitem', { name: 'Main attack' });
         const charged = page.getByRole('listitem', { name: 'Charged attack' });
 
-        const targets = (card: Locator) =>
-            card.locator('.target-icon').evaluateAll((icons) => icons.map((icon) => icon.getAttribute('title')));
+        const lit = (card: Locator) =>
+            card.locator('.target-seal[data-hit="true"]').evaluateAll((seals) => seals.map((seal) => seal.getAttribute('title')));
 
-        await expect(main.getByRole('group', { name: 'Against' })).toBeVisible();
-        expect(await targets(main)).toEqual(['siege', 'buildings']);
+        await expect(main.getByRole('group', { name: 'Targets' })).toBeVisible();
+        expect(await lit(main)).toEqual(['Siege weapons', 'Buildings']);
         await expect(main.locator('.attack-fact[data-stat="range"] .stat__value')).toHaveText('13');
-        expect(await targets(charged)).toEqual(['land units', 'ships']);
+        expect(await lit(charged)).toEqual(['Land units', 'Ships']);
         await expect(charged.locator('.attack-fact[data-stat="count"] .visually-hidden')).toHaveText('10 missiles per shot');
         await expect(charged.locator('.attack-fact[data-stat="range"] .stat__value')).toHaveText('10');
     });

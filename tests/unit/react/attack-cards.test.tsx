@@ -18,11 +18,11 @@ afterEach(() => {
     window.history.replaceState(null, '', '/');
 });
 
-/** The name each group of a row of target icons carries for hovering. */
-function namesIn(row: HTMLElement): (string | null | undefined)[] {
+/** What each seal of a row of targets says for hovering and for readers that cannot see its strength. */
+function sealsIn(row: HTMLElement): (string | null)[] {
     return within(row)
         .getAllByRole('listitem')
-        .map((item) => item.querySelector('[title]')?.getAttribute('title'));
+        .map((item) => item.getAttribute('title'));
 }
 
 const bow = makeStats({ attacks: { 'base-pierce': 5, spearman: 3 }, range: 4, reloadTime: 2 });
@@ -222,18 +222,16 @@ describe('AttackCards abilities and targets', () => {
             charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets: ['ship', 'building'] },
         });
 
-        window.history.replaceState(null, '', '/?targets=c');
-
         render(<AttackCards stats={sword} base={[fire]} />);
 
-        const rows = screen.getAllByRole('group', { name: 'Against' });
-        expect(rows.map(namesIn)).toEqual([
-            ['land units', 'siege'],
-            ['ships', 'buildings'],
+        const rows = screen.getAllByRole('group', { name: 'Targets' });
+        expect(rows.map(sealsIn)).toEqual([
+            ['Land units', 'Ships: not a target', 'Siege weapons', 'Buildings: not a target'],
+            ['Land units: not a target', 'Ships', 'Siege weapons: not a target', 'Buildings'],
         ]);
     });
 
-    it('names the targets a slow charge is never used against, drawn as the kinds they are', () => {
+    it('draws a slow charge as the targets it is used against, never those it is kept from', () => {
         const slow = new SpecialAttack({
             role: 'charge',
             projectile: 2702,
@@ -246,28 +244,15 @@ describe('AttackCards abilities and targets', () => {
                 targets: ['infantry', 'cavalry', 'archer', 'cavalry-archer', 'monk', 'villager'],
             },
         });
-        window.history.replaceState(null, '', '/?targets=a');
-
         render(<AttackCards stats={bow} base={[slow]} />);
 
-        const row = screen.getByRole('group', { name: 'Never against' });
-        expect(namesIn(row)).toEqual(['Ships', 'Siege weapons', 'Buildings']);
-    });
-
-    it('names every kind of a group drawn as its parts', () => {
-        const fire = new SpecialAttack({
-            role: 'charge',
-            projectile: 2713,
-            attack: new AttackProfile({ entries: [{ armourClass: 'base-melee', amount: 8 }] }),
-            range: 3,
-            count: 1,
-            charge: { capacity: 1, rechargeRate: 100000, kind: 'missiles', targets: ['ship', 'building'] },
-        });
-        window.history.replaceState(null, '', '/?targets=a');
-
-        render(<AttackCards stats={sword} base={[fire]} />);
-
-        const land = screen.getAllByRole('group', { name: 'Against' })[0];
-        expect(within(land).getAllByRole('listitem')[0]?.querySelectorAll('[title]')).toHaveLength(6);
+        const row = screen.getByRole('group', { name: 'Targets' });
+        expect(sealsIn(row)).toEqual([
+            'Land units',
+            'Ships: not a target',
+            'Siege weapons: not a target',
+            'Buildings: not a target',
+        ]);
+        expect(within(row).getAllByRole('listitem').map((seal) => seal.dataset.hit)).toEqual(['true', 'false', 'false', 'false']);
     });
 });

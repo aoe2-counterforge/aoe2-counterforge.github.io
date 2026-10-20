@@ -94,25 +94,18 @@
             "upTo_one": "jusqu'à {{count}} projectile",
             "upTo_other": "jusqu'à {{count}} projectiles",
             "upToShort": "jusqu'à ×{{count}}",
-            "targets": {
-                "land": "les unités terrestres",
-                "ship": "les navires",
-                "siege": "les engins de siège",
-                "building": "les bâtiments"
-            },
-            "against": "Contre {{targets}}",
-            "never": "Jamais contre {{targets}}",
-            "againstLabel": "Contre",
-            "neverLabel": "Jamais contre",
-            "kinds": {
-                "infantry": "Infanterie",
-                "cavalry": "Cavalerie",
-                "archer": "Archers",
-                "cavalry-archer": "Archers à cheval",
-                "monk": "Moines",
-                "villager": "Villageois",
+            "targetsLabel": "Cibles",
+            "notTarget": "{{name}} : pas une cible",
+            "groups": {
+                "land": "Unités terrestres",
                 "ship": "Navires",
                 "siege": "Engins de siège",
+                "building": "Bâtiments"
+            },
+            "groupsShort": {
+                "land": "Terrestres",
+                "ship": "Navires",
+                "siege": "Siège",
                 "building": "Bâtiments"
             },
             "replacesShot": "Remplace un tir normal",

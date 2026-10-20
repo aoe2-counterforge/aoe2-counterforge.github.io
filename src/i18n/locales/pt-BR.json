@@ -94,25 +94,18 @@
             "upTo_one": "até {{count}} projétil",
             "upTo_other": "até {{count}} projéteis",
             "upToShort": "até ×{{count}}",
-            "targets": {
-                "land": "unidades terrestres",
-                "ship": "navios",
-                "siege": "armas de cerco",
-                "building": "construções"
-            },
-            "against": "Contra {{targets}}",
-            "never": "Nunca contra {{targets}}",
-            "againstLabel": "Contra",
-            "neverLabel": "Nunca contra",
-            "kinds": {
-                "infantry": "Infantaria",
-                "cavalry": "Cavalaria",
-                "archer": "Arqueiros",
-                "cavalry-archer": "Arqueiros a cavalo",
-                "monk": "Monges",
-                "villager": "Aldeões",
+            "targetsLabel": "Alvos",
+            "notTarget": "{{name}}: não é alvo",
+            "groups": {
+                "land": "Unidades terrestres",
                 "ship": "Navios",
                 "siege": "Armas de cerco",
+                "building": "Construções"
+            },
+            "groupsShort": {
+                "land": "Terrestres",
+                "ship": "Navios",
+                "siege": "Cerco",
                 "building": "Construções"
             },
             "replacesShot": "Substitui um disparo comum",

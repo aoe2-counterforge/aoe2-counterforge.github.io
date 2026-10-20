@@ -94,25 +94,18 @@
             "upTo_one": "bis zu {{count}} Geschoss",
             "upTo_other": "bis zu {{count}} Geschosse",
             "upToShort": "bis zu ×{{count}}",
-            "targets": {
-                "land": "Land\u00adeinheiten",
-                "ship": "Schiffe",
-                "siege": "Belagerungs\u00adwaffen",
-                "building": "Gebäude"
-            },
-            "against": "Gegen {{targets}}",
-            "never": "Nie gegen {{targets}}",
-            "againstLabel": "Gegen",
-            "neverLabel": "Nie gegen",
-            "kinds": {
-                "infantry": "Infanterie",
-                "cavalry": "Kavallerie",
-                "archer": "Bogen­schützen",
-                "cavalry-archer": "Berittene Bogen­schützen",
-                "monk": "Mönche",
-                "villager": "Dorf­bewohner",
+            "targetsLabel": "Ziele",
+            "notTarget": "{{name}}: kein Ziel",
+            "groups": {
+                "land": "Land­einheiten",
                 "ship": "Schiffe",
                 "siege": "Belagerungs­waffen",
+                "building": "Gebäude"
+            },
+            "groupsShort": {
+                "land": "Land­einheiten",
+                "ship": "Schiffe",
+                "siege": "Belagerung",
                 "building": "Gebäude"
             },
             "replacesShot": "Ersetzt einen normalen Schuss",

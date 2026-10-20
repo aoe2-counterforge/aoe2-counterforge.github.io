@@ -94,25 +94,18 @@
             "upTo_one": "hasta {{count}} proyectil",
             "upTo_other": "hasta {{count}} proyectiles",
             "upToShort": "hasta ×{{count}}",
-            "targets": {
-                "land": "unidades terrestres",
-                "ship": "barcos",
-                "siege": "asedio",
-                "building": "edificios"
-            },
-            "against": "Contra {{targets}}",
-            "never": "Nunca contra {{targets}}",
-            "againstLabel": "Contra",
-            "neverLabel": "Nunca contra",
-            "kinds": {
-                "infantry": "Infantería",
-                "cavalry": "Caballería",
-                "archer": "Arqueros",
-                "cavalry-archer": "Arqueros a caballo",
-                "monk": "Monjes",
-                "villager": "Aldeanos",
+            "targetsLabel": "Objetivos",
+            "notTarget": "{{name}}: no es objetivo",
+            "groups": {
+                "land": "Unidades terrestres",
                 "ship": "Barcos",
                 "siege": "Armas de asedio",
+                "building": "Edificios"
+            },
+            "groupsShort": {
+                "land": "Terrestres",
+                "ship": "Barcos",
+                "siege": "Asedio",
                 "building": "Edificios"
             },
             "replacesShot": "Sustituye un disparo normal",

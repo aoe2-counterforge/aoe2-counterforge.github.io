@@ -94,25 +94,18 @@
             "upTo_one": "up to {{count}} missile",
             "upTo_other": "up to {{count}} missiles",
             "upToShort": "up to ×{{count}}",
-            "targets": {
-                "land": "land units",
-                "ship": "ships",
-                "siege": "siege",
-                "building": "buildings"
-            },
-            "against": "Against {{targets}}",
-            "never": "Never against {{targets}}",
-            "againstLabel": "Against",
-            "neverLabel": "Never against",
-            "kinds": {
-                "infantry": "Infantry",
-                "cavalry": "Cavalry",
-                "archer": "Archers",
-                "cavalry-archer": "Cavalry archers",
-                "monk": "Monks",
-                "villager": "Villagers",
+            "targetsLabel": "Targets",
+            "notTarget": "{{name}}: not a target",
+            "groups": {
+                "land": "Land units",
                 "ship": "Ships",
                 "siege": "Siege weapons",
+                "building": "Buildings"
+            },
+            "groupsShort": {
+                "land": "Land units",
+                "ship": "Ships",
+                "siege": "Siege",
                 "building": "Buildings"
             },
             "replacesShot": "Replaces a regular shot",

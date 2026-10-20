@@ -94,25 +94,18 @@
             "upTo_one": "fino a {{count}} proiettile",
             "upTo_other": "fino a {{count}} proiettili",
             "upToShort": "fino a ×{{count}}",
-            "targets": {
-                "land": "unità terrestri",
-                "ship": "navi",
-                "siege": "armi d'assedio",
-                "building": "edifici"
-            },
-            "against": "Contro {{targets}}",
-            "never": "Mai contro {{targets}}",
-            "againstLabel": "Contro",
-            "neverLabel": "Mai contro",
-            "kinds": {
-                "infantry": "Fanteria",
-                "cavalry": "Cavalleria",
-                "archer": "Arcieri",
-                "cavalry-archer": "Arcieri a cavallo",
-                "monk": "Monaci",
-                "villager": "Villici",
+            "targetsLabel": "Bersagli",
+            "notTarget": "{{name}}: non è un bersaglio",
+            "groups": {
+                "land": "Unità terrestri",
                 "ship": "Navi",
                 "siege": "Armi d'assedio",
+                "building": "Edifici"
+            },
+            "groupsShort": {
+                "land": "Terrestri",
+                "ship": "Navi",
+                "siege": "Assedio",
                 "building": "Edifici"
             },
             "replacesShot": "Sostituisce un colpo normale",

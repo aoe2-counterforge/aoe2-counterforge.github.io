@@ -1,6 +1,5 @@
 import { useId, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { TargetGroup } from '../../domain/enums/charge-target.ts';
 import type { ProjectileRole } from '../../domain/enums/projectile-role.ts';
 import type { ChargeAbility, ChargeAbilityKind } from '../../domain/values/charge-ability.ts';
 import type { SpecialAttack } from '../../domain/values/special-attack.ts';
@@ -11,13 +10,11 @@ import {
     type CardCadence,
     type MissileCount,
     type Strike,
-    type TargetNote,
 } from '../attack-rows.ts';
 import { precise, short } from '../format.ts';
 import { BonusChips, Gain, type DamageType } from './attack-parts.tsx';
 import { Icon, type IconName } from './icon.tsx';
-import { useTargetStyle } from '../target-style.ts';
-import { TargetStrip } from './target-icons.tsx';
+import { TargetSeals } from './target-seals.tsx';
 
 export interface AttackCardsProps {
     /** The unit's stat line, base or upgraded. */
@@ -179,23 +176,6 @@ function RoleBadge({ glyph, name, type, nameId }: RoleBadgeProps) {
     );
 }
 
-/**
- * Which targets an attack is used against, or never used against, named by group in the reader's language.
- *
- * @param props.note - The groups and whether the attack is for them or kept from them.
- */
-function TargetLine({ note }: { note: TargetNote }) {
-    const { t, i18n } = useTranslation();
-    const list = new Intl.ListFormat(i18n.language, { type: note.kind === 'against' ? 'conjunction' : 'disjunction' });
-    const targets = list.format(note.groups.map((group: TargetGroup) => t(`unit.attacks.targets.${group}`)));
-
-    return (
-        <p className="attack-note attack-note--targets" data-targets={note.kind}>
-            {t(`unit.attacks.${note.kind}`, { targets })}
-        </p>
-    );
-}
-
 /** The glyph each ability is drawn with: the charge's bolt for a charged blow, the burst for one that spreads. */
 const ABILITY_GLYPHS: Record<ChargeAbilityKind, IconName> = {
     blow: 'charge',
@@ -285,7 +265,6 @@ function AttackCardItem({ card }: { card: AttackCard }) {
     const { t } = useTranslation();
     const seconds = useSeconds();
     const nameId = useId();
-    const style = useTargetStyle();
     const { strike, rider } = card;
     const type = strike.attack.damageType();
     const riderType = rider?.attack.damageType();
@@ -299,8 +278,7 @@ function AttackCardItem({ card }: { card: AttackCard }) {
                 </span>
             ) : null}
             <RoleBadge glyph={ROLE_GLYPHS[card.role]} name={t(ROLE_NAMES[card.role])} type={type} nameId={nameId} />
-            {card.targets && style === 'text' ? <TargetLine note={card.targets} /> : null}
-            {card.targets && style !== 'text' ? <TargetStrip note={card.targets} /> : null}
+            {card.targets ? <TargetSeals note={card.targets} /> : null}
             <div className="attack-card__facts">
                 <DamageFact strike={strike} />
                 {cadence ? <CadenceFact cadence={cadence} /> : null}

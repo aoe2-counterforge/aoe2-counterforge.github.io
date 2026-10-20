@@ -1,0 +1,101 @@
+/*
+ * The targets of an attack, drawn instead of written: one fixed row of four seals, land units, ships,
+ * siege weapons and buildings, struck like the damage seal on the band above. The ones the attack goes
+ * against are lit; the ones it is never used against are the same seals, faded.
+ */
+
+.attack-targets {
+    display: grid;
+    /* On a wide card the seals keep to the width a phone gives them, close to their label, rather than spreading across it. */
+    grid-template-columns: 3.25rem repeat(4, minmax(0, 5.5rem));
+    align-items: start;
+    column-gap: var(--space-1);
+    min-width: 0;
+    /* Pulled under the band and out to the card's edges, so it reads as a plate of the card, not a stray line. */
+    margin: calc(var(--space-1) * -1) calc(var(--space-3) * -1) 0;
+    padding: 0.4rem var(--space-3) 0.45rem;
+    background: color-mix(in srgb, var(--bg) 28%, transparent);
+    border-bottom: 1px solid var(--border);
+    box-shadow: inset 0 3px 6px -3px rgb(0 0 0 / 35%);
+}
+
+:root[data-theme='light'] .attack-targets {
+    background: color-mix(in srgb, var(--surface-3) 40%, transparent);
+    box-shadow: inset 0 3px 5px -3px rgb(20 35 55 / 18%);
+}
+
+/* The label stands level with the seals, not with the names beneath them. */
+.attack-targets__label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.attack-targets__list {
+    display: grid;
+    grid-column: 2 / -1;
+    grid-template-columns: subgrid;
+    margin: 0;
+    padding: 0;
+}
+
+.target-seal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    min-width: 0;
+    list-style: none;
+}
+
+.target-seal__disc {
+    display: grid;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    color: var(--text);
+    background: var(--seal-core) padding-box, var(--seal-ring) border-box;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    box-shadow: var(--seal-shadow);
+}
+
+.target-seal__disc .glyph {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.target-seal__name {
+    max-width: 100%;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--text-muted);
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+
+/* A target the attack is never used against: the same seal, seen through. */
+.target-seal[data-hit='false'] .target-seal__disc {
+    opacity: 0.32;
+    box-shadow: none;
+}
+
+:root[data-theme='light'] .target-seal[data-hit='false'] .target-seal__disc {
+    opacity: 0.42;
+}
+
+.target-seal[data-hit='false'] .target-seal__name {
+    opacity: 0.55;
+}
+
+/* The figures size the phone's columns, so a row laid across the card must not widen them. */
+@container attack-section (max-width: 28rem) {
+    .attack-card .attack-targets {
+        contain: inline-size;
+    }
+}

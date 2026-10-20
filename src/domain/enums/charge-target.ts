@@ -34,16 +34,6 @@ const GROUP_MEMBERS: Record<TargetGroup, readonly ChargeTarget[]> = {
 const KNOWN = new Set<string>(CHARGE_TARGETS);
 
 /**
- * Lists the kinds of target a group stands for.
- *
- * @param group - A group a reader names targets by.
- * @returns Its kinds, so a group of several can be drawn as the parts it holds.
- */
-export function membersOf(group: TargetGroup): readonly ChargeTarget[] {
-    return GROUP_MEMBERS[group];
-}
-
-/**
  * Narrows an arbitrary string to a known kind of target.
  *
  * @param value - Raw target identifier coming from the generated dataset.
