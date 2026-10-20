@@ -109,18 +109,51 @@ the main shot, the secondary missiles that fly with it, and the one a charged at
 shot hits with the unit's own attack. The other two do not, so they ship apart from the stat line,
 in `specialAttacks`: 41 units have one, 25 with secondary missiles and 18 with a charged attack.
 
-- **Secondary** missiles count once they can fly: the unit fires more than one (the Chu Ko Nu, the
-  Kipchak, the Hussite Wagon), can fire more in a charged volley (the Xianbei Raider), or a
-  technology or bonus raises its missile count (Bolt Magazine, Double Crossbow, Hul'che
-  Javelineers, Sitting Tiger). One without damage is a piece of a blast, like the Mangonel's, and is
-  left out. `count` is how many fly with an ordinary shot, so zero when only something else adds them.
-- **Charged** attacks count whatever they carry. The fire ships only get a charge from Siphons, and
-  the Jomsviking's torch carries no damage list of its own. Blows measured in the game
-  (`scripts/benchmark/data/hit-test/jomsviking-torch.csv`, on the `game/jomsviking-torch` branch)
-  show the torch dealing exactly the unit's own melee attack, every bonus class included (+6 against
-  buildings) and reduced by melee armour, once per attack and with no burn over time, and rising
-  with Forging and the Elite upgrade. A charged attack with an empty damage list is therefore shown
-  with the unit's own attack, upgrades included.
+Every figure and every "against" on the attack cards is read from fields of the data file. Hits
+measured in the game (`scripts/benchmark/data/hit-test/*.csv`, on the `game/charge-targets`
+branch) only settled how to read those fields. They are kept in
+`tests/fixtures/measured-special-attacks.ts`, and `tests/feature/data/measured-special-attacks.test.ts`
+checks that the values read from the shipped dataset reproduce them. They never feed the site.
+
+### The range
+
+A unit has two ranges in the file. `displayedRange` is what the game's interface prints; `maxRange`
+is what the engine uses. They differ for three units only: the Lou Chuan (10 shown, 13 used), the
+Fire Archer (5 and 9) and the Elite Fire Archer (6 and 10). The Lou Chuan's trebuchet shot was
+measured hitting a House from 13 tiles, so the stat line carries `maxRange`.
+
+### Missiles a shot carries
+
+`totalProjectiles` counts the missiles of an ordinary shot. Three cases follow from the file:
+
+- **A secondary missile with damage** (the Chu Ko Nu, the Kipchak, the Hussite Wagon): the extra
+  missiles are that one, each hitting with its own list. They are `extraProjectiles` and
+  `secondaryAttacks`, and a secondary special attack with `count`.
+- **A secondary missile without damage** (the Mangonel line): the pieces of one blast, which the
+  unit's own attack and blast width already cover. Nothing extra is counted.
+- **No secondary missile at all**: the extra missiles are copies of the main one and hit with the
+  unit's own attack. `extrasRepeatMain` says so. The Turtle Ship was measured landing three hits of
+  its full attack with every shot. The same rule reaches every unit that counts several missiles and
+  names no secondary one: Longship and Elite Longship (×4), Turtle Ship (×3), Organ Gun (×5) and
+  Elite (×6), Dromon (×5), Rocket Cart (×8), Heavy Rocket Cart (×10), War Chariot (×5), Hulk, War
+  Hulk and Carrack (×3). These now count in the combat model as well. Only the Turtle Ship was
+  measured.
+
+A technology that adds to `totalProjectiles` (Shinkichon on the Turtle Ship) adds copies of the
+main missile to the stat line. One that adds to `maxTotalProjectiles` (attribute 107,
+`maxProjectiles`) only lands on a charged attack, as below; on any other unit it changes nothing
+the guide shows.
+
+### Which damage list a missile hits with
+
+The main missile hits with the unit's list even when the file gives it one of its own: the Lou
+Chuan's trebuchet shot was measured dealing 207 to a House and 204 to a Watch Tower, which is the
+unit's +180 against buildings, not the missile's +230. Charged and secondary missiles hit with their
+own lists (the Xianbei Raider's, the Turtle Ship's heavy shot at 20 melee +7 against buildings,
+measured 20 on a Galley and 29 on a House). A charged missile with no list at all, the Jomsviking's
+torch, hits with the unit's own attack: blows measured in the game
+(`jomsviking-torch.csv`) show it dealing exactly the unit's melee attack, every bonus class
+included, reduced by melee armour, and rising with Forging and the Elite upgrade.
 
 A technology often writes the same change on the unit and on its missile. Fletching gives every
 archer +1 pierce, and also gives the Fire Archer's missile +1, because that missile is both its main
@@ -131,27 +164,80 @@ missile plays for the shooter, in `projectile`, and never added to the unit's ow
   missile it lands nowhere, since the shot hits with the unit's attack and the file writes the same
   change on the unit as well;
 - anything else, such as Ballistics or Curare's poison, is the unit's own shot when the missile is
-  its main one, exactly as before, and otherwise belongs to the special attack.
+  its main one, and otherwise belongs to the special attack.
 
-So Fletching reads +1 attack on the Fire Archer and +1 on its charged attack, not +2. A unit with
-two special attacks, like the Xianbei Raider, gets one change for each. None of this reaches the
-matchups or the ratings yet.
+So Fletching reads +1 attack on the Fire Archer and +1 on its charged attack, not +2.
 
-### How far a charged attack reaches
+### The charge fields
 
-A charged attack reaches the unit's maximum range plus its `chargeEvent`. The file supports reading
-it that way on three counts. The Fire Archer reaches 9 with an event of −4 and the Lou Chuan 13 with
-−3, and the range the game displays for them is 5 and 10. The Blacksmith arrow technologies raise
-the Hearth Troop's and the Lou Chuan's event by one exactly where they raise other archers' range,
-and the game's text lists range among both units' Blacksmith upgrades. Siege Engineers raises the
-Lou Chuan's range by one and lowers its event by one, so its arrows stay where they were while its
-trebuchet gains a tile. That puts the Hearth Troop's javelin at 6 tiles, the Fire Lancer's shot at 4
-(5 elite) and the Jomsviking's torch at 3. It has not been measured in game.
+The meanings come from the community's scenario guide (ugc.aoe2.rocks, attributes 59 to 62 and
+162) and the Advanced Genie Editor (`AGE_Frame/Units.cpp` in Tapsa/AGE), each checked against the
+measurements.
+
+- **`chargeType`** says what the charge buys:
+  - 1, **charged blow**: one hit deals `maxCharge` extra damage, and the charge comes back after
+    `maxCharge / rechargeRate` seconds. Coustillier +20 every 40 s (measured 41 s, the next blow after
+    it is ready), Elite +25 every 40 s, Samurai +1 every 30 s.
+  - 3, **charged blast**: the same, and the blow also lands on the units around the target. Urumi +12
+    every 24 s, Elite +15 every 20 s. The reach is the unit's `blastWidth` (0.75) and the share its
+    `blastDamage`, the file's area damage (0.5), which the scenario guide describes as the multiplier
+    of the blast on the units not targeted. Measured: units half a tile away took 10.5 of a 21 blow,
+    units a tile away took nothing, and ordinary blows hit no one else.
+  - 4, **dodge**: dodges up to `maxCharge` missiles and wins one back every `1 / rechargeRate`
+    seconds. Shrivamsha 5, one every 4 s; Elite 7, one every 2.9 s. Measured: a Galley shooting
+    every 3 s landed its first arrow after 52.8 s, which is when five dodges regained at that rate
+    run out.
+  - 5, **block**: no damage from one melee blow every `maxCharge / rechargeRate` seconds. Iron Pagoda
+    one every 40 s, Elite every 30 s, measured 41 s and 31 s against a Long Swordsman.
+  - 6, **charged missiles**: the charged attack fires `maxTotalProjectiles` copies of the charged
+    missile and nothing of the secondary one. Lou Chuan 10 arrows (measured 10), Fire Archer 3
+    (measured 3), Fire Lancer 3 (measured 2 hits, misses likely), Hearth Troop, Bolas Rider and
+    Jomsviking 1. The Lou Chuan's secondary missile is a trebuchet piece that only Sitting Tiger puts
+    in the air, so the "up to 9 melee extras" the site used to show were a misreading.
+  - 7, **charged volley**: one charged missile and `maxTotalProjectiles − totalProjectiles` secondary
+    ones. Xianbei Raider 1 + 5 (measured 6), Turtle Ship 1 + 0, its heavy shot measured as a single
+    hit every 5.9 s in place of an ordinary shot.
+
+  The charge record carries this as `kind`: `missiles` or `volley`; the four others are a separate
+  `chargeAbility` on the unit, with its `kind`, `capacity`, `rechargeRate` and, for a blast, its
+  `blast` reach and share.
+- **`chargeTarget`** is a bit field of the targets the charge is used against, labelled by the
+  Advanced Genie Editor: 1 infantry, 2 cavalry, 4 archers, 8 cavalry archers, 16 monks, 32 villagers
+  and trade carts, 64 ships, 128 siege, 256 buildings; −1 is every target. The site groups the first
+  six as land units and names a group only when every bit of it is set. Measured: the Lou Chuan (127,
+  no siege, no buildings) shot its arrows at land units and a Galley and never at a House, a Watch
+  Tower or a Mangonel; the Jomsviking (320, ships and buildings) used its torch only on buildings and
+  ships; the Hearth Troop (127) threw no javelin at a House; the Fire Archer (191, no ships, no
+  buildings) shot its volley at units and single arrows at a House. The record carries the kinds in
+  `charge.targets`, left out when the field restricts nothing.
+- **`rechargeRate`** of 100000 or more refills the charge at once, so the charge is spent on every
+  attack at a target it names, and the main attack takes the rest. The cards then split: the Lou
+  Chuan's arrows against land units and ships, its trebuchet shot against siege and buildings. A
+  charge that takes its time only says which targets it is never used against.
+- **`chargeEvent`** is, for types 6 and 7, the charged attack's range modifier: the charged attack
+  reaches `maxRange + chargeEvent`. Measured: Lou Chuan arrows 13 − 3 = 10, Hearth Troop javelin
+  0 + 6 (thrown from 6.3), Fire Lancer 4 (4.4), Jomsviking torch 3 (used from about 4). Siege
+  Engineers raises the Lou Chuan's range by one and lowers its event by one, so its arrows stay at
+  10 while its trebuchet gains a tile.
+
+  The Fire Archer does not fit: an event of −4 would keep its volley within 5 tiles, yet it fired
+  volleys from 8 and 9 tiles, and the Elite from 10. The one field that sets it apart is
+  `maxCharge`: 20 against 1 for every other unit. The extractor therefore offsets the range by the
+  event only for a unit holding at most one charge, which puts the Fire Archer's volley at its full
+  9 (10 Elite). That rule fits every unit measured, but it rests on this single exception; another
+  that fits as well is that the Fire Archer's charged missile is its main one, which no other unit
+  shares. Treat it as a hypothesis until a unit tells the two apart.
+- The Bolas Rider's charged bolas carries a stinger task (task 157 in the scenario guide): the
+  target's movement speed is multiplied by 1 − 0.15 for 10 seconds, not stacking. The record carries
+  it as `slows: { share: 0.15, seconds: 10 }`. The slow has not been measured.
 
 What is left out on purpose: the missile's own accuracy and blast, which on the main shot are known
-not to be the ones used (the Archer shoots at 80% with an arrow that says 85%); and a technology that
-swaps a missile for another, like Thunderclap Bombs or Incendiaries, which stays a flag on the unit
-while the special attack keeps the damage of the missile the unit starts with.
+not to be the ones used (the Archer shoots at 80% with an arrow that says 85%); a technology that
+swaps a missile for another or changes the charge type, like Thunderclap Bombs or Incendiaries,
+which stays a flag on the unit while the special attack keeps the charge the unit starts with; and a
+charge a technology gives a unit that has none (Comitatenses, Siphons), which reads as a chip on the
+technology but no card on the unit. A charged blow is not marked as ready when the unit appears, nor
+a block as empty, though both were measured that way: no field says so.
 
 ## What links a unit to a civilization
 
@@ -271,8 +357,8 @@ community's figures), not from a published attribute list.
   Byzantines, Celts, Malians, Cumans in Spanish, Italian and French), probably a different split of
   the game's text.
 - The monk attribute above is named by inference.
-- How far a charged attack reaches is read from the file, not measured in game (see
-  [Special attacks](#how-far-a-charged-attack-reaches)).
+- Why the Fire Archer's charge event does not shorten its volley (see
+  [The charge fields](#the-charge-fields)).
 - A secondary missile is taken to hit with its own damage list, as the Chu Ko Nu's does. For the
   skirmishers' second javelin under Hul'che Javelineers that list says 1 pierce, which has not
   been checked in game.
