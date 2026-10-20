@@ -2076,22 +2076,13 @@ details[open] > summary::after {
     margin: 0;
 }
 
-.attack-badge__role,
-.attack-badge__type {
+.attack-badge__role {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
     min-width: 0;
     white-space: nowrap;
-}
-
-.attack-badge__role {
     color: var(--role);
-}
-
-.attack-badge__type {
-    flex: none;
-    color: var(--type);
 }
 
 .attack-badge .glyph {
@@ -2100,7 +2091,7 @@ details[open] > summary::after {
     height: 1.25em;
 }
 
-/* Past the narrowest phone the badge still fits: the attack's name gives way before the damage type. */
+/* Past the narrowest phone the badge still fits: the attack's name gives way before the seal. */
 .attack-badge__name {
     min-width: 0;
     overflow: hidden;

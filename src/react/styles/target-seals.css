@@ -6,9 +6,10 @@
 
 .attack-targets {
     min-width: 0;
-    /* Pulled under the band and out to the card's edges, so it reads as a plate of the card, not a stray line. */
-    margin: calc(var(--space-1) * -1) calc(var(--space-3) * -1) 0;
-    padding: 0.3rem var(--space-3) 0.25rem;
+    /* Pulled up against the band and out to the card's edges, so it reads as a plate of the card, not a stray line. */
+    margin: calc((var(--space-1) + var(--space-2)) * -1) calc(var(--space-3) * -1) 0;
+    /* The damage seal hangs over the plate's top, so the target seals start below it. */
+    padding: 0.75rem var(--space-3) 0.375rem;
     background: color-mix(in srgb, var(--bg) 28%, transparent);
     border-bottom: 1px solid var(--border);
     box-shadow: inset 0 3px 6px -3px rgb(0 0 0 / 35%);

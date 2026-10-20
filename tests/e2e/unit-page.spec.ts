@@ -59,16 +59,32 @@ test.describe('the banner of a unit', () => {
 });
 
 test.describe('the attack cards of a unit', () => {
-    test('keeps the longest badge, name and damage type whole, inside its card', async ({ page }) => {
+    test('keeps the longest attack name whole and its damage seal inside its card', async ({ page }) => {
         await page.goto('es/unit/mangonel');
 
         const card = page.getByRole('listitem', { name: 'Ataque principal' });
         const edge = await box(card);
-        const type = await box(card.locator('.attack-badge__type'));
+        const seal = await box(card.locator('.attack-card__emblem'));
         const name = card.locator('.attack-badge__name');
 
-        expect(right(type)).toBeLessThanOrEqual(right(edge));
+        expect(right(seal)).toBeLessThanOrEqual(right(edge));
         expect(await name.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+    });
+
+    test('runs the body on right under the band, the damage seal hanging over it clear of the targets', async ({ page }) => {
+        await page.goto('en/unit/lou-chuan');
+
+        const card = page.getByRole('listitem', { name: 'Main attack' });
+        const band = await box(card.locator('.attack-badge'));
+        const seal = await box(card.locator('.attack-card__emblem'));
+        const targets = await box(card.locator('.attack-targets'));
+        const buildings = await box(card.locator('.target-seal__disc').last());
+
+        expect([Math.abs(targets.y - bottom(band)) < 1, bottom(seal) > targets.y, overlaps(seal, buildings)]).toEqual([
+            true,
+            true,
+            false,
+        ]);
     });
 
     test('hangs the missiles of a charged volley inside the charged card', async ({ page }) => {

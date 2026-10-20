@@ -15,7 +15,7 @@
     --seal-ring: conic-gradient(from 210deg, #6b4a1c, #f4d79c 18%, #9a6b28 36%, #e6bb6b 58%, #5e3f15 78%, #c9974a 92%, #6b4a1c);
     --seal-core: radial-gradient(circle at 38% 30%, #3b4856 0%, #1a222b 62%, #10161c 100%);
     --seal-shadow: 0 2px 6px rgb(0 0 0 / 55%), 0 0 0 1px rgb(0 0 0 / 40%);
-    --seal-size: 2.375rem;
+    --seal-size: 2.5rem;
     --heat-from: rgb(255 120 40 / 42%);
     padding: 0 var(--space-3) var(--space-3);
     overflow: hidden;
@@ -166,20 +166,9 @@
     }
 }
 
-.attack-section .attack-badge__type {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-/* The seal carries the glyph, so the band only names the type. */
-.attack-section .attack-badge__type .glyph {
-    display: none;
-}
-
 /* ---------- the seal ---------- */
 
+/* The seal hangs past the band onto the card's body, which runs on under it as if it were not there. */
 .attack-section .attack-card__emblem {
     position: absolute;
     top: 0.25rem;
@@ -238,38 +227,7 @@
     box-shadow: 1px 0 0 rgb(255 255 255 / 85%);
 }
 
-/*
- * On a phone the band is too short for a long name and its type side by side, so the type goes under
- * the name like a line struck beneath a title, and the seal grows to hold both lines.
- */
 @container attack-section (max-width: 28rem) {
-    .attack-section .attack-badge {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 0;
-        min-height: 3rem;
-        padding-block: 0.3rem;
-    }
-
-    .attack-section .attack-badge__name {
-        line-height: 1.35;
-    }
-
-    .attack-section .attack-badge__type {
-        padding-left: 1.45rem;
-        font-size: 0.625rem;
-        line-height: 1.4;
-    }
-
-    .attack-section .attack-card {
-        --seal-size: 2.625rem;
-    }
-
-    .attack-section .attack-card__emblem {
-        top: 0.5rem;
-    }
-
     .attack-section .attack-card__facts > :nth-child(3n + 1)::before {
         display: none;
     }
