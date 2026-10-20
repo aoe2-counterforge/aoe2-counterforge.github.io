@@ -52,8 +52,8 @@ describe('the combat fields read out of the unit record', () => {
         ]);
     });
 
-    it('describes every volley the combat model fires as a secondary special attack too', () => {
-        const volleys = units.filter((unit) => unit.extraProjectiles > 0);
+    it('describes every volley of secondary missiles the combat model fires as a secondary special attack too', () => {
+        const volleys = units.filter((unit) => unit.extraProjectiles > 0 && !unit.extrasRepeatMain);
 
         const mismatched = volleys.filter((unit) => {
             const secondary = unit.specialAttacks.find((attack) => attack.role === 'secondary');
@@ -62,5 +62,17 @@ describe('the combat fields read out of the unit record', () => {
         });
 
         expect([volleys.length > 0, mismatched.map((unit) => unit.key)]).toEqual([true, []]);
+    });
+
+    it('reads copies of the main missile only where no secondary missile is named', () => {
+        const copies = units.filter((unit) => unit.extrasRepeatMain);
+
+        const stray = copies.filter((unit) => unit.extraProjectiles === 0 || unit.secondaryAttacks.length > 0);
+
+        expect([byKey.get('turtle-ship')?.extraProjectiles, byKey.get('chu-ko-nu')?.extrasRepeatMain, stray]).toEqual([
+            2,
+            false,
+            [],
+        ]);
     });
 });
