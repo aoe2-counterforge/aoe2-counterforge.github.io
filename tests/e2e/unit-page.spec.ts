@@ -122,6 +122,28 @@ test.describe('the attack cards of a unit', () => {
         expect([Math.abs((seals[0]?.[0] ?? 0) - damage.x) < 1, new Set(gaps).size]).toEqual([true, 1]);
     });
 
+    test('takes a target seal that no longer fits to the next row whole, every row starting under the first', async ({ page }) => {
+        await page.setViewportSize({ width: 280, height: 900 });
+        await page.goto('de/unit/lou-chuan');
+
+        const card = page.getByRole('listitem', { name: 'Hauptangriff' });
+        const edge = await box(card);
+        const seals = await card.locator('.target-seal').evaluateAll((items) =>
+            items.map((seal) => {
+                const range = document.createRange();
+                range.selectNodeContents(seal.querySelector('.target-seal__name') ?? seal);
+                const { top, left, right } = seal.getBoundingClientRect();
+
+                return { top: Math.round(top), left: Math.round(left), right, lines: new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size };
+            }),
+        );
+        const starts = new Set(
+            [...new Set(seals.map((seal) => seal.top))].map((top) => Math.min(...seals.filter((seal) => seal.top === top).map((seal) => seal.left))),
+        );
+
+        expect([starts.size, seals.every((seal) => seal.lines === 1 && seal.right <= right(edge))]).toEqual([1, true]);
+    });
+
     test('runs the body on right under the band, the damage seal hanging over it clear of the targets', async ({ page }) => {
         await page.goto('en/unit/lou-chuan');
 

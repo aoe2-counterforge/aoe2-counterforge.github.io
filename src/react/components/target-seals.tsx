@@ -57,12 +57,14 @@ export function TargetSeals({ note }: { note: TargetNote }) {
     return (
         <div className="attack-targets" role="group" aria-label={t('unit.attacks.targetsLabel')}>
             <ul className="attack-targets__list">
-                {TARGET_GROUPS.map((group) => {
+                {TARGET_GROUPS.map((group, index) => {
                     const targeted = hit.includes(group);
                     const name = t(`unit.attacks.groups.${group}`);
                     const described = targeted ? name : t('unit.attacks.notTarget', { name });
 
-                    return (
+                    return [
+                        // The room between two seals is an item of its own, so it can give way before a caption does.
+                        index > 0 ? <li key={`${group}-gap`} className="attack-targets__gap" aria-hidden="true" /> : null,
                         <li key={group} className="target-seal" data-group={group} data-hit={targeted} title={described}>
                             <span className="target-seal__disc" aria-hidden="true">
                                 <svg
@@ -81,8 +83,8 @@ export function TargetSeals({ note }: { note: TargetNote }) {
                                 {t(`unit.attacks.groupsShort.${group}`)}
                             </span>
                             <span className="visually-hidden">{described}</span>
-                        </li>
-                    );
+                        </li>,
+                    ];
                 })}
             </ul>
         </div>

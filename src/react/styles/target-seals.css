@@ -20,21 +20,37 @@
     box-shadow: inset 0 3px 5px -3px rgb(20 35 55 / 18%);
 }
 
-/* The seals line up from the left edge, as the figures under them do, each as wide as its caption. */
+/*
+ * The seals line up from the left edge, as the figures under them do, each as wide as its caption.
+ * The list reaches into the margin by one step, so the step before the first seal of a row is hidden there.
+ */
 .attack-targets__list {
     display: flex;
-    gap: var(--space-5);
+    flex-wrap: wrap;
     align-items: start;
+    row-gap: var(--space-2);
     margin: 0;
+    margin-inline-start: calc(var(--space-2) * -1);
     padding: 0;
 }
 
-/* On the narrowest phones a seal gives way by breaking its caption where a word may break, never mid-word. */
+/*
+ * Room to spare widens the step between seals up to a wide one. The room takes no width of its own
+ * when a row is full, so it never starts a row, whatever font draws the captions.
+ */
+.attack-targets__gap {
+    flex: 1 0 0;
+    max-width: calc(var(--space-5) - var(--space-2));
+    list-style: none;
+}
+
+/* Each seal stands at least a near step from the one before; one that no longer fits takes the next row whole. */
 .target-seal {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.1rem;
+    margin-inline-start: var(--space-2);
     list-style: none;
 }
 
@@ -82,20 +98,5 @@
 @container attack-section (max-width: 28rem) {
     .attack-card .attack-targets {
         contain: inline-size;
-    }
-}
-
-/* Under a 360px phone the German captions only fit on one row with the seals drawn closer. */
-@container attack-section (max-width: 18rem) {
-    .attack-targets__list {
-        gap: var(--space-3);
-    }
-}
-
-/* On a phone as narrow as a folded one, a caption that still does not fit takes its seal to a second row. */
-@container attack-section (max-width: 14.5rem) {
-    .attack-targets__list {
-        flex-wrap: wrap;
-        row-gap: var(--space-2);
     }
 }
