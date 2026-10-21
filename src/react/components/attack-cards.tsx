@@ -108,7 +108,7 @@ function CountFact({ count, label }: { count: MissileCount; label: string }) {
 
     return (
         <Fact kind="count" icon="projectiles" label={label}>
-            <span aria-hidden="true">{shown}</span>
+            <span className="attack-fact__count" aria-hidden="true">{shown}</span>
             <span className="visually-hidden">{full}</span>
         </Fact>
     );
