@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.10.0](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/compare/v0.9.0...v0.10.0) (2026-10-21)
+
+
+### Features
+
+* carry charge targets, abilities, slows and copied missiles through the domain and upgrades ([ef1914b](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/ef1914b3b914beb49153db562dd282e1bb80f4d6))
+* draw the targets as one fixed row of seals with the ones never hit faded ([110458d](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/110458dff97ec12aadbf7d97b8cee80a6c5bb43a))
+* draw the targets of an attack as icons instead of a line of words ([1e54a50](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/1e54a50e0df795005228b712a24a20a9608e7eb9))
+* dress the attack cards in forge, hero and game looks chosen by a temporary cards parameter ([3567af4](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/3567af40c2c20f43813b0a1e46c68637881f100a))
+* drop the targets label and shorten the row of seals ([4b43ef3](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/4b43ef3a41d8720e581a247e8fa129b25c46a519))
+* extract the game's house picture to stand for buildings ([66262fe](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/66262fe6fb451bdf34c6d6a55a2cd029241d2c4e))
+* extract the game's own stat icons for damage, reload, range and recharge ([b17bf72](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/b17bf72917a49f10b475c7a93118c9c442cfd2d1))
+* line the target seals up from the left an even gap apart ([85b9624](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/85b96248b8b8c979dd705bbd1dd078097fb3aec4))
+* name charge targets and show charged missiles, slows and charge abilities on the attack cards ([9628d47](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/9628d47affbcd9bd824c3e13be9370ccb76421ac))
+* name damage types by the hit and seal them with the armour they go through ([d69f496](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/d69f4964c9a7ad35a7cf42621043104fdf10416b))
+* name each attack card and its damage type in one badge on its edge, with volley missiles inside the charged card ([4cc5691](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/4cc56911888026f1a1b358db83506f67fc9f442e))
+* read charge kinds, targets, charged ranges, abilities and copied missiles from the game data ([eebaad6](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/eebaad664577bb6566ce6600b02b2da6bac58ecb))
+* settle the attack cards on the forge look and drop the other looks with their switch ([70f6b41](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/70f6b418a203a7f73ecf7df05a9f2f81eb023b5e))
+* show the damage type only as its seal, hanging over the card body ([0017acf](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/0017acf66a4f73299b9aa7a157ee4c4533925871))
+
+
+### Bug Fixes
+
+* count extra projectiles in the place of their cadence so no figure sits alone on a row ([4b1ecb9](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/4b1ecb943cdbd7e4e4819945263fa7d01de3452b))
+* draw target seals closer before a caption breaks and wrap a seal whole ([7c30702](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/7c307022f1eca708b9a9dbb424cc60578bcd7172))
+* hang the extra projectiles every shot carries inside the main attack card ([9fa96da](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/9fa96da98a537c6a7e37793c67d5186b5b61a089))
+* keep the attack cards shrinking to a folded phone in wider fonts ([d419da4](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/d419da49695cee93c3a418aa06b61a1c056bf6b0))
+* keep the damage type word beside its seal where the band has room ([bec464d](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/bec464d03a6f7694e180536910bacd4c1ff20940))
+* leave room between the damage type and the seal at the end of the attack band ([949db04](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/949db044c40855aef39628a63bc97d0ce448edf3))
+* let the attack cards shrink to 280px and show the type word to 425px ([39b46a1](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/39b46a12fa5d75c686bf2062cb3bd096f642521f))
+* let the german extra projectiles label break inside its compound ([b494362](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/commit/b49436236ee84d3703d222e5861c3c9919978c7b))
+
 ## [0.9.0](https://github.com/aoe2-counterforge/aoe2-counterforge.github.io/compare/v0.8.0...v0.9.0) (2026-10-16)
 
 
